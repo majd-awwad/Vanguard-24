@@ -37,6 +37,14 @@ async function journey(lang, width) {
     await page.locator("#guided-example").click();
     assert.match(await page.locator("#guided-status").textContent(), lang === "ar" ? /تدريبي/ : /Practice/);
     assert.equal(await page.locator("#guided-zones [data-active]").count(), 0);
+    await page.locator("#guided-pair summary").click();
+    const firstPair = page.locator("#guided-pair-first");
+    const secondPair = page.locator("#guided-pair-second");
+    await firstPair.selectOption("south");
+    assert.equal(await page.locator("#guided-play-pair").getAttribute("aria-disabled"), "true");
+    await secondPair.selectOption("north");
+    await page.locator("#guided-play-pair").click();
+    await page.locator("#guided-zones .guided-zone").nth(2).locator(":scope[data-active]").waitFor();
     await page.locator("#guided-compare").click();
     await page.locator("#guided-zones .guided-zone").first().locator(":scope[data-active]").waitFor();
     await page.locator("#guided-pulses i").first().waitFor();
@@ -65,6 +73,8 @@ async function journey(lang, width) {
       assert.ok((await page.locator("#guided-readings dd").nth(row).textContent()).includes(formatter.format(mean)));
     }
     await page.locator("#guided-note").waitFor();
+    await page.locator("#guided-cell-evidence summary").click();
+    assert.equal(await page.locator("#guided-cell-rows td:visible").count(), 15);
     await page.locator("#guided-context-image").scrollIntoViewIfNeeded();
     await page.waitForFunction(() => document.querySelector("#guided-context-image").naturalWidth === 1920);
     assert.match(await page.locator("#guided-note").textContent(), lang === "ar" ? /تشغيل منفصل/ : /separate GEOS-FP 2 km Replay/);
@@ -73,6 +83,11 @@ async function journey(lang, width) {
     assert.equal(await page.locator("#guided-readings dd, [data-strongest]").count(), 0);
     assert.equal(await page.locator("#guided-note").textContent(), "");
     assert.equal(await page.locator("#guided-context-image").getAttribute("src"), null);
+    assert.equal(await page.locator("#guided-cell-rows td").count(), 0);
+    await page.locator("#guided-observatory").click();
+    await page.locator("#observatory-field").waitFor();
+    await page.locator("#observatory-guided").click();
+    await page.locator("#guided-interface").waitFor();
 
     for (const [level, count] of [["quick", 12], ["advanced", 48]]) {
       await page.locator("#guided-" + level).click();

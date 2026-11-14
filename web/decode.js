@@ -82,6 +82,7 @@ const systemCopy = {
     awaitingAudio: "The dust case is ready. This experience is waiting for the spatial audio module.",
     fixtureNote: "Synthetic test data only. The case has no NASA frame or measurements.",
     unavailable: "Audio could not start. Check your audio settings and try again.",
+    planUnavailable: "This sound could not be prepared. Try playing it again or continue with the grid.",
     testAudio: "Integration test: simulated playback. It does not represent the sound of NASA data.",
 
 
@@ -101,6 +102,7 @@ const systemCopy = {
     awaitingAudio: "حالة الغبار جاهزة. التجربة بانتظار توصيل وحدة الصوت المكاني.",
     fixtureNote: "بيانات اصطناعية للاختبار فقط. الحالة ما فيها صورة أو قياسات من ناسا.",
     unavailable: "تعذّر تشغيل الصوت. تحقّق من إعدادات الصوت وحاول مرة ثانية.",
+    planUnavailable: "تعذّر تجهيز الصوت. جرّب تشغيله مرة ثانية أو كمّل باستخدام الشبكة.",
     testAudio: "اختبار دمج: التشغيل محاكى. هذا التشغيل لا يمثّل صوت بيانات ناسا.",
 
 
@@ -501,7 +503,10 @@ export async function mountDecode(root, {
       }
       pause.disabled = !["playing", "starting"].includes(state.status);
       mute.setAttribute("aria-pressed", state.muted ? "true" : "false");
-      busy.textContent = hasPlayback && state.audioUnavailable ? text.unavailable : "";
+      const playbackMessage = hasPlayback
+        ? (snapshot.error === "plan-unavailable" ? text.planUnavailable : state.audioUnavailable ? text.unavailable : "")
+        : "";
+      if (busy.textContent !== playbackMessage) busy.textContent = playbackMessage;
     });
     const onClick = (element, handler) => element.addEventListener("click", handler, { signal: handlers.signal });
     onClick(play, () => rendererSession.dispatch({

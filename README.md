@@ -2,6 +2,14 @@
 
 Team Vanguard’s bilingual Earth-science listening platform. Explore ocean heat, rainfall, active-fire detections and forest structure through their numerical evidence. The atlas opens the three temporal cases in a common Sonic Lens. The Forest route (`forest.html`) retains the original discrete track and vertical waveform instrument. The browser uses only packaged assets and needs no credentials or network connection for playback.
 
+## Dust discovery
+
+- [Guided Discovery](web/dust.html) lets you compare three latitude bands by ear, choose a hypothesis, and reveal the actual Quick-grid means. An optional practice clip and text cues make the comparison usable without headphones.
+- [Earth Detective](web/decode.html) keeps the original spatial grid challenge. Quick has 12 cells and Advanced has 48. Pitch locates north and south, stereo places west and east, and loudness varies among qualifying cells. The 0.20 cutoff is a challenge rule.
+- [Dust Observatory](web/dust-observatory.html) lets you inspect the 1,000-cell map across 13 verified three-hour snapshots and compare compatible dates. These selected windows support specific comparisons, not seasonal averages or long-term trend claims.
+
+See [the guided method](docs/guided-dust.md), [the data validation and extraction ledger](docs/dust-v2-data.md), and [the demo and accessibility handoff](docs/dust-demo.md).
+
 ## Run locally
 
 Use Node.js 22 or later. From this directory, run:

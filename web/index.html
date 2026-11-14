@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101715">
-  <meta name="description" content="Explore NASA Earth observations through sound, from ocean temperature to forests.">
+  <meta name="description" content="Hear NASA Earth data, follow a Saharan dust signal, and explore the measurements behind the sound.">
   <title>EARTHPULSE · The Sound Atlas</title>
   <link rel="icon" href="./assets/atlas/pulse.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./visual/platform.css">
@@ -23,8 +23,8 @@
         <h1 id="hero-title" data-copy="title">One Earth.<br>Many signals.</h1>
         <p data-copy="intro">What if you could hear what Earth is telling us? Explore the science behind the sounds of ocean heat, rainfall, active fires and forests.</p>
         <div class="actions">
-          <a class="solid" href="#atlas" data-copy="explore">Explore Earth</a>
-          <a class="outline" id="dust-discovery" href="./dust.html" data-copy="dustDiscovery">Explore dust with sound</a>
+          <a class="solid" id="dust-discovery" href="./dust.html" data-copy="dustDiscovery">Explore dust with sound</a>
+          <a class="outline" href="#atlas" data-copy="explore">Explore Earth</a>
           <label class="sr-only" for="preview-source" data-copy="previewChoice">Preview signal</label>
           <select id="preview-source"></select>
           <button id="preview" class="outline" type="button" disabled data-copy="preview">Listen</button>
@@ -35,6 +35,26 @@
         <img id="preview-image" src="./assets/atlas/svs-5101.jpg" width="1024" height="512" fetchpriority="high" alt="Global NASA visualization of sea-surface temperature">
         <figcaption><span id="preview-caption">Ocean surface temperature · related NASA visualization</span><a id="preview-credit" href="https://svs.gsfc.nasa.gov/5101/">NASA SVS 5101 ↗</a></figcaption>
       </figure>
+    </section>
+    <section class="dust-path wrap" aria-labelledby="dust-path-title">
+      <div>
+        <h2 id="dust-path-title" data-copy="dustPathTitle">Follow the Saharan dust signal</h2>
+        <p data-copy="dustPathIntro">Listen for the strongest region, test your answer against the NASA model, then see how the pattern changes across selected dates.</p>
+      </div>
+      <div class="dust-path-links">
+        <a id="dust-path-guided" href="./dust.html">
+          <strong data-copy="dustPathGuided">Listen and discover</strong>
+          <span data-copy="dustPathGuidedDetail">Compare three bands and reveal the evidence.</span>
+        </a>
+        <a id="dust-path-observatory" href="./dust-observatory.html">
+          <strong data-copy="dustPathObservatory">Explore the dust observatory</strong>
+          <span data-copy="dustPathObservatoryDetail">Inspect the map across 13 verified snapshots.</span>
+        </a>
+        <a id="dust-path-decode" href="./decode.html">
+          <strong data-copy="dustPathDecode">Become an Earth Detective</strong>
+          <span data-copy="dustPathDecodeDetail">Find individual cells using the spatial sound grid.</span>
+        </a>
+      </div>
     </section>
     <section class="atlas wrap" id="atlas" aria-labelledby="atlas-title">
       <header class="section-head"><div><p class="eyebrow" data-copy="worlds">Explore Earth</p><h2 id="atlas-title" data-copy="atlas">Sound Atlas</h2></div></header>
