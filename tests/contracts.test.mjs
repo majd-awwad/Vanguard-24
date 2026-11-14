@@ -54,10 +54,9 @@ test("v2 validation rejects corrupt cases with field-specific errors", () => {
 });
 
 test("Decode shell provides one interactive mount, an inert visual layer and one live region", () => {
-  const html = readFileSync(new URL("../web/index.html", import.meta.url), "utf8");
+  const html = readFileSync(new URL("../web/decode.html", import.meta.url), "utf8");
   assert.equal([...html.matchAll(/id="decode-grid"/g)].length, 1);
   assert.match(html, /id="decode-visual" aria-hidden="true" inert/);
-  const css = readFileSync(new URL("../web/visual/decode.css", import.meta.url), "utf8");
-  assert.match(css, /#decode-visual\s*\{[^}]*pointer-events: none/);
+  assert.match(html, /#decode-visual\s*\{\s*pointer-events: none/);
   assert.equal([...html.matchAll(/aria-live="polite"/g)].length, 1);
 });

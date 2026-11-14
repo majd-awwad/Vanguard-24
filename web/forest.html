@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a14">
+  <meta name="description" content="Listen to the shape of real NASA GEDI lidar returns over Brazil's Cerrado.">
+  <title>The Invisible Forest · EARTHPULSE</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='14' fill='%23233224'/%3E%3Cpath d='M4 15h5l2-4 3 8 3-11 2 7h5' fill='none' stroke='%23d9edaa' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preload" href="./assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./visual/exhibit.css">
+</head>
+<body>
+  <a class="skip" href="#lens" data-copy="skip">Skip to exploration</a>
+  <header class="masthead">
+    <div class="layout nav">
+      <a class="brand" href="./index.html" data-atlas-link aria-label="EARTHPULSE">
+        <svg class="brand-mark" viewBox="0 0 28 28" aria-hidden="true">
+          <circle cx="14" cy="14" r="12.3"/>
+          <path d="M3 15h6l2-4 3 8 3-11 2 7h6"/>
+        </svg>
+        <span>EARTH<span class="brand-light">PULSE</span></span>
+      </a>
+      <nav aria-label="Exhibit" data-label="nav">
+        <a href="./index.html#atlas" data-atlas-link data-copy="navExplore">Explore Earth</a>
+        <a href="#science" data-copy="navScience">The science</a>
+      </nav>
+      <button type="button" class="locale-button" id="locale" lang="ar">العربية</button>
+    </div>
+  </header>
+  <main id="top">
+    <section class="hero" aria-labelledby="title">
+      <div class="layout hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow hero-label"><span></span><span data-copy="heroLabel">NASA GEDI FIELD RECORDING</span></p>
+          <h1 id="title"><span data-copy="titleLine">The Invisible</span><br><em data-copy="titleAccent">Forest.</em></h1>
+          <p class="hero-description" data-copy="intro">The canopy hides a world of layers. Follow a NASA laser pulse into Brazil’s Cerrado and hear what the reflected light reveals.</p>
+          <div class="hero-actions">
+            <button id="begin" class="button primary" type="button" disabled>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4.5 16 10l-9 5.5z" fill="currentColor"/></svg>
+              <span data-copy="begin">Enter with sound</span>
+            </button>
+            <button type="button" id="begin-silent" class="hero-silent" data-copy="beginSilent" disabled>Enter silently</button>
+          </div>
+        </div>
+        <div class="hero-sight" aria-hidden="true"><i></i><b></b><em></em></div>
+        <div class="hero-notes">
+          <p class="location" data-copy="location">CERRADO, BRAZIL</p>
+          <p class="coordinates" dir="ltr">13.74° S &nbsp; 44.13° W</p>
+          <p class="photo-credit" data-copy="photo">Illustrative landscape · AI-generated</p>
+        </div>
+      </div>
+    </section>
+    <section class="lens-section layout" aria-labelledby="lens">
+      <header class="section-heading">
+        <h2 id="lens" tabindex="-1" data-copy="sonicLens">Sonic Lens</h2>
+        <p class="dataset-stamp"><bdi>GEDI V001 · BEAM0101</bdi><span data-copy="acquired">18 APR 2019 · BRAZIL</span></p>
+      </header>
+      <p id="loading" role="status" data-copy="loading">Loading the six verified GEDI observations…</p>
+      <p id="load-error" role="alert" hidden></p>
+      <button id="retry" type="button" class="button neutral" data-copy="retry" hidden>Retry loading</button>
+      <div id="experience" class="experience" hidden>
+        <div class="journey" id="guide" aria-labelledby="guide-title">
+          <div class="journey-copy">
+            <p class="eyebrow" id="guide-step"></p>
+            <h3 id="guide-title" tabindex="-1"></h3>
+            <p id="question-description"></p>
+          </div>
+          <div class="journey-actions">
+            <button id="guide-pulse" class="button neutral" type="button" data-copy="guidePulse">Play the height scan</button>
+            <button id="guide-track" class="button primary" type="button" data-copy="guideTrack">Hold a layer across the track</button>
+            <button id="reveal" class="button primary" type="button" aria-controls="guide-outcome" aria-expanded="false" data-copy="reveal" hidden>Uncover the difference</button>
+            <button id="open" class="text-button" type="button" data-copy="open">Explore freely</button>
+          </div>
+        </div>
+        <div class="instrument">
+          <div class="instrument-top">
+            <div class="modes" role="group" data-label="modes" aria-label="Scan axis">
+              <button id="horizontal" class="axis-button" type="button" aria-pressed="true">
+                <span aria-hidden="true">↔</span> <span data-copy="horizontal">Along the track</span>
+              </button>
+              <button id="vertical" class="axis-button" type="button" aria-pressed="false">
+                <span aria-hidden="true">↕</span> <span data-copy="vertical">Through a footprint</span>
+              </button>
+            </div>
+            <span id="instruction" class="plot-instruction"></span>
+          </div>
+          <div id="plot" class="plot"></div>
+          <p class="plot-key" id="plot-key"></p>
+          <div class="readout">
+            <div class="reading">
+              <p class="eyebrow section-label" id="reading-title"></p>
+              <p id="current-value" class="current-value"></p>
+              <p id="current-label" class="current-label"></p>
+            </div>
+            <button id="inspect" class="text-button" type="button" aria-controls="observation" data-copy="inspect">Inspect measurement</button>
+          </div>
+          <section id="guide-outcome" class="guide-outcome" aria-labelledby="guide-result-heading" hidden>
+            <h3 id="guide-result-heading" tabindex="-1" data-copy="discoveryHeading">A different echo at the same height.</h3>
+            <div id="guide-result" class="guide-result"></div>
+            <div class="guide-evidence" role="group" aria-label="Comparison evidence" data-label="comparisonEvidence">
+              <button id="evidence-low" class="text-button" type="button"></button>
+              <button id="evidence-high" class="text-button" type="button"></button>
+            </div>
+            <button id="guide-vertical" class="button neutral" type="button"></button>
+            <button id="discovery-open" class="text-button" type="button" data-copy="open">Explore freely</button>
+          </section>
+          <div class="selectors">
+            <label><span data-copy="footprint">Footprint</span><select id="footprint"></select></label>
+            <div id="band-controls" class="band-controls" role="group" aria-label="Height range" data-label="heightRange">
+              <label><span data-copy="from">From (m)</span><select id="band-min"></select></label>
+              <label><span data-copy="to">To (m)</span><select id="band-max"></select></label>
+            </div>
+            <label id="vertical-controls" hidden><span data-copy="heightStep">Height band</span><select id="height-step"></select></label>
+          </div>
+          <div class="transport">
+            <div class="transport-main">
+              <button id="play" class="button dark" type="button" data-copy="play">Play</button>
+              <button id="pause" class="button neutral" type="button" data-copy="pause">Pause</button>
+              <button id="replay" class="button neutral" type="button" data-copy="replay">Replay</button>
+            </div>
+            <div class="transport-steps">
+              <button id="previous" class="button neutral step" type="button" data-label="previous" aria-label="Previous step"><span aria-hidden="true">←</span></button>
+              <button id="next" class="button neutral step" type="button" data-label="next" aria-label="Next step"><span aria-hidden="true">→</span></button>
+              <label for="speed"><span class="sr-only" data-copy="speed">Playback speed</span>
+                <select id="speed" dir="ltr"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+              </label>
+            </div>
+          </div>
+          <div class="transport-status">
+            <span id="position-text" class="position-text"></span>
+            <span id="playback-status"></span>
+          </div>
+        </div>
+        <details id="studio" class="panel studio">
+          <summary data-copy="studio">Sound Studio</summary>
+          <div class="panel-body">
+            <div class="sound-controls">
+              <label><span data-copy="volume">Volume</span><input id="volume" type="range" min="0" max="100" value="72"></label>
+              <label class="mute"><input id="mute" type="checkbox"><span data-copy="mute">Mute data tones</span></label>
+              <button id="sound" type="button" class="button neutral" data-copy="runSound">Play with sound</button>
+              <button id="silent" type="button" class="button neutral" data-copy="runSilent">Run without sound</button>
+            </div>
+            <p data-copy="mapping">Tones use a fixed 440 Hz pitch. Gain is 0.32 × the square root of the return fraction. Each metre advances the vertical scan by 0.13 seconds at 1×. The track scan advances at 65 metres per playback second at 1×.</p>
+          </div>
+        </details>
+        <details id="observation" class="panel observation">
+          <summary data-copy="evidence">Observation evidence and sources</summary>
+          <div class="panel-body">
+            <div id="evidence-content" tabindex="-1"></div>
+            <button id="close-evidence" class="text-button" type="button" data-copy="closeEvidence">Close evidence</button>
+          </div>
+        </details>
+      </div>
+      <p id="announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+    </section>
+    <section class="science" id="science" aria-labelledby="science-heading">
+      <div class="layout science-inner">
+        <div>
+          <p class="eyebrow section-label">NASA SVS 4950</p>
+          <h2 id="science-heading" data-copy="science">What came back</h2>
+          <p data-copy="scienceBody">GEDI measures reflected laser light from a footprint. The tones represent a share of the corrected signal above a noise threshold, within a fixed −10 to 22 m window relative to estimated ground.</p>
+          <p data-copy="scienceLimits">Terrain, reflectance and vegetation shape the return. This signal alone cannot identify leaf density, tree count or biomass. Between footprints, GEDI provides no measurements for this pass.</p>
+          <p data-copy="scienceMethod">We subtract the instrument’s background estimate and three noise standard deviations, then sum the positive remainder into one-metre bands. We divide by the sum within the same height window for each footprint.</p>
+          <p class="method-links"><a href="https://edcftp.cr.usgs.gov/project/lpdaac/GEDI_L1A-L1B/gedi_l1b_product_data_dictionary.html" data-copy="dictionary">GEDI waveform documentation</a></p>
+          <a class="text-button" href="#lens" data-copy="returnToLens">Explore the six footprints</a>
+        </div>
+        <figure>
+          <img src="./assets/gedi/svs-4950.jpg" width="1024" height="576" loading="lazy" alt="NASA map of GEDI forest-height measurements, with coloured orbital tracks and a height legend." data-alt="frameAlt">
+          <figcaption><a href="https://svs.gsfc.nasa.gov/4950/" data-copy="frameLink">GEDI Forest Height · NASA Scientific Visualization Studio</a>
+            <span data-copy="frameScope">Mission context using L2B RH100. This frame has no verified match to the six L1B/L2A footprints.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+  <footer class="footer layout"><span>EARTHPULSE</span><span data-copy="footer">The Invisible Forest · Team Vanguard</span></footer>
+  <noscript><p class="layout">JavaScript is required to explore this GEDI exhibition.</p></noscript>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

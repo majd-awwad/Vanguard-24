@@ -70,13 +70,13 @@ test("the unrolled map registers to an arbitrary stage rectangle inside a larger
   assert.ok(Math.abs(full.left + full.right) < 1e-12 && Math.abs(full.top + full.bottom) < 1e-12, "no rect means the whole canvas");
 });
 
-test("the hero pose leaves space around Earth and mirrors for Arabic without mirroring the map", () => {
+test("the hero pose puts a huge, partly cropped Earth on the chosen side and mirrors for Arabic without mirroring the map", () => {
   const frame = createFrame(dust);
   const aspect = 16 / 9;
   const centre = (shift) => projectToNdc(cameraMatrices(frame, 0, aspect, { hero: { distance: HERO_DISTANCE, shift } }), new Vector3(0, 0, 0));
   assert.ok(Math.abs(centre(HERO_SHIFT).x - HERO_SHIFT) < 1e-9, "Earth centre sits at the shift");
   assert.ok(Math.abs(centre(-HERO_SHIFT).x + HERO_SHIFT) < 1e-9, "mirrored for right-to-left");
-  // A little breathing room around the globe, while keeping it prominent in the frame.
+  // Angular radius of the globe against the half field of view: the diameter is about 1.1x the viewport height.
   const camera = cameraMatrices(frame, 0, aspect, { hero: { distance: HERO_DISTANCE, shift: HERO_SHIFT } });
   const eye = new Vector3().setFromMatrixPosition(camera.world);
   assert.ok(Math.abs(eye.length() - HERO_DISTANCE) < 1e-9);
@@ -431,7 +431,7 @@ test("only the particle module reads cell readings, and no 3D file reads plans, 
   assert.match(comments(read("web/cinematic/scene.js")), /buildDustParticles\(snapshot/, "scene builds particles from the snapshot only");
   const css = read("web/cinematic/cinematic.css");
   assert.doesNotMatch(css, /https?:\/\/|@import/);
-  const html = read("web/index.html");
+  const html = read("web/decode-3d.html");
   assert.doesNotMatch(html, /https?:\/\//, "the page loads nothing from the network");
   assert.match(html, /\.\/cinematic\/main\.js/);
   assert.match(html, /\.\/cinematic\/cinematic\.css/);
@@ -448,12 +448,12 @@ test("no pre-Reveal path draws colour or particles over the region", () => {
 });
 
 test("the page keeps every element the shared Decode wiring queries and uses the corrected copy", () => {
-  const html = read("web/index.html");
+  const html = read("web/decode-3d.html");
   const source = read("web/decode.js");
   const ids = new Set([...source.matchAll(/byId\("([\w-]+)"\)/g)].map((match) => `decode-${match[1]}`));
   for (const id of ["decode-title", "decode-home", "decode-state", "decode-retry", "decode-page"]) ids.add(id);
   assert.ok(ids.size > 25);
-  for (const id of ids) assert.match(html, new RegExp(`id="${id}"`), `index.html needs #${id}`);
+  for (const id of ids) assert.match(html, new RegExp(`id="${id}"`), `decode-3d.html needs #${id}`);
   for (const id of ["cine-eyebrow", "cine-title-lead", "cine-title-accent", "cine-lede", "cine-lede2", "cine-play-guide", "cine-play-label", "cine-wave",
     "cine-guide-caption", "cine-steps", "cine-start", "cine-start-label", "cine-source", "cine-challenge", "cine-zoom-in", "cine-zoom-out", "cine-compass",
     "cine-sound", "cine-dock-label", "cine-nav-decode", "cine-nav-about", "cine-nav-science", "cine-nav-dataset", "cine-lang-en", "cine-lang-ar"]) {
@@ -465,7 +465,6 @@ test("the page keeps every element the shared Decode wiring queries and uses the
   assert.match(main, /id="decode-date"/);
   assert.doesNotMatch(html + read("web/cinematic/copy.js") + read("web/cinematic/main.js"), /Turned NASA dust data/);
   assert.match(html, /HEAR THE/);
-  assert.match(html, /<html lang="ar" dir="rtl">/);
   assert.match(html, /UNSEEN/);
 });
 

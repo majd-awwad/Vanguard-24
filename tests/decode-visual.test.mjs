@@ -87,8 +87,8 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
     await page.route("http://earthpulse.test/**", async (route) => {
       const path = new URL(route.request().url()).pathname.slice(1);
       switch (path) {
-        case "index.html":
-        case "visual/base.css":
+        case "decode.html":
+        case "visual/platform.css":
         case "visual/decode.css":
         case "visual/decode-visual.js":
         case "visual/reveal.js":
@@ -110,7 +110,7 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
           for (const [rows, cols] of [[3, 4], [6, 8]]) {
             for (const grouped of [false, true]) {
               const scenario = `${rows}x${cols}, ${width}px, ${direction}, ${zoom}% text, grouped=${grouped}`;
-              await page.goto("http://earthpulse.test/index.html");
+              await page.goto("http://earthpulse.test/decode.html");
               await page.addStyleTag({ url: "/visual/decode.css" });
               const snapshot = { ...fixture(rows, cols), caseId: dustCaseId };
               await page.evaluate(async ({ snapshot, direction, zoom, grouped }) => {
@@ -121,7 +121,7 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
                 document.documentElement.lang = rtl ? "ar" : "en";
                 document.documentElement.style.fontSize = `${zoom}%`;
                 document.body.style.fontSize = "1rem";
-                document.querySelector("#decode-state").textContent = "Test data";
+                document.querySelector("h1 + p").textContent = "Test data";
                 grid.setAttribute("role", "grid");
                 grid.setAttribute("aria-label", "Test data");
                 const rowParent = grouped ? document.createElement("div") : grid;
@@ -226,9 +226,8 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
                 return { offsetLeft, offsetTop, offsetWidth, offsetHeight };
               });
               const before = await size();
-              // Establish keyboard modality, then focus the grid independently of header links.
               await page.keyboard.press("Tab");
-              await first.focus();
+              await page.keyboard.press("Tab");
               assert.ok(await first.evaluate((button) => button.matches(":focus-visible") &&
                 getComputedStyle(button).outlineStyle === "solid"), `${scenario}: visible keyboard focus`);
               assert.deepEqual(await size(), before, `${scenario}: focus shifted the button`);

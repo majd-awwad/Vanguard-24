@@ -4,6 +4,7 @@ import test from "node:test";
 import { makeSpatialPlan, heardClass, mappingVersion } from "../web/audio/spatial-plan.js";
 import { continuousVoice, crackleVoice, GAIN_CEILING, MAX_PULSES } from "../web/audio/voices.js";
 import { createTransport } from "../web/audio/transport.js";
+import { makeTemporalPlan } from "../web/audio/temporal-plan.js";
 
 // Official repository fixtures are explicitly synthetic, never NASA observations.
 const fixtures = JSON.parse(readFileSync(new URL("./fixtures/decode-fixture.json", import.meta.url)));
@@ -347,6 +348,32 @@ test("transport provides mono fallback and graceful browser audio refusal", asyn
   assert.equal(refused.transport.snapshot().status, "ended");
 });
 
+test("transport keeps legacy temporal tone and pulse timing, controls and event identity", async () => {
+  const data = { id: "rain", unit: "mm/day", cells: [{ lat: 0, lon: 0,
+    samples: [{ value: 30 }, { value: 60 }] }], times: [{ start: "test-1" }, { start: "test-2" }] };
+  const plan = makeTemporalPlan(data, { id: "synthetic", lat: 0, lon: 0 });
+  const harness = audioHarness();
+  harness.transport.load(plan);
+  const snapshots = [];
+  harness.transport.subscribe(snapshot => snapshots.push(snapshot));
+  await harness.transport.play();
+  assert.equal(harness.nodes.filter(n => n.kind === "pan").length, 0);
+  const oscillators = harness.nodes.filter(n => n.kind === "oscillator");
+  assert.deepEqual(oscillators.map(n => n.startTime), plan.events.flatMap(e => e.tone.pulses.map(p => 0.035 + (e.onsetS + p))));
+  assert.equal(harness.transport.snapshot().activeEventId, plan.events[0].id);
+  harness.advance(0.3);
+  const position = harness.transport.snapshot().positionS;
+  harness.transport.setSpeed(2);
+  assert.equal(harness.transport.snapshot().positionS, position);
+  harness.transport.setVolume(0.3);
+  harness.transport.setMuted(true);
+  assert.equal(harness.transport.snapshot().muted, true);
+  harness.transport.pause();
+  harness.transport.seek(0.9);
+  assert.equal(harness.transport.snapshot().activeEventId, plan.events[1].id);
+  assert.equal(harness.transport.snapshot().planRevision, 1);
+  assert.ok(snapshots.length > 5);
+});
 
 test("spatial crackle seek and speed changes retain pulse offsets and cancel old schedules", async () => {
   const harness = audioHarness();

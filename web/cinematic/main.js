@@ -3,19 +3,19 @@ import { mountDecode } from "../decode.js";
 import { decodeMessage } from "../i18n/decode-messages.js";
 import { loadDecodeCase } from "../sources/decode/index.js";
 import { mountDecodeVisual } from "../visual/decode-visual.js";
-import { mountInfo } from "../info.js";
 import { createAudioTap } from "./audio-tap.js";
 import { copy } from "./copy.js";
 import { createGlobeMount } from "./globe.js";
 import { createHero } from "./hero.js";
 import { createScene } from "./scene.js";
 
-// The single application entry point: the decoding session, accessible grid and audio
-// transport share one cinematic scene. The 3D layer follows the public session snapshot.
+// Mirrors startDecode() in web/decode.js (read-only): the same session, transport, spatial plan and accessible
+// grid run underneath, with a cinematic scene, hero and dock around them. The only interactive grid is still the
+// shared HTML one; the 3D layer draws what the session snapshot allows and nothing else.
 
 export async function startCinematic(root) {
   const document = root.ownerDocument;
-  const language = new URL(document.URL).searchParams.get("lang") === "en" ? "en" : "ar";
+  const language = new URL(document.URL).searchParams.get("lang") === "ar" ? "ar" : "en";
   const text = copy[language];
   const body = document.body;
   document.documentElement.lang = language;
@@ -55,7 +55,6 @@ export async function startCinematic(root) {
   }
 
   const tap = createAudioTap();
-  const info = mountInfo(document, language);
   const transport = createTransport({ createContext: () => tap.createContext() });
   const hero = createHero({ root, language, scene, transport, analyser: () => tap.analyser });
   let caseInfo = null;
@@ -75,7 +74,6 @@ export async function startCinematic(root) {
   async function loadCase(id) {
     caseInfo = await loadDecodeCase(id);
     hero.setCase(caseInfo);
-    info.setCase(caseInfo);
     return caseInfo;
   }
 

@@ -13,6 +13,19 @@ body:has(#decode-page) {
 
 #decode-page { width: min(calc(100% - 2.5rem), 54rem); padding-block-end: 3rem; }
 #decode-page :is(a, button, summary, [tabindex]):focus-visible { outline-color: var(--decode-gold); }
+.decode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem;
+  padding-block: 1.15rem;
+  margin-block-end: 1.5rem;
+  border-block-end: 1px solid var(--decode-line);
+}
+.decode-header a { color: var(--decode-muted); text-decoration: none; }
+.decode-header a:hover { text-decoration: underline; }
+#decode-home { font-weight: 700; color: var(--decode-ink); }
+#decode-language { border: 1px solid var(--decode-line); border-radius: 2rem; padding: .2rem .7rem; }
 #decode-title {
   font: 400 clamp(2.6rem, 8vw, 5.3rem)/1.04 var(--serif);
   letter-spacing: -.045em;
