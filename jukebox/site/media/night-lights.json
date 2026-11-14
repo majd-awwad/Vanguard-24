@@ -1,0 +1,462 @@
+{
+  "schema": 1,
+  "svs": 5313,
+  "source": "https://svs.gsfc.nasa.gov/5313/",
+  "video": "https://svs.gsfc.nasa.gov/vis/a000000/a005300/a005313/nightlights_flat_series_and_change_wZooms_13_EIC_2160p30_h265.mp4",
+  "sourceSha256": "fa770691e32961d6670ef22689a63210fd732228fabf4946a8117e96b2bcffd9",
+  "frame": 1260,
+  "second": 42,
+  "width": 7680,
+  "height": 2160,
+  "classifier": "rgb-visible-change-v1",
+  "rawRgbSha256": "fe9b30d9110ad0895c619967b4d887288f076f5024cc508255218d4d9c3d4d38",
+  "regions": [
+    {
+      "id": "europe",
+      "box": [
+        696,
+        820,
+        1980,
+        2040
+      ],
+      "image": "europe.webp",
+      "bands": [
+        {
+          "start": 0,
+          "end": 107,
+          "pixels": 130540,
+          "bright": 15,
+          "dim": 719
+        },
+        {
+          "start": 107,
+          "end": 214,
+          "pixels": 130540,
+          "bright": 2046,
+          "dim": 4898
+        },
+        {
+          "start": 214,
+          "end": 321,
+          "pixels": 130540,
+          "bright": 1112,
+          "dim": 2720
+        },
+        {
+          "start": 321,
+          "end": 428,
+          "pixels": 130540,
+          "bright": 1097,
+          "dim": 5001
+        },
+        {
+          "start": 428,
+          "end": 535,
+          "pixels": 130540,
+          "bright": 1318,
+          "dim": 10804
+        },
+        {
+          "start": 535,
+          "end": 642,
+          "pixels": 130540,
+          "bright": 2982,
+          "dim": 8651
+        },
+        {
+          "start": 642,
+          "end": 749,
+          "pixels": 130540,
+          "bright": 2497,
+          "dim": 9490
+        },
+        {
+          "start": 749,
+          "end": 856,
+          "pixels": 130540,
+          "bright": 5241,
+          "dim": 12381
+        },
+        {
+          "start": 856,
+          "end": 963,
+          "pixels": 130540,
+          "bright": 6967,
+          "dim": 9512
+        },
+        {
+          "start": 963,
+          "end": 1070,
+          "pixels": 130540,
+          "bright": 6155,
+          "dim": 6110
+        },
+        {
+          "start": 1070,
+          "end": 1177,
+          "pixels": 130540,
+          "bright": 6464,
+          "dim": 3718
+        },
+        {
+          "start": 1177,
+          "end": 1284,
+          "pixels": 130540,
+          "bright": 4958,
+          "dim": 4669
+        }
+      ],
+      "sensitivity": {
+        "10": [
+          43331,
+          84880
+        ],
+        "12": [
+          40852,
+          78673
+        ],
+        "14": [
+          37304,
+          73980
+        ]
+      }
+    },
+    {
+      "id": "med",
+      "box": [
+        2390,
+        200,
+        3216,
+        1256
+      ],
+      "image": "med.webp",
+      "bands": [
+        {
+          "start": 0,
+          "end": 68,
+          "pixels": 71808,
+          "bright": 3316,
+          "dim": 211
+        },
+        {
+          "start": 68,
+          "end": 137,
+          "pixels": 72864,
+          "bright": 2620,
+          "dim": 262
+        },
+        {
+          "start": 137,
+          "end": 206,
+          "pixels": 72864,
+          "bright": 3530,
+          "dim": 3774
+        },
+        {
+          "start": 206,
+          "end": 275,
+          "pixels": 72864,
+          "bright": 4452,
+          "dim": 6845
+        },
+        {
+          "start": 275,
+          "end": 344,
+          "pixels": 72864,
+          "bright": 3239,
+          "dim": 2482
+        },
+        {
+          "start": 344,
+          "end": 413,
+          "pixels": 72864,
+          "bright": 2193,
+          "dim": 596
+        },
+        {
+          "start": 413,
+          "end": 481,
+          "pixels": 71808,
+          "bright": 7044,
+          "dim": 365
+        },
+        {
+          "start": 481,
+          "end": 550,
+          "pixels": 72864,
+          "bright": 10688,
+          "dim": 3208
+        },
+        {
+          "start": 550,
+          "end": 619,
+          "pixels": 72864,
+          "bright": 3915,
+          "dim": 2558
+        },
+        {
+          "start": 619,
+          "end": 688,
+          "pixels": 72864,
+          "bright": 2762,
+          "dim": 459
+        },
+        {
+          "start": 688,
+          "end": 757,
+          "pixels": 72864,
+          "bright": 2547,
+          "dim": 506
+        },
+        {
+          "start": 757,
+          "end": 826,
+          "pixels": 72864,
+          "bright": 2951,
+          "dim": 773
+        }
+      ],
+      "sensitivity": {
+        "10": [
+          51835,
+          23279
+        ],
+        "12": [
+          49257,
+          22039
+        ],
+        "14": [
+          46022,
+          21134
+        ]
+      }
+    },
+    {
+      "id": "ukraine",
+      "box": [
+        4656,
+        174,
+        5712,
+        908
+      ],
+      "image": "ukraine.webp",
+      "bands": [
+        {
+          "start": 0,
+          "end": 88,
+          "pixels": 64592,
+          "bright": 1253,
+          "dim": 705
+        },
+        {
+          "start": 88,
+          "end": 176,
+          "pixels": 64592,
+          "bright": 889,
+          "dim": 527
+        },
+        {
+          "start": 176,
+          "end": 264,
+          "pixels": 64592,
+          "bright": 1938,
+          "dim": 610
+        },
+        {
+          "start": 264,
+          "end": 352,
+          "pixels": 64592,
+          "bright": 1392,
+          "dim": 224
+        },
+        {
+          "start": 352,
+          "end": 440,
+          "pixels": 64592,
+          "bright": 708,
+          "dim": 434
+        },
+        {
+          "start": 440,
+          "end": 528,
+          "pixels": 64592,
+          "bright": 117,
+          "dim": 1803
+        },
+        {
+          "start": 528,
+          "end": 616,
+          "pixels": 64592,
+          "bright": 100,
+          "dim": 577
+        },
+        {
+          "start": 616,
+          "end": 704,
+          "pixels": 64592,
+          "bright": 1020,
+          "dim": 834
+        },
+        {
+          "start": 704,
+          "end": 792,
+          "pixels": 64592,
+          "bright": 576,
+          "dim": 1117
+        },
+        {
+          "start": 792,
+          "end": 880,
+          "pixels": 64592,
+          "bright": 1205,
+          "dim": 712
+        },
+        {
+          "start": 880,
+          "end": 968,
+          "pixels": 64592,
+          "bright": 1831,
+          "dim": 1413
+        },
+        {
+          "start": 968,
+          "end": 1056,
+          "pixels": 64592,
+          "bright": 3717,
+          "dim": 540
+        }
+      ],
+      "sensitivity": {
+        "10": [
+          15618,
+          10290
+        ],
+        "12": [
+          14746,
+          9496
+        ],
+        "14": [
+          13658,
+          8914
+        ]
+      }
+    },
+    {
+      "id": "india",
+      "box": [
+        6068,
+        1144,
+        7068,
+        2080
+      ],
+      "image": "india.webp",
+      "bands": [
+        {
+          "start": 0,
+          "end": 83,
+          "pixels": 77688,
+          "bright": 359,
+          "dim": 37
+        },
+        {
+          "start": 83,
+          "end": 166,
+          "pixels": 77688,
+          "bright": 302,
+          "dim": 493
+        },
+        {
+          "start": 166,
+          "end": 250,
+          "pixels": 78624,
+          "bright": 1746,
+          "dim": 24
+        },
+        {
+          "start": 250,
+          "end": 333,
+          "pixels": 77688,
+          "bright": 7266,
+          "dim": 73
+        },
+        {
+          "start": 333,
+          "end": 416,
+          "pixels": 77688,
+          "bright": 11298,
+          "dim": 78
+        },
+        {
+          "start": 416,
+          "end": 500,
+          "pixels": 78624,
+          "bright": 17127,
+          "dim": 302
+        },
+        {
+          "start": 500,
+          "end": 583,
+          "pixels": 77688,
+          "bright": 8453,
+          "dim": 103
+        },
+        {
+          "start": 583,
+          "end": 666,
+          "pixels": 77688,
+          "bright": 8141,
+          "dim": 112
+        },
+        {
+          "start": 666,
+          "end": 750,
+          "pixels": 78624,
+          "bright": 9191,
+          "dim": 26
+        },
+        {
+          "start": 750,
+          "end": 833,
+          "pixels": 77688,
+          "bright": 6229,
+          "dim": 72
+        },
+        {
+          "start": 833,
+          "end": 916,
+          "pixels": 77688,
+          "bright": 1979,
+          "dim": 4
+        },
+        {
+          "start": 916,
+          "end": 1000,
+          "pixels": 78624,
+          "bright": 1056,
+          "dim": 0
+        }
+      ],
+      "sensitivity": {
+        "10": [
+          78929,
+          1802
+        ],
+        "12": [
+          73147,
+          1324
+        ],
+        "14": [
+          64836,
+          1056
+        ]
+      }
+    }
+  ],
+  "media": {
+    "night-lights.webp": "5c1506dbe3d9ba685222cba73747025018d10d1687ce06c2999c5c21c8f8b77a",
+    "europe.webp": "b295688ae86c2d2477a142bcb24d7b39a68b4da9c7e18fad32767c95f42c283c",
+    "med.webp": "c4e2857df72527659dce9e9002e30536f08e601b8612abfa19b435f65516f44b",
+    "ukraine.webp": "134f72f8c2d38b36e5e13449fb95576ae724fd46cb81e869f8a5cf30ac03eee5",
+    "india.webp": "b7386064d00e4a44d90f96fd1874256a6554cc8380e42c9880385ea6ac21aedd"
+  }
+}

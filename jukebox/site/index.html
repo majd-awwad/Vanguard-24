@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1e9">
+  <meta name="description" content="Read and hear the changing lights of Earth. An interactive sonification of a NASA Earth Information Center frame.">
+  <link rel="icon" href="./media/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>EARTHPULSE — The Earth Information Jukebox</title>
+</head>
+<body>
+  <a class="skip" href="#lab" data-copy="skip">Skip to the listening instrument</a>
+  <header class="mast wrap">
+    <a href="./" class="brand" aria-label="EarthPulse"><img src="./media/mark.svg" alt="" width="34" height="34"><span>EARTHPULSE</span></a>
+    <nav><a href="#lab" data-copy="navCanvas">Listening canvas</a><a href="#method" data-copy="navMethod">How it works</a></nav>
+    <button id="language" class="language" type="button" lang="ar">العربية</button>
+  </header>
+  <main>
+    <section class="intro wrap" aria-labelledby="title">
+      <div>
+        <p class="eyebrow" data-copy="edition">The Earth Information Jukebox</p>
+        <h1 id="title"><span data-copy="title1">Hear what Earth</span><em data-copy="title2">is telling us.</em></h1>
+      </div>
+      <div class="invitation">
+        <p data-copy="intro">Where did the night get brighter? Listen to a NASA map of changing lights, then trace every note back to the image.</p>
+        <div class="entry-actions">
+          <button id="listen" class="ink-button" type="button" disabled><span aria-hidden="true">▶</span><span data-copy="listen">Start listening to Earth</span></button>
+          <a href="#lab" id="silent-entry" data-copy="silentEntry">Explore without sound</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="lab" class="lab wrap" aria-labelledby="lab-title">
+      <header class="lab-head">
+        <div><p class="eyebrow" data-copy="visualLabel">NASA Earth Information Center · SVS 5313</p><h2 id="lab-title" tabindex="-1" data-copy="case">A decade of night lights</h2></div>
+        <p class="era" dir="ltr">2012 <span aria-hidden="true">→</span> 2023</p>
+      </header>
+      <p id="loading" class="notice" role="status" data-copy="loading">Loading verified frame measurements…</p>
+      <button id="retry" type="button" class="outline" data-copy="retry" hidden>Try again</button>
+      <div id="instrument" hidden>
+        <figure class="map">
+          <div class="frame" id="frame" dir="ltr">
+            <img id="nasa-frame" src="./media/night-lights.webp" width="2560" height="720" alt="NASA night lights change map from 2012 to 2023. Purple shows areas NASA rendered as brighter, orange shows areas rendered as dimmer. Four regional zooms are inset on the world map." data-alt="frameAlt" fetchpriority="high">
+            <div id="overlays" aria-hidden="true"></div>
+            <div id="region-targets" role="group" aria-label="Choose a NASA inset" data-label="chooseInset"></div>
+          </div>
+          <figcaption class="figure-legend">
+            <div class="legend" id="map-legend"><span class="key bright" data-copy="brighter">Rendered brighter</span><span class="key dim" data-copy="dimmer">Rendered dimmer</span><span class="frame-instruction" data-copy="tapInset">Choose an inset to scan</span></div>
+            <a href="https://svs.gsfc.nasa.gov/5313/" data-copy="sourceCredit">NASA Scientific Visualization Studio ↗</a>
+          </figcaption>
+        </figure>
+        <div class="image-inspection">
+          <div class="inset" id="inset" dir="ltr" aria-hidden="true"><img id="inset-image" alt=""><div id="sweep"></div></div>
+        <div class="bench">
+          <div class="controls">
+            <label class="field"><span class="eyebrow" data-copy="region">Listening region</span><select id="region"></select></label>
+            <div class="playback" role="group" aria-label="Playback" data-label="playback">
+              <button id="play" type="button" class="ink-button" data-copy="play">Play scan</button>
+              <button id="pause" type="button" class="outline" data-copy="pause">Pause</button>
+              <button id="replay" type="button" class="outline" data-copy="replay">Replay</button>
+              <button id="mute" type="button" class="outline" aria-pressed="false" data-copy="mute">Mute</button>
+            </div>
+          </div>
+          <div class="timeline">
+            <div class="timeline-heading"><label for="slice" class="eyebrow" data-copy="scan">Left-to-right image scan</label><span id="current-slice"></span></div>
+            <div class="position" dir="ltr">
+              <button id="previous" type="button" class="step" data-label="previous" aria-label="Previous band">←</button>
+              <input type="range" id="slice" min="1" max="12" value="1" step="1">
+              <button id="next" type="button" class="step" data-label="next" aria-label="Next band">→</button>
+            </div>
+          </div>
+          <aside class="readout" aria-labelledby="read-label">
+            <p class="eyebrow" id="read-label" data-copy="frameReading">Active band · share of inset pixels</p>
+            <dl>
+              <div><dt data-copy="brighter">Rendered brighter</dt><dd class="bright-value" id="bright-value"></dd><div class="envelope" aria-hidden="true"><i id="bright-meter"></i></div></div>
+              <div><dt data-copy="dimmer">Rendered dimmer</dt><dd class="dim-value" id="dim-value"></dd><div class="envelope" aria-hidden="true"><i id="dim-meter"></i></div></div>
+            </dl>
+            <p id="play-status" role="status" aria-live="polite"></p>
+          </aside>
+          <details class="acoustic">
+            <summary data-copy="audioSettings">Sound and playback settings</summary>
+            <div class="sound-settings" id="sound-settings">
+              <label><span data-copy="volume">Volume</span><input id="volume" type="range" min="0" max="100" value="65"></label>
+              <label><span data-copy="speed">Band speed</span><select id="speed"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select></label>
+              <label class="check"><input id="stereo" type="checkbox" checked><span data-copy="stereo">Use stereo separation</span></label>
+              <label class="check"><input id="use-audio" type="checkbox" checked><span data-copy="useAudio">Play data tones</span></label>
+            </div>
+            <p data-copy="quickLegend">Purple uses 392 Hz on the right. Orange uses 261.626 Hz on the left. Both share the same volume scale.</p>
+          </details>
+        </div>
+        </div>
+        <div class="details-layout">
+          <section class="comparison" aria-labelledby="compare-title">
+            <p class="eyebrow" data-copy="compareLabel">Hear the difference</p>
+            <h2 id="compare-title" data-copy="compareTitle">Two places. One scale.</h2>
+            <div class="comparison-select">
+              <label class="field"><span data-copy="first">First region</span><select id="first"></select></label>
+              <label class="field"><span data-copy="second">Second region</span><select id="second"></select></label>
+            </div>
+            <p id="compare-finding"></p>
+            <button id="compare" type="button" class="ink-button" data-copy="playComparison">Play first, then second</button>
+          </section>
+          <section class="signature" aria-labelledby="signature-title">
+            <p class="eyebrow" data-copy="signatureLabel">Sonic DNA</p>
+            <h2 id="signature-title" data-copy="signatureTitle">A fingerprint of change.</h2>
+            <div id="fingerprints"></div>
+            <p id="signature-note" data-copy="signatureNote">Each column is an image band. Purple rises above the line and orange falls below on the same 0–24% scale. Choose a column to find its place in the frame.</p>
+          </section>
+        </div>
+        <details class="explain" id="values">
+          <summary data-copy="openValues">Read the bands and sound values</summary>
+          <div class="table-scroll"><table>
+            <caption id="table-caption"></caption>
+            <thead><tr><th scope="col" data-copy="band">Band</th><th scope="col" data-copy="brighter">Rendered brighter</th><th scope="col" data-copy="dimmer">Rendered dimmer</th><th scope="col" data-copy="sound">Sound levels</th></tr></thead><tbody id="data-rows"></tbody>
+          </table></div>
+        </details>
+      </div>
+    </section>
+    <section id="method" class="method wrap" aria-labelledby="method-title">
+      <div><p class="eyebrow" data-copy="navMethod">How it works</p><h2 id="method-title" data-copy="methodTitle">From pixels to pitch.</h2></div>
+      <div class="method-text">
+        <p data-copy="method1">NASA’s purple and orange show opposite directions of change. EARTHPULSE counts colored pixels in 12 vertical bands inside each NASA inset, then sounds each band as it is highlighted.</p>
+        <p data-copy="method2">The higher voice marks purple and the lower voice marks orange. More of that color raises its volume. Both voices can sound together. A band without either color class is silent.</p>
+        <p data-copy="method3">These percentages describe the published image. The raster contains rendering and compression, and the insets have different map scales. The comparison describes color coverage in the chosen inset windows.</p>
+        <p class="sources"><a href="https://svs.gsfc.nasa.gov/5313/" data-copy="viewSource">View the NASA original ↗</a><a href="./media/night-lights.json" data-copy="viewData">Read the pixel counts ↗</a></p>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap foot"><span>EARTHPULSE · Team Vanguard</span><a href="https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/">NASA Space Apps · The Earth Information Jukebox ↗</a></footer>
+  <noscript>This instrument needs JavaScript for playback. The source visualization is available from <a href="https://svs.gsfc.nasa.gov/5313/">NASA SVS 5313</a>.</noscript>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

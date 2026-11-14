@@ -1,0 +1,11 @@
+{
+  "name": "earthpulse-jukebox",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "node tools/check-assets.mjs"
+  },
+  "engines": { "node": ">=22" }
+}
