@@ -21,7 +21,14 @@ async function journey(flat) {
     await page.waitForFunction(() => document.body.dataset.caseReady !== undefined);
     assert.equal(await page.locator("html").getAttribute("dir"), "rtl");
     assert.equal(await page.locator("body").getAttribute("data-renderer"), flat ? "svg" : "webgl");
-    if (flat) assert.equal(await page.locator(".cine-rail").isVisible(), false);
+    if (flat) {
+      assert.equal(await page.locator(".cine-rail").isVisible(), false);
+      const steps = await page.locator("#cine-steps").boundingBox();
+      const facts = await page.locator("#cine-bar").boundingBox();
+      const start = await page.locator("#cine-start").boundingBox();
+      assert.ok(steps.y + steps.height <= facts.y && facts.y + facts.height <= start.y);
+      assert.ok(Math.abs(start.x + start.width / 2 - 195) < 2);
+    }
     const guide = page.locator("#cine-play-guide");
     await guide.click();
     await page.waitForFunction(() => {

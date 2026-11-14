@@ -333,11 +333,16 @@ body.cine #decode-svs-card figure { max-inline-size: 15rem; }
   .cine-links { order: 1; flex-basis: 100%; justify-content: space-between; gap: .45rem; }
   .cine-links a { letter-spacing: normal; }
   .cine-copy { max-inline-size: none; }
-  .cine-hero { align-items: flex-start; padding-block-start: 7.75rem; background: linear-gradient(var(--cine-bg), rgb(5 11 18 / .76) 46%, transparent 88%); }
+  .cine-hero {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding-block: 7.75rem 1.5rem;
+    background: linear-gradient(var(--cine-bg), rgb(5 11 18 / .76) 46%, transparent 88%);
+  }
   body.cine #decode-title { font-size: clamp(3rem, 15vw, 6rem); }
-  .cine-bar { inset-inline-end: var(--cine-pad); inset-block-end: 11rem; }
-  body.cine #decode-page button.cine-orbit { inset-inline-end: 50%; transform: translateX(50%); inset-block-end: 1rem; }
-  body.cine #decode-page button.cine-orbit:hover { transform: translateX(50%) scale(1.04); }
+  .cine-bar { position: static; }
+  body.cine #decode-page button.cine-orbit { position: relative; inset: auto; align-self: center; }
   .cine-rail { display: none; }
   #cine-wave { inline-size: 5.2rem; }
   body.cine[data-view="decode"] #decode-page { grid-template-columns: minmax(0, 1fr); grid-template-areas: "map" "dock" "status" "evidence"; padding-block-start: 6.5rem; }
