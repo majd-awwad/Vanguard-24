@@ -19,6 +19,14 @@ async function journey(lang, width) {
   const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: "reduce" });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
+  await page.addInitScript(() => {
+    window.missionTones = 0;
+    const start = OscillatorNode.prototype.start;
+    OscillatorNode.prototype.start = function (...args) {
+      window.missionTones++;
+      return start.apply(this, args);
+    };
+  });
   try {
     await page.goto(new URL("?lang=" + lang, root).href);
     await page.locator("#dust-discovery").click();
@@ -31,6 +39,8 @@ async function journey(lang, width) {
     assert.equal(await page.locator("#guided-note").textContent(), "");
     assert.equal(await page.locator("#guided-context-image").getAttribute("src"), null);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    const missionStep = page.locator("#guided-mission-steps [aria-current='step']");
+    assert.equal(await missionStep.getAttribute("data-step"), "listen");
 
     await page.locator("#guided-mute").click();
     assert.equal(await page.locator("#guided-mute").getAttribute("aria-pressed"), "true");
@@ -55,6 +65,18 @@ async function journey(lang, width) {
     await page.locator("#guided-listen-bands button").nth(2).click();
     await page.locator("#guided-zones .guided-zone").nth(2).locator(":scope[data-active]").waitFor();
     assert.equal(await page.locator("#guided-transcript li").count(), 1);
+    await page.locator("#guided-mute").click();
+    await page.locator("#guided-mission-text").focus();
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => document.querySelector("#guided-mission-steps [aria-current='step']").dataset.step === "choose");
+    assert.equal(await page.locator(":focus").getAttribute("id"), "guided-mission-text");
+    assert.equal(await page.locator("#guided-transcript li").count(), 3);
+    assert.equal(await page.evaluate(() => window.missionTones), 0);
+    assert.equal(await page.locator("#guided-calculation-equation").textContent(), "");
+    await page.locator("#guided-mission-start").focus();
+    await page.keyboard.press("Enter");
+    assert.equal(await page.locator(":focus").getAttribute("name"), "band");
+    assert.equal(await page.locator("#guided-options input:checked").count(), 0);
     const guessed = page.locator("#guided-options input").nth(winningRow);
     await guessed.focus();
     await page.keyboard.press("Space");
@@ -63,6 +85,7 @@ async function journey(lang, width) {
     await page.keyboard.press("Enter");
     await page.locator("#guided-result").waitFor();
     assert.equal(await page.locator(":focus").getAttribute("id"), "guided-result-title");
+    assert.equal(await missionStep.getAttribute("data-step"), "evidence");
     const names = lang === "ar" ? ["الشمال", "الوسط", "الجنوب"] : ["North", "Middle", "South"];
     assert.ok((await page.locator("#guided-result-title").textContent()).endsWith(names[winningRow]));
     assert.equal(await page.locator("#guided-zones [data-strongest]").count(), 1);
@@ -75,11 +98,20 @@ async function journey(lang, width) {
     await page.locator("#guided-note").waitFor();
     await page.locator("#guided-cell-evidence summary").click();
     assert.equal(await page.locator("#guided-cell-rows td:visible").count(), 15);
+    for (const [row, value] of ["north", "middle", "south"].entries()) {
+      await page.locator("#guided-calculation-band").selectOption(value);
+      assert.ok((await page.locator("#guided-calculation-equation").textContent()).endsWith("≈ " + formatter.format(means[row])));
+      assert.ok((await page.locator("#guided-calculation-result").textContent()).includes(formatter.format(means[row])));
+    }
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
     await page.locator("#guided-context-image").scrollIntoViewIfNeeded();
     await page.waitForFunction(() => document.querySelector("#guided-context-image").naturalWidth === 1920);
     assert.match(await page.locator("#guided-note").textContent(), lang === "ar" ? /تشغيل منفصل/ : /separate GEOS-FP 2 km Replay/);
     assert.equal(await page.locator("#guided-sources a").last().getAttribute("href"), data.visualLink.svs);
     await page.locator("#guided-reset").click();
+    assert.equal(await page.locator(":focus").getAttribute("id"), "guided-mission-start");
+    assert.equal(await missionStep.getAttribute("data-step"), "listen");
+    assert.equal(await page.locator("#guided-calculation-equation").textContent(), "");
     assert.equal(await page.locator("#guided-readings dd, [data-strongest]").count(), 0);
     assert.equal(await page.locator("#guided-note").textContent(), "");
     assert.equal(await page.locator("#guided-context-image").getAttribute("src"), null);

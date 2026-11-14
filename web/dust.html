@@ -23,6 +23,23 @@
     <p id="guided-load" role="status"></p>
     <button class="outline" id="guided-retry" type="button" data-message="retry" hidden></button>
     <div id="guided-interface" class="guided-layout" hidden>
+      <section class="guided-mission" aria-labelledby="guided-mission-title">
+        <ol class="guided-mission-steps" id="guided-mission-steps" aria-label="Challenge progress">
+          <li data-step="listen" aria-current="step" data-message="missionListen"></li>
+          <li data-step="choose" data-message="missionChoose"></li>
+          <li data-step="evidence" data-message="missionEvidence"></li>
+        </ol>
+        <div class="guided-mission-content">
+          <div>
+            <h2 id="guided-mission-title" data-message="missionListenTitle"></h2>
+            <p id="guided-mission-instructions" data-message="missionListenHelp"></p>
+          </div>
+          <div class="guided-actions">
+            <button class="solid" id="guided-mission-start" type="button" data-message="missionStart"></button>
+            <button class="outline" id="guided-mission-text" type="button" data-message="missionText"></button>
+          </div>
+        </div>
+      </section>
       <figure class="guided-map">
         <div class="guided-map-heading">
           <p data-message="region"></p>
@@ -44,7 +61,7 @@
           <h2 id="guided-listen-heading" data-message="listen"></h2>
           <p id="guided-mapping" data-message="mapping"></p>
           <div class="guided-actions">
-            <button class="solid" id="guided-compare" type="button" data-message="compare"></button>
+            <button class="outline" id="guided-compare" type="button" data-message="compare"></button>
             <button class="outline" id="guided-example" type="button" data-message="example"></button>
           </div>
           <div id="guided-listen-bands" class="guided-actions" role="group" aria-labelledby="guided-solo-label">
@@ -70,9 +87,9 @@
           </details>
           <p id="guided-status" role="status" aria-atomic="true"></p>
         </section>
-        <form id="guided-guess">
+        <form id="guided-guess" aria-labelledby="guided-guess-label">
           <fieldset>
-            <legend data-message="guess"></legend>
+            <legend id="guided-guess-label" data-message="guess"></legend>
             <p class="guided-guess-help" data-message="guessHelp"></p>
             <div id="guided-options" class="guided-options"></div>
           </fieldset>
@@ -101,6 +118,13 @@
         <details id="guided-cell-evidence">
           <summary data-message="cellEvidence"></summary>
           <p data-message="cellExplanation"></p>
+          <div class="guided-calculation">
+            <label for="guided-calculation-band" data-message="calculationBand"></label>
+            <select id="guided-calculation-band"></select>
+            <p id="guided-calculation-result" role="status" aria-atomic="true"></p>
+            <p class="guided-equation" id="guided-calculation-equation" aria-hidden="true" dir="ltr"></p>
+            <p data-message="calculationRounding"></p>
+          </div>
           <table class="guided-cell-table">
             <caption class="sr-only" data-message="cellEvidence"></caption>
             <thead id="guided-cell-columns"></thead>

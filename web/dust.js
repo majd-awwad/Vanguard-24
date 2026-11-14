@@ -9,6 +9,23 @@ const messages = {
   skip: ["Skip to the dust challenge", "انتقل إلى تحدّي الغبار"],
   retry: ["Retry loading the dust data", "أعِد تحميل بيانات الغبار"],
   guide: ["Guided Discovery", "استكشاف موجّه"],
+  missionProgress: ["Challenge progress", "تقدّم التحدّي"],
+  missionListen: ["Compare", "قارن"],
+  missionChoose: ["Predict", "توقّع"],
+  missionEvidence: ["Check the evidence", "تحقّق من الدليل"],
+  missionListenTitle: ["Follow the notes across the map", "تتبّع النغمات على الخريطة"],
+  missionListenHelp: ["Three bands, north to south. Listen for the one with the most notes, or watch the same cues without sound.", "ثلاثة نطاقات من الشمال للجنوب. اسمع أيّ نطاق فيه نغمات أكثر، أو تابع الإشارات نفسها بدون صوت."],
+  missionStart: ["Start the comparison", "ابدأ المقارنة"],
+  missionText: ["Compare without sound", "قارن بدون صوت"],
+  missionRunning: ["Comparison in progress", "المقارنة جارية"],
+  missionPaused: ["Continue the comparison", "تابع المقارنة"],
+  missionChooseTitle: ["Which band stood out?", "أي نطاق برز أكثر؟"],
+  missionChooseHelp: ["Choose the band you think ranked highest. You can replay the comparison before deciding.", "اختَر النطاق اللي بتتوقّع إنّه احتل أعلى مرتبة. بتقدر تعيد المقارنة قبل ما تقرّر."],
+  missionPick: ["Choose a band", "اختَر نطاقًا"],
+  missionFinished: ["Comparison complete. Choose a band when you're ready.", "اكتملت المقارنة. اختَر نطاقًا لمّا تكون جاهز."],
+  missionEvidenceTitle: ["Connect the notes to the numbers", "اربط النغمات بالأرقام"],
+  missionEvidenceHelp: ["Compare the band means, then inspect the cells behind the result.", "قارن متوسطات النطاقات، وبعدين افحص الخلايا اللي حسبنا منها النتيجة."],
+  missionRead: ["Go to the evidence", "انتقل إلى الدليل"],
   question: ["Which region has the strongest modeled dust signal?", "أي منطقة فيها أقوى إشارة غبار في النموذج؟"],
   intro: ["Trace a real NASA dust case across North Africa and the Mediterranean. Compare three bands by sound or text, make your prediction, then check it against the model.",
     "تتبّع حالة غبار حقيقية من بيانات ناسا عبر شمال أفريقيا والبحر المتوسّط. قارن ثلاثة نطاقات بالصوت أو بالنص، وبعدين اختبر توقّعك مقابل بيانات النموذج."],
@@ -71,6 +88,10 @@ const messages = {
   cellBand: ["Band", "النطاق"],
   cellColumn: ["Column {number}", "العمود {number}"],
   cellMean: ["Mean", "المتوسط"],
+  calculationBand: ["Trace the mean for a band", "تتبّع حساب متوسط نطاق"],
+  calculationResult: ["{band}: sum of the available cell values {sum}, divided by {count}, gives a mean of {mean}.", "{band}: اقسم مجموع قيم الخلايا المتاحة، {sum}، على عددها، {count}، لتحصل على المتوسط {mean}."],
+  calculationRounding: ["Displayed numbers are rounded. The comparison uses the original cell values.", "الأرقام المعروضة مقرّبة. المقارنة بتستخدم قيم الخلايا الأصلية."],
+  calculationMissing: ["{band}: no available cells to average.", "{band}: ما في خلايا متاحة لحساب المتوسط."],
   limits: ["Dust optical depth describes how dust dims light through the whole atmospheric column. It does not measure ground-level PM2.5 or health risk.",
     "العمق البصري للغبار يصف كيف يخفّف الغبار الضوء عبر عمود الغلاف الجوي كاملًا. لا يقيس جسيمات PM2.5 عند سطح الأرض أو المخاطر الصحية."],
   provenance: ["Data and NASA image provenance", "مصدر البيانات وعلاقتها بصورة ناسا"],
@@ -121,13 +142,21 @@ function mountGuided(data) {
   const pulses = byId("pulses");
   const contextImage = byId("context-image");
   const pauseButton = byId("pause");
+  const missionStart = byId("mission-start");
+  const missionText = byId("mission-text");
+  const missionSteps = byId("mission-steps");
+  const missionTitle = byId("mission-title");
+  const missionInstructions = byId("mission-instructions");
   const pairFirst = byId("pair-first");
   const pairSecond = byId("pair-second");
   const playPair = byId("play-pair");
   const cellHead = byId("cell-columns");
   const cellRows = byId("cell-rows");
+  const calculationBand = byId("calculation-band");
   let plan;
   let example = false;
+  let silentComparison = false;
+  let comparedAll = false;
   let lastBands = [];
   let completedBands = 0;
   let userPaused = false;
@@ -138,6 +167,33 @@ function mountGuided(data) {
   const describeCue = band => fill(t(band.notes ? "cue" : "cueMissing"), {
     band: t(band.id), count: number(band.notes), notes: t(band.notes === 1 ? "cueOne" : "cueMany"),
   });
+
+  missionSteps.setAttribute("aria-label", t("missionProgress"));
+
+  function renderMission(snapshot = transport.snapshot()) {
+    const stage = form.hidden ? "evidence" : comparedAll ? "choose" : "listen";
+    const comparingAll = !example && lastBands.length === bandIds.length;
+    const running = comparingAll && ["starting", "playing"].includes(snapshot.status);
+    const paused = comparingAll && userPaused;
+    const stageKeys = {
+      listen: ["missionListenTitle", "missionListenHelp", paused ? "missionPaused" : running ? "missionRunning" : "missionStart"],
+      choose: ["missionChooseTitle", "missionChooseHelp", "missionPick"],
+      evidence: ["missionEvidenceTitle", "missionEvidenceHelp", "missionRead"],
+    };
+    const [title, instructions, action] = stageKeys[stage];
+    for (const [element, key] of [[missionTitle, title], [missionInstructions, instructions], [missionStart, action]]) {
+      const label = t(key);
+      if (element.textContent !== label) element.textContent = label;
+    }
+    for (const step of missionSteps.children) {
+      if (step.dataset.step === stage) step.setAttribute("aria-current", "step");
+      else step.removeAttribute("aria-current");
+    }
+    missionStart.setAttribute("aria-disabled", String(stage === "listen" && running));
+    missionText.hidden = stage === "evidence";
+  }
+
+  const playbackMode = () => silentComparison || transport.snapshot().muted ? "silent" : "audio";
 
   function renderSignal(event) {
     if (event === activeEvent) return;
@@ -188,6 +244,7 @@ function mountGuided(data) {
     button.addEventListener("click", () => playBands([band]));
     byId("listen-bands").append(button);
     for (const select of [pairFirst, pairSecond]) select.add(new Option(t(band.id), band.id));
+    calculationBand.add(new Option(t(band.id), band.id));
   }
   pairSecond.value = "south";
   const updatePair = () => { playPair.setAttribute("aria-disabled", String(pairFirst.value === pairSecond.value)); };
@@ -209,16 +266,17 @@ function mountGuided(data) {
     for (const [id, zone] of zones) zone.toggleAttribute("data-predicted", id === event.target.value);
   });
 
-  function playBands(bands, practice = false) {
+  function playBands(bands, practice = false, silent = false) {
     userPaused = false;
     example = practice;
+    silentComparison = silent;
     lastBands = bands;
     plan = buildBandPlayback(bands, { caseId: data.id, example });
     transport.load(plan);
     byId("replay").disabled = false;
     showStatus(example ? t("practice") : "");
     renderTranscript();
-    return transport.play(transport.snapshot().muted ? "silent" : "audio");
+    return transport.play(playbackMode());
   }
 
   transport.subscribe(snapshot => {
@@ -241,16 +299,32 @@ function mountGuided(data) {
     const running = snapshot.status === "starting" || snapshot.status === "playing";
     pauseButton.setAttribute("aria-disabled", String(!running && !userPaused));
     pauseButton.textContent = t(userPaused ? "resume" : "pause");
-    if (snapshot.status === "ended" && previousStatus === "playing") announcement = t("ended");
+    if (snapshot.status === "ended" && previousStatus === "playing") {
+      const completedComparison = !example && lastBands.length === bandIds.length;
+      if (completedComparison) comparedAll = true;
+      announcement = t(completedComparison && !form.hidden ? "missionFinished" : "ended");
+    }
     else if (snapshot.audioUnavailable && running && snapshot.status !== previousStatus && transcript.open === false) {
       announcement = t("unavailable");
     }
     if (announcement || freshCues.length) {
       showStatus([...freshCues.map(band => describeCue(band) + "."), announcement].filter(Boolean).join(" "));
     }
+    if (previousStatus !== snapshot.status) renderMission(snapshot);
     previousStatus = snapshot.status;
   });
 
+  missionStart.addEventListener("click", () => {
+    if (form.hidden) return byId("result-title").focus();
+    if (comparedAll) return (form.querySelector("input:checked") ?? form.querySelector("input")).focus();
+    if (missionStart.getAttribute("aria-disabled") === "true") return;
+    if (userPaused && !example && lastBands.length === bandIds.length) return pauseButton.click();
+    return playBands(result.bands);
+  });
+  missionText.addEventListener("click", () => {
+    transcript.open = true;
+    return playBands(result.bands, false, true);
+  });
   byId("compare").addEventListener("click", () => playBands(result.bands));
   playPair.addEventListener("click", () => {
     if (pairFirst.value === pairSecond.value) return;
@@ -261,7 +335,7 @@ function mountGuided(data) {
   byId("replay").addEventListener("click", () => {
     userPaused = false;
     showStatus(example ? t("practice") : "");
-    return transport.replay(transport.snapshot().muted ? "silent" : "audio");
+    return transport.replay(playbackMode());
   });
   pauseButton.addEventListener("click", () => {
     if (pauseButton.getAttribute("aria-disabled") === "true") return;
@@ -270,7 +344,7 @@ function mountGuided(data) {
       transport.seek(completedBands * plan.durationS / lastBands.length);
       userPaused = false;
       showStatus(example ? t("practice") : "");
-      return transport.play(transport.snapshot().muted ? "silent" : "audio");
+      return transport.play(playbackMode());
     }
     userPaused = true;
     transport.pause();
@@ -284,6 +358,25 @@ function mountGuided(data) {
   window.addEventListener("pagehide", () => {
     userPaused = false;
     transport.pause();
+  });
+
+  function renderCalculation() {
+    const row = bandIds.indexOf(calculationBand.value);
+    const band = result.bands[row];
+    const values = data.levels.quick.cells.filter(cell => cell.row === row && cell.value !== null)
+      .map(cell => cell.value);
+    const calculation = byId("calculation-result");
+    const equation = byId("calculation-equation");
+    calculation.textContent = band.count ? fill(t("calculationResult"), {
+      band: t(band.id), sum: number(values.reduce((sum, value) => sum + value, 0)),
+      count: number(band.count), mean: number(band.mean),
+    }) : fill(t("calculationMissing"), { band: t(band.id) });
+    equation.textContent = band.count ?
+      `(${values.map(number).join(" + ")}) ÷ ${number(band.count)} ≈ ${number(band.mean)}` : "";
+    equation.hidden = !equation.textContent;
+  }
+  calculationBand.addEventListener("change", () => {
+    if (form.hidden) renderCalculation();
   });
 
   function renderCellEvidence() {
@@ -359,6 +452,8 @@ function mountGuided(data) {
       return block;
     }));
     renderCellEvidence();
+    calculationBand.value = result.strongest[0] ?? bandIds[0];
+    renderCalculation();
     const interval = new Intl.DateTimeFormat(language, {
       dateStyle: "medium", timeStyle: "short", timeZone: "UTC",
     }).formatRange(date, new Date(data.source.time.end));
@@ -379,11 +474,13 @@ function mountGuided(data) {
     }
     form.hidden = true;
     byId("result").hidden = false;
+    renderMission();
     heading.focus();
   });
 
   byId("reset").addEventListener("click", () => {
     userPaused = false;
+    comparedAll = false;
     transport.pause();
     plan = undefined;
     completedBands = 0;
@@ -393,6 +490,7 @@ function mountGuided(data) {
     byId("readings").replaceChildren();
     cellHead.replaceChildren();
     cellRows.replaceChildren();
+    byId("calculation-result").textContent = byId("calculation-equation").textContent = "";
     byId("cell-evidence").open = false;
     byId("sources").replaceChildren();
     byId("provenance").open = true;
@@ -407,7 +505,8 @@ function mountGuided(data) {
     transcript.open = false;
     transcriptLines.replaceChildren();
     showStatus("");
-    byId("compare").focus();
+    renderMission();
+    missionStart.focus();
   });
 }
 
@@ -433,7 +532,7 @@ async function initialize() {
     mountGuided(data);
     byId("interface").hidden = false;
     byId("load").textContent = "";
-    if (restoreFocus) byId("compare").focus();
+    if (restoreFocus) byId("mission-start").focus();
   } catch (error) {
     console.error(error);
     byId("load").textContent = appMessage("general.error");

@@ -31,6 +31,47 @@ body:has(.guided-main) {
   gap: clamp(1rem, 3vw, 2rem);
   align-items: start;
 }
+.guided-mission {
+  grid-column: 1 / -1;
+  border: 1px solid var(--guided-line);
+  border-radius: .85rem;
+  background: #202f29;
+}
+.guided-mission-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-block-end: 1px solid var(--guided-line);
+}
+.guided-mission-steps li {
+  padding: .6rem clamp(.45rem, 2vw, 1.1rem);
+  color: var(--sub);
+  border-block-end: 2px solid transparent;
+  font-size: .85rem;
+}
+.guided-mission-steps li[aria-current="step"] {
+  border-color: var(--guided-gold);
+  color: var(--guided-gold);
+  font-weight: 700;
+}
+.guided-mission-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .85rem;
+  padding: clamp(.85rem, 2.5vw, 1.25rem);
+}
+.guided-mission-content h2 { font-size: clamp(1.15rem, 2.4vw, 1.5rem); }
+.guided-mission-content p { margin-block-start: .25rem; color: var(--sub); max-inline-size: 58ch; }
+.guided-mission-content .solid { background: var(--guided-gold); color: #241c0e; }
+.guided-mission-content .solid:hover { background: #ffe2ae; }
+@media (max-width: 31rem) {
+  .guided-mission .guided-actions { inline-size: 100%; }
+  .guided-mission button { flex: 1 1 auto; }
+}
 .guided-map, .guided-controls, .guided-result, .guided-detective {
   border: 1px solid var(--guided-line);
   border-radius: .85rem;
@@ -136,6 +177,31 @@ body:has(.guided-main) {
 .guided-bar { block-size: .45rem; margin-block-start: .5rem; border-radius: 1rem; background: var(--bg); }
 .guided-bar div { block-size: 100%; border-radius: inherit; background: var(--guided-gold); }
 .guided-result details p { margin-block: .5rem; }
+.guided-calculation {
+  padding: .8rem .9rem;
+  border: 1px solid var(--guided-line);
+  border-inline-start: 3px solid var(--guided-gold);
+  border-radius: .45rem;
+  background: var(--bg);
+}
+.guided-calculation label { display: inline-block; margin-inline-end: .6rem; font-weight: 650; }
+.guided-calculation select {
+  min-block-size: 2.5rem;
+  max-inline-size: 100%;
+  margin-block: .25rem;
+  padding-inline: .55rem;
+  border: 1px solid var(--guided-line);
+  border-radius: .4rem;
+  background: var(--guided-surface);
+  color: var(--ink);
+}
+.guided-calculation .guided-equation {
+  font: 650 clamp(.85rem, 2vw, 1.1rem)/1.7 var(--mono);
+  overflow-wrap: anywhere;
+  text-align: left;
+  color: var(--guided-gold);
+  unicode-bidi: isolate;
+}
 .guided-cell-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: clamp(.73rem, 1.6vw, .95rem); }
 .guided-cell-table :is(th, td) { padding: .35rem .25rem; text-align: start; overflow-wrap: anywhere; border-block-end: 1px solid var(--guided-line); }
 .guided-cell-table td { font-variant-numeric: tabular-nums; }
