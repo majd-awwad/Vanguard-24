@@ -79,7 +79,6 @@ const copy = {
 
 const systemCopy = {
   en: {
-    awaitingAudio: "The dust case is ready. This experience is waiting for the spatial audio module.",
     fixtureNote: "Synthetic test data only. The case has no NASA frame or measurements.",
     unavailable: "Audio could not start. Check your audio settings and try again.",
     testAudio: "Integration test: simulated playback. It does not represent the sound of NASA data.",
@@ -98,7 +97,6 @@ const systemCopy = {
     contextNote: "SVS 5669 shows a separate 2 km GEOS-FP Replay frame at 20:00 UTC. The grid and sound use the standard GEOS-FP three-hour mean.",
   },
   ar: {
-    awaitingAudio: "حالة الغبار جاهزة. التجربة بانتظار توصيل وحدة الصوت المكاني.",
     fixtureNote: "بيانات اصطناعية للاختبار فقط. الحالة ما فيها صورة أو قياسات من ناسا.",
     unavailable: "تعذّر تشغيل الصوت. تحقّق من إعدادات الصوت وحاول مرة ثانية.",
     testAudio: "اختبار دمج: التشغيل محاكى. هذا التشغيل لا يمثّل صوت بيانات ناسا.",
@@ -521,65 +519,4 @@ export async function mountDecode(root, {
     dispose();
     throw error;
   }
-}
-
-async function loadOptionalModule(path) {
-  const url = new URL(path, import.meta.url);
-  try {
-    return await import(url.href);
-  } catch (error) {
-    if (error instanceof TypeError && (await fetch(url, { method: "HEAD" })).status === 404) return null;
-    throw error;
-  }
-}
-
-export async function startDecode(root) {
-  const document = root.ownerDocument;
-  const language = new URL(document.URL).searchParams.get("lang") === "ar" ? "ar" : "en";
-  document.documentElement.lang = language;
-  document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
-  document.title = copy[language].title + " · EARTHPULSE";
-  root.querySelector("#decode-title").textContent = copy[language].title;
-  const home = root.querySelector("#decode-home");
-
-  home.href = language === "ar" ? "./?lang=ar" : "./";
-  const switchLanguage = root.querySelector("#decode-language");
-  const alternate = language === "ar" ? "en" : "ar";
-  switchLanguage.href = "?lang=" + alternate;
-  switchLanguage.hreflang = switchLanguage.lang = alternate;
-  switchLanguage.textContent = alternate === "ar" ? "العربية" : "English";
-  const state = root.querySelector("#decode-state");
-  const retry = root.querySelector("#decode-retry");
-  const t = key => decodeMessage(language, key);
-  retry.textContent = t("general.retry");
-
-  async function start() {
-    retry.hidden = true;
-    state.textContent = t("general.loading");
-    try {
-      const sound = await loadOptionalModule("./audio/spatial-plan.js");
-      if (!sound) {
-        state.textContent = systemCopy[language].awaitingAudio;
-        return;
-      }
-      if (typeof sound.makeSpatialPlan !== "function" || typeof sound.heardClass !== "function") {
-        throw new Error("Decode spatial plan exports do not conform to v2.");
-      }
-      const visual = await loadOptionalModule("./visual/decode-visual.js");
-      if (visual && typeof visual.mountDecodeVisual !== "function") {
-        throw new Error("Decode visual export does not conform to v2.");
-      }
-      await mountDecode(root, {
-        language, makePlan: sound.makeSpatialPlan, heardClass: sound.heardClass, mountVisual: visual?.mountDecodeVisual,
-      });
-      switchLanguage.hidden = false;
-    } catch (error) {
-      console.error(error);
-      state.textContent = t("general.error");
-      retry.hidden = false;
-    }
-  }
-
-  retry.addEventListener("click", start);
-  await start();
 }

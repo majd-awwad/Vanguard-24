@@ -1,6 +1,6 @@
 # Earth assets for the cinematic Decode page
 
-`web/decode-3d.html` renders a 3D Earth that unrolls onto the challenge region. Everything it needs ships in this
+`web/index.html` renders a 3D Earth that unrolls onto the challenge region. Everything it needs ships in this
 repository, so the page works offline: there is no CDN and no network request at runtime.
 
 ## Textures

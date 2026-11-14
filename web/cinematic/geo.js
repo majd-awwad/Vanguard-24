@@ -80,7 +80,7 @@ export function surfacePoint(frame, lon, lat, t, lift = 0, out = new Vector3(), 
   return out.addScaledVector(normalTemp, lift);
 }
 
-export const HERO_DISTANCE = 3.5;
+export const HERO_DISTANCE = 4.2;
 export const HERO_SHIFT = 0.42;
 const HERO_LON = 8;
 const HERO_LAT = 18;
@@ -215,10 +215,10 @@ export function ringTriangles(frame, rects, { t, lift = 0, insetDeg = 0.4, thick
 }
 
 /** Cell boundaries as line segment pairs, subdivided so they follow the surface while it unrolls. */
-export function gridLines(frame, rows, cols, { t, lift = 0, segments = 24 }) {
+export function gridLines(frame, rows, cols, { t, lift = 0, segments = 24, spin = 0 }) {
   const positions = [];
   const { west, east, north, south } = frame.bounds;
-  const push = (lon, lat) => surfacePoint(frame, lon, lat, t, lift, flatTemp.clone()).toArray(positions, positions.length);
+  const push = (lon, lat) => surfacePoint(frame, lon, lat, t, lift, flatTemp.clone(), spin).toArray(positions, positions.length);
   for (let row = 0; row <= rows; row++) {
     const lat = north - (row * (north - south)) / rows;
     for (let k = 0; k < segments; k++) {

@@ -1,0 +1,22 @@
+@font-face { font-family: Instrument Sans; src: url("../assets/fonts/instrument-sans.woff2"); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: Instrument Serif; src: url("../assets/fonts/instrument-serif.woff2"); font-display: swap; }
+@font-face { font-family: Plex Mono; src: url("../assets/fonts/ibm-plex-mono.woff2"); font-display: swap; }
+:root { color-scheme: dark; --bg: #101715; --panel: #192421; --line: #4b5b55; --ink: #eef3ec; --sub: #b7c8c2; --accent: #b3eed4; --sans: "Instrument Sans", Arial, sans-serif; --serif: "Instrument Serif", Georgia, serif; --mono: "Plex Mono", Consolas, monospace; }
+[dir="rtl"] { --sans: Tahoma, Arial, sans-serif; --serif: Tahoma, Arial, sans-serif; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--sans); }
+a { color: inherit; text-underline-offset: .25em; }
+button, select, input { font: inherit; }
+button, select, summary { cursor: pointer; }
+button:disabled { opacity: .58; cursor: default; }
+input { accent-color: var(--accent); }
+img { display: block; width: 100%; height: auto; }
+h1, h2, h3, p, figure { margin: 0; }
+:focus-visible { outline: 2px solid #ffe2a7; outline-offset: 4px; }
+.wrap { width: min(calc(100% - 100px), 1280px); margin-inline: auto; }
+.skip { position: absolute; z-index: 10; inset-block-start: .5rem; inset-inline-start: 1rem; padding: .7rem; color: #122019; background: var(--accent); transform: translateY(-155%); }
+.skip:focus { transform: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

@@ -1,125 +1,210 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101715">
-  <meta name="description" content="Explore NASA Earth observations through sound, from ocean temperature to forests.">
-  <title>EARTHPULSE · The Sound Atlas</title>
-  <link rel="icon" href="./assets/atlas/pulse.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./visual/platform.css">
+  <meta name="color-scheme" content="dark">
+  <title>اسمع ما لا يُرى · EARTHPULSE</title>
+  <link rel="icon" href="./assets/pulse.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./visual/base.css">
+  <link rel="stylesheet" href="./visual/decode.css">
+  <link rel="stylesheet" href="./decode-page.css">
+  <link rel="stylesheet" href="./cinematic/cinematic.css">
 </head>
-<body>
-  <a class="skip" href="#main" data-copy="skip">Skip to main content</a>
-  <header class="shell wrap">
-    <a class="brand" href="./" aria-label="EARTHPULSE"><svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="14.4" stroke="currentColor" stroke-width="1.4"/><path d="M5 17h6l2.1-5 3.2 10 3.5-13 2.8 8H27" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>EARTH<span>PULSE</span></a>
-    <nav aria-label="EARTHPULSE"><a href="#atlas" data-copy="atlas">Sound Atlas</a><a href="#lens" data-copy="lens">Sonic Lens</a><a href="#about" data-copy="about">Science & credits</a></nav>
-    <button id="language" lang="ar" class="outline">العربية</button>
+<body class="cine" data-view="hero">
+  <a class="skip" href="#decode-interface">Skip to the decoding controls</a>
+
+  <div class="cine-sky" aria-hidden="true" inert><i class="cine-comet"></i><i class="cine-comet"></i></div>
+
+  <header class="cine-nav">
+    <a id="decode-home" class="cine-logo" href="./" aria-label="EarthPulse"><svg class="cine-brand-mark" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M11 24h2m4-6v12m7-18v24m7-18v12m5-6h2" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg><span class="cine-brand-name">EARTH<span>PULSE</span></span></a>
+    <nav class="cine-links" aria-label="Main">
+      <a id="cine-nav-decode" href="./" aria-current="page">Decode</a>
+      <a id="cine-nav-about" href="#about">About</a>
+      <a id="cine-nav-science" href="#science">Science</a>
+      <a id="cine-nav-dataset" href="#dataset">Dataset</a>
+    </nav>
+    <div class="cine-tools">
+      <span class="cine-lang" role="group" aria-label="Language">
+        <a id="cine-lang-en" href="?lang=en" lang="en" hreflang="en">EN</a>
+        <span aria-hidden="true">|</span>
+        <a id="cine-lang-ar" href="?lang=ar" lang="ar" hreflang="ar">العربية</a>
+      </span>
+      <button type="button" id="cine-sound" class="cine-icon-button" aria-pressed="false" aria-label="Sound">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4 14v-2a8 8 0 0 1 16 0v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="13" width="4" height="7" rx="1.6" fill="currentColor"/><rect x="17" y="13" width="4" height="7" rx="1.6" fill="currentColor"/></svg>
+      </button>
+    </div>
   </header>
-  <main id="main">
-    <section class="arrival wrap" aria-labelledby="hero-title">
-      <div class="arrival-copy">
-        <p class="eyebrow" data-copy="eyebrow">An Earth observation jukebox</p>
-        <h1 id="hero-title" data-copy="title">One Earth.<br>Many signals.</h1>
-        <p data-copy="intro">What if you could hear what Earth is telling us? Explore the science behind the sounds of ocean heat, rainfall, active fires and forests.</p>
-        <div class="actions">
-          <a class="solid" href="#atlas" data-copy="explore">Explore Earth</a>
-          <label class="sr-only" for="preview-source" data-copy="previewChoice">Preview signal</label>
-          <select id="preview-source"></select>
-          <button id="preview" class="outline" type="button" disabled data-copy="preview">Listen</button>
+
+  <main id="decode-page" class="cine-page">
+    <section id="cine-hero" class="cine-hero" aria-labelledby="decode-title">
+      <div class="cine-copy">
+        <p id="cine-eyebrow" class="cine-eyebrow">NASA Earth data sonification</p>
+        <h1 id="decode-title"><span id="cine-title-lead">HEAR THE</span> <em id="cine-title-accent">UNSEEN</em></h1>
+        <p id="cine-lede" class="cine-lede"></p>
+        <p id="cine-lede2" class="cine-lede"></p>
+        <p id="decode-state" role="status"></p>
+        <button type="button" id="decode-retry" hidden></button>
+
+        <div class="cine-guide">
+          <button type="button" id="cine-play-guide" class="cine-pill" aria-pressed="false">
+            <svg class="cine-play-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
+            <span id="cine-play-label">Play Sound Guide</span>
+          </button>
+          <div class="cine-signal" aria-hidden="true">
+            <canvas id="cine-wave" width="240" height="64"></canvas>
+            <svg class="cine-wave-idle" viewBox="0 0 240 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+              <path d="M4 32v0m8-2v4m8-6v8m8-9v10m8-14v18m8-22v26m8-32v38m8-44v50m8-53v56m8-60v62m8-54v46m8-37v28m8-23v18m8-14v10m8-9v8m8-8v9m8-10v12m8-14v16m8-18v20m8-23v26m8-27v28m8-23v20m8-16v12m8-9v6m8-5v4m8-3v2m8-1v0m8-1v0m8-1v0"/>
+            </svg>
+          </div>
+          <p id="cine-guide-caption" class="cine-guide-caption" hidden></p>
         </div>
-        <p class="preview-note" id="preview-note" role="status"></p>
+
+        <ol id="cine-steps" class="cine-icon-steps">
+          <li data-step="listen">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M3 12h2m3-5v10m4-13v16m4-12v8m4-5v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <span></span>
+            <p></p>
+          </li>
+          <li data-step="select">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M15 15l5 2-2 1-1 2z" fill="currentColor"/></svg>
+            <span></span>
+            <p></p>
+          </li>
+          <li data-step="reveal">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+            <span></span>
+            <p></p>
+          </li>
+        </ol>
       </div>
-      <figure class="earth-frame">
-        <img id="preview-image" src="./assets/atlas/svs-5101.jpg" width="1024" height="512" fetchpriority="high" alt="Global NASA visualization of sea-surface temperature">
-        <figcaption><span id="preview-caption">Ocean surface temperature · related NASA visualization</span><a id="preview-credit" href="https://svs.gsfc.nasa.gov/5101/">NASA SVS 5101 ↗</a></figcaption>
-      </figure>
+
+      <button type="button" id="cine-start" class="cine-orbit">
+        <svg class="cine-orbit-ring" viewBox="0 0 140 140" aria-hidden="true" focusable="false">
+          <circle cx="70" cy="70" r="64" fill="none" stroke="rgba(48,232,231,.18)" stroke-width="3"/>
+          <circle class="cine-orbit-arc" cx="70" cy="70" r="64" fill="none" stroke="#25f4ec" stroke-width="3" stroke-linecap="round" stroke-dasharray="185 217"/>
+        </svg>
+        <span id="cine-start-label">Start Decoding</span>
+        <svg class="cine-orbit-arrow" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M4 12h15m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="cine-rail" role="group">
+        <button type="button" id="cine-zoom-in" class="cine-icon-button" aria-label="Zoom in">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button type="button" id="cine-zoom-out" class="cine-icon-button" aria-label="Zoom out">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button type="button" id="cine-compass" class="cine-icon-button cine-compass" aria-label="Reset view, north is up">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M12 3l3.2 9H8.8z" fill="#5eead4"/><path d="M12 21l-3.2-9h6.4z" fill="rgba(255,255,255,.35)"/></svg>
+          <span aria-hidden="true">N</span>
+        </button>
+      </div>
     </section>
-    <section class="atlas wrap" id="atlas" aria-labelledby="atlas-title">
-      <header class="section-head"><div><p class="eyebrow" data-copy="worlds">Explore Earth</p><h2 id="atlas-title" data-copy="atlas">Sound Atlas</h2></div></header>
-      <div id="atlas-worlds" class="atlas-worlds"></div>
-    </section>
-    <section class="lens wrap" id="lens" aria-labelledby="lens-title">
-      <header class="section-head">
-        <div><p class="eyebrow" data-copy="lens">Sonic Lens</p><h2 id="lens-title" tabindex="-1"></h2></div>
-        <label class="field"><span data-copy="signal">Signal</span><select id="signal"></select></label>
-      </header>
-      <p id="load-message" role="status" data-copy="loading">Loading measurements…</p>
-      <button id="retry-lens" class="outline" type="button" data-copy="retry" hidden>Retry</button>
-      <div id="instrument" hidden>
-        <div class="observatory">
-          <div class="scientific-stage">
-            <div class="stage-top"><span id="map-title"></span><span id="map-date"></span></div>
-            <div id="data-map" class="data-map"></div>
-            <div id="map-legend" class="map-legend"></div>
-            <p id="map-note" class="map-note"></p>
-          </div>
-          <aside class="reading-summary" aria-labelledby="reading-label">
-            <p class="eyebrow" id="reading-label"></p>
-            <p id="reading-value"></p>
-            <p id="reading-location"></p>
-            <p id="reading-detail"></p>
-          </aside>
-          <div class="listening-dock">
-            <div class="dock-row">
-              <div class="actions">
-                <button id="play" class="solid" type="button" data-copy="play">Play</button>
-                <button id="pause" class="outline" type="button" data-copy="pause">Pause</button>
-                <button id="replay" class="outline" type="button" data-copy="replay">Replay</button>
-              </div>
-              <span id="playback"></span>
-              <label class="field speed"><span data-copy="speed">Speed</span><select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
-            </div>
-            <label class="sr-only" for="date-scrub" data-copy="scrub">Scientific date</label>
-            <div id="date-trend" class="date-trend" aria-hidden="true"></div>
-            <input id="date-scrub" type="range" min="0" max="6" value="0">
-            <div id="date-labels" class="date-labels"></div>
-          </div>
-          <div class="reading-controls">
-            <label class="field"><span data-copy="location">Location</span><select id="site"></select></label>
-            <label class="field"><span data-copy="compare">Compare with</span><select id="compare-site"></select></label>
-            <p id="compare-reading"></p>
-            <button id="hear-comparison" class="outline" type="button" data-copy="hearCompare" hidden>Hear both locations</button>
-            <button id="read-measurement" class="text-action" type="button" data-copy="read">Read measurement</button>
-            <button id="open-evidence" class="text-action" type="button" aria-controls="evidence" data-copy="evidence">Inspect evidence</button>
-          </div>
+
+    <div id="decode-interface" class="cine-dock" hidden>
+      <p id="cine-dock-label" class="sr-only"></p>
+      <div class="decode-brief">
+        <p id="decode-question"></p>
+        <p id="decode-method"></p>
+      </div>
+      <p id="decode-notice" hidden></p>
+      <ol id="decode-steps" class="decode-progress"></ol>
+      <section class="decode-instrument" aria-labelledby="decode-phase">
+        <h2 id="decode-phase" tabindex="-1"></h2>
+        <p id="decode-description"></p>
+        <ul id="decode-legend" class="decode-legend" hidden></ul>
+        <div id="decode-controls">
+          <button type="button" id="decode-next" hidden></button>
+          <button type="button" id="decode-play" hidden></button>
+          <button type="button" id="decode-pause" hidden></button>
+          <button type="button" id="decode-replay" hidden></button>
+          <button type="button" id="decode-mute" hidden></button>
+          <button type="button" id="decode-submit" hidden></button>
+          <button type="button" id="decode-restart" hidden></button>
         </div>
-        <details class="context-strip">
-          <summary data-copy="context">Related NASA visualization</summary>
-          <figure><img id="context-image" width="1024" height="512" loading="lazy" alt=""><figcaption><a id="context-link" href="https://svs.gsfc.nasa.gov/5101/"></a> · <span data-copy="contextNote">NASA Scientific Visualization Studio · frame independent of the selected date</span></figcaption></figure>
-        </details>
-        <section id="detective" class="method" aria-labelledby="detective-title">
-          <div><p class="eyebrow" data-copy="detective">Earth Detective</p><h3 id="detective-title"></h3><p id="mission"></p></div>
-          <div><button id="reveal-mission" class="outline" type="button" aria-expanded="false" aria-controls="mission-result" data-copy="check">Check the pattern</button><p id="mission-result" tabindex="-1" hidden></p></div>
-        </section>
-        <details class="fold" id="studio">
-          <summary data-copy="studio">Sound Studio</summary>
-          <div class="studio-body">
-            <div class="studio-controls">
-              <label class="field"><span data-copy="timbre">Tone color</span><select id="timbre"><option value="sine" data-copy="pure">Pure sine</option><option value="triangle" data-copy="soft">Soft triangle</option></select></label>
-              <label class="field"><span data-copy="volume">Volume</span><input id="volume" type="range" min="0" max="100" value="54"></label>
-              <label class="check"><input id="mute" type="checkbox"><span data-copy="mute">Mute</span></label>
-              <label class="check"><input id="visual-only" type="checkbox"><span data-copy="silent">Visual playback</span></label>
-            </div>
-            <p id="mapping"></p>
-          </div>
+        <div class="decode-transport" id="decode-playback" hidden>
+          <progress id="decode-progress" max="1" value="0"></progress>
+          <span id="decode-playback-label"></span>
+        </div>
+      </section>
+    </div>
+
+    <div id="decode-map">
+      <div class="decode-map-top" hidden>
+        <span id="decode-west"></span>
+        <span id="decode-north"></span>
+        <span id="decode-east"></span>
+      </div>
+      <section id="decode-stage" aria-label="Decode map" dir="ltr">
+        <div id="decode-visual" aria-hidden="true" inert></div>
+        <div id="decode-grid"></div>
+      </section>
+      <div class="decode-map-bottom">
+        <p id="decode-south"></p>
+        <p id="decode-map-key"></p>
+        <p id="decode-selections"></p>
+        <div class="decode-cell-actions" hidden>
+          <button type="button" id="decode-probe"></button>
+          <p id="decode-probe-reading"></p>
+        </div>
+      </div>
+    </div>
+    <p id="decode-status" role="status" aria-live="polite"></p>
+
+    <section id="decode-evidence" aria-labelledby="decode-evidence-title" hidden>
+      <div class="decode-evidence-card">
+        <h2 id="decode-evidence-title"></h2>
+        <p id="decode-finding"></p>
+        <p id="decode-score"></p>
+        <p id="decode-limits"></p>
+        <div id="decode-outcome-labels"></div>
+        <details id="decode-details">
+          <summary id="decode-details-title"></summary>
+          <table>
+            <thead><tr>
+              <th scope="col" id="decode-positions"></th>
+              <th scope="col" id="decode-values"></th>
+              <th scope="col" id="decode-classifications"></th>
+            </tr></thead>
+            <tbody id="decode-readings"></tbody>
+          </table>
+          <p id="decode-source-details"></p>
+          <p><a id="decode-source"></a></p>
         </details>
       </div>
-      <p id="announcer" class="sr-only" role="status" aria-live="polite"></p>
+      <div id="decode-svs-card" class="decode-evidence-card" hidden>
+        <h3 id="decode-context-title"></h3>
+        <figure id="decode-context-figure" hidden>
+          <img id="decode-context-image" width="1920" height="1080" loading="lazy" decoding="async">
+          <figcaption id="decode-context-credit"></figcaption>
+        </figure>
+        <p id="decode-context-note"></p>
+        <p class="decode-source-links"><a id="decode-context"></a> <a id="decode-frame"></a></p>
+      </div>
     </section>
-    <section class="about wrap" id="about" aria-labelledby="about-title">
-      <p class="eyebrow">EARTHPULSE · Team Vanguard</p>
-      <h2 id="about-title" data-copy="about">Science & credits</h2>
-      <p data-copy="aboutBody">Listen to derived signals from traceable NASA science. Each experience identifies its source, scientific time, units and sound mapping. Map legends and structured evidence also support silent exploration.</p>
-      <p data-copy="credits">Visual context: NASA Scientific Visualization Studio. Forest landscape: AI-generated illustration. Implementation assisted by Codex.</p>
-      <a href="https://svs.gsfc.nasa.gov/gallery/daily-visualizations/" data-copy="gallery">NASA Earth Information Center gallery ↗</a>
-    </section>
+    <div id="cine-bar" class="cine-bar" role="group" aria-label="Case">
+      <svg class="cine-bar-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M12 3l2 2-2 2-2-2zM5 10l2 2-2 2-2-2zM19 10l2 2-2 2-2-2zM7.2 12h9.6M12 7v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="17.5" r="2.2" fill="currentColor"/></svg>
+      <span id="cine-source" class="cine-bar-source"></span>
+      <span class="cine-bar-sep" aria-hidden="true"></span>
+      <span id="decode-region" class="cine-bar-region"></span>
+      <span class="cine-bar-sep" aria-hidden="true"></span>
+      <span id="decode-date" class="cine-bar-date"></span>
+      <span class="cine-bar-sep cine-bar-challenge-sep" aria-hidden="true"></span>
+      <span id="cine-challenge" class="cine-bar-challenge"></span>
+    </div>
+
   </main>
-  <dialog id="evidence" aria-labelledby="evidence-title">
-    <div class="evidence-head"><h2 id="evidence-title" data-copy="evidence">Inspect evidence</h2><form method="dialog"><button class="outline" data-copy="close">Close</button></form></div>
-    <div id="evidence-body"></div>
+
+  <dialog id="site-info" aria-labelledby="site-info-title">
+    <button type="button" id="site-info-close" autofocus></button>
+    <h2 id="site-info-title"></h2>
+    <div id="site-info-body"></div>
   </dialog>
-  <noscript>JavaScript is required to explore the scientific data.</noscript>
-  <script type="module" src="./platform.js"></script>
+
+  <script type="module">
+    import { startCinematic } from "./cinematic/main.js";
+    startCinematic(document.querySelector("#decode-page"));
+  </script>
 </body>
 </html>

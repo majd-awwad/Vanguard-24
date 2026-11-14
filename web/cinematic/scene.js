@@ -1,6 +1,6 @@
 import {
   AdditiveBlending, BackSide, BufferAttribute, BufferGeometry, CanvasTexture, DoubleSide, LineBasicMaterial,
-  LineSegments, Mesh, MeshBasicMaterial, PerspectiveCamera, Points, Scene, ShaderMaterial, SphereGeometry,
+  LineSegments, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Points, Scene, ShaderMaterial, SphereGeometry,
   SRGBColorSpace, TextureLoader, Vector2, Vector3, Vector4, WebGLRenderer,
 } from "../vendor/three/three.module.min.js";
 import {
@@ -73,13 +73,13 @@ const earthFragment = /* glsl */ `
     float ndl = dot(normalize(vSphere), uSun);
     float lit = smoothstep(-0.08, 0.28, ndl);
     float twilight = exp(-pow((ndl - 0.03) / 0.11, 2.0));
-    vec3 dayColor = day * (0.2 + 0.95 * clamp(ndl + 0.12, 0.0, 1.0));
+    vec3 dayColor = day * (0.24 + 1.03 * clamp(ndl + 0.12, 0.0, 1.0));
     vec3 nightColor = day * 0.04 + vec3(1.0, 0.84, 0.55) * pow(lights, vec3(1.1)) * 1.7;
     vec3 color = mix(nightColor, dayColor, lit) + vec3(0.95, 0.5, 0.25) * twilight * 0.07;
     // Thin atmospheric rim, teal, identical for every case.
     float rim = pow(1.0 - clamp(vFacing, 0.0, 1.0), 3.0);
     vec3 rimColor = mix(uRim, vec3(1.0, 0.84, 0.62), smoothstep(0.15, 0.85, ndl));
-    color += rimColor * rim * 0.6;
+    color += rimColor * rim * 0.85;
     // The decoding map is fully lit and readable; outside the region it falls away into space.
     float dx = max(max(uBounds.x - vLonLat.x, vLonLat.x - uBounds.y), 0.0);
     float dy = max(max(uBounds.z - vLonLat.y, vLonLat.y - uBounds.w), 0.0);
@@ -117,21 +117,135 @@ const haloFragment = /* glsl */ `
 const starVertex = /* glsl */ `
   uniform float uTime;
   uniform float uPixels;
+  uniform vec2 uDrift;
+  uniform float uAspect;
+  uniform float uMirror;
   attribute float aSize;
   attribute float aPhase;
+  attribute float aBand;
   varying float vTwinkle;
+  varying float vPhase;
+  varying float vSpark;
   void main() {
-    vTwinkle = 0.65 + 0.35 * sin(uTime * (0.6 + aPhase) + aPhase * 40.0);
-    gl_PointSize = aSize * uPixels;
-    gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
+    vPhase = aPhase;
+    float pulse = pow(0.5 + 0.5 * sin(uTime * (0.65 + aPhase * 0.6) + aPhase * 40.0), 3.0);
+    vTwinkle = 0.22 + 0.78 * pulse;
+    vSpark = step(2.6, aSize) * pulse;
+    gl_PointSize = (aSize * (0.85 + 0.3 * pulse) + vSpark * 4.0) * uPixels;
+    // Clip-space positions keep the sky evenly spread behind both page directions.
+    vec2 drift = uDrift * (0.3 + position.z * 0.7);
+    drift += vec2(sin(uTime * 0.035 + aPhase), cos(uTime * 0.025 + aPhase)) * 0.003;
+    vec2 sky = position.xy;
+    if (aBand > 0.5) {
+      sky = vec2(position.x * uMirror, position.x * uAspect * 0.5 + 0.1 + position.y);
+    }
+    gl_Position = vec4(sky + drift, 0.9999, 1.0);
   }
 `;
 const starFragment = /* glsl */ `
   varying float vTwinkle;
+  varying float vPhase;
+  varying float vSpark;
   void main() {
-    float d = length(gl_PointCoord - 0.5) * 2.0;
-    float a = smoothstep(1.0, 0.0, d) * vTwinkle;
-    gl_FragColor = vec4(vec3(0.82, 0.93, 1.0) * a * 1.25, a);
+    vec2 p = gl_PointCoord - 0.5;
+    float d = length(p) * 2.0;
+    float soft = smoothstep(1.0, 0.0, d);
+    float rays = exp(-abs(p.x) * 38.0 - abs(p.y) * 5.0)
+      + exp(-abs(p.y) * 38.0 - abs(p.x) * 5.0);
+    float a = min(1.0, soft * vTwinkle + rays * vSpark * 0.35);
+    vec3 tint = mix(vec3(0.69, 0.82, 1.0), vec3(1.0, 0.9, 0.75), step(0.8, vPhase));
+    gl_FragColor = vec4(tint * a * (1.5 + vSpark * 0.7), a);
+  }
+`;
+const galaxyVertex = /* glsl */ `
+  varying vec2 vSky;
+  void main() {
+    vSky = position.xy;
+    gl_Position = vec4(position.xy, 0.99999, 1.0);
+  }
+`;
+const galaxyFragment = /* glsl */ `
+  uniform float uAspect;
+  uniform float uMirror;
+  uniform float uFade;
+  varying vec2 vSky;
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float noise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x),
+               mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+  }
+  float clouds(vec2 p) {
+    float total = 0.0, weight = 0.5;
+    for (int i = 0; i < 5; i++) {
+      total += noise(p) * weight;
+      p = mat2(1.6, -1.2, 1.2, 1.6) * p + 11.7;
+      weight *= 0.5;
+    }
+    return total;
+  }
+  void main() {
+    vec2 p = vec2(vSky.x * uAspect * uMirror, vSky.y);
+    float axis = p.y - p.x * 0.5 - 0.1;
+    float warp = (clouds(vec2(p.x * 1.6, axis * 3.0)) - 0.5) * 0.18;
+    float band = exp(-pow((axis + warp) / 0.24, 2.0));
+    float halo = exp(-pow(axis / 0.5, 2.0));
+    float detail = clouds(vec2(p.x * 3.0, axis * 7.0));
+    float wisps = clouds(vec2(p.x * 9.0, axis * 19.0));
+    float darkLane = exp(-pow((axis + warp * 0.6 + 0.025) / 0.065, 2.0));
+    vec3 tint = mix(vec3(0.19, 0.16, 0.29), vec3(0.10, 0.26, 0.29), detail);
+    vec3 color = tint * band * (0.25 + detail * 0.85 + wisps * 0.25);
+    color *= 1.0 - darkLane * 0.72;
+    color += vec3(0.025, 0.04, 0.075) * halo * detail;
+    // Fade towards the copy side, keeping the interface readable in both languages.
+    float quiet = 0.3 + 0.7 * smoothstep(-1.0, 0.3, p.x);
+    gl_FragColor = vec4(color * quiet * uFade, 1.0);
+  }
+`;
+const moonVertex = /* glsl */ `
+  varying vec3 vSurface;
+  void main() {
+    vSurface = position;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+const moonFragment = /* glsl */ `
+  uniform float uFade;
+  uniform float uTurn;
+  varying vec3 vSurface;
+  float grain(vec3 p) {
+    return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453);
+  }
+  float noise(vec3 p) {
+    vec3 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(mix(grain(i), grain(i + vec3(1,0,0)), f.x),
+                   mix(grain(i + vec3(0,1,0)), grain(i + vec3(1,1,0)), f.x), f.y),
+               mix(mix(grain(i + vec3(0,0,1)), grain(i + vec3(1,0,1)), f.x),
+                   mix(grain(i + vec3(0,1,1)), grain(i + vec3(1,1,1)), f.x), f.y), f.z);
+  }
+  float crater(vec3 p, vec3 center, float radius) {
+    float d = length(p - normalize(center)) / radius;
+    float bowl = -0.22 * (1.0 - smoothstep(0.2, 0.82, d));
+    float rim = 0.14 * exp(-pow((d - 0.9) * 12.0, 2.0));
+    return bowl + rim;
+  }
+  void main() {
+    vec3 n = normalize(vSurface);
+    float c = cos(uTurn), s = sin(uTurn);
+    vec3 p = vec3(n.x * c + n.z * s, n.y, -n.x * s + n.z * c);
+    float terrain = 0.45 * noise(p * 5.0) + 0.2 * noise(p * 19.0) + 0.07 * noise(p * 70.0);
+    terrain += crater(p, vec3(-0.35, 0.4, 1.0), 0.27);
+    terrain += crater(p, vec3(0.35, -0.2, 1.0), 0.2);
+    terrain += crater(p, vec3(-0.1, -0.5, 1.0), 0.12);
+    terrain += crater(p, vec3(0.55, 0.4, 0.8), 0.15);
+    terrain += crater(p, vec3(-0.65, -0.05, 0.8), 0.16);
+    terrain += crater(p, vec3(0.05, 0.05, 1.0), 0.09);
+    float light = max(0.0, dot(n, normalize(vec3(-0.7, 0.45, 0.8))));
+    vec3 rock = mix(vec3(0.35, 0.38, 0.41), vec3(0.82, 0.83, 0.8), clamp(terrain + 0.25, 0.0, 1.0));
+    gl_FragColor = vec4(rock * (0.045 + 1.1 * light), uFade);
+    #include <colorspace_fragment>
   }
 `;
 const dustVertex = /* glsl */ `
@@ -215,24 +329,25 @@ function earthGeometry(columns = 180, rows = 90) {
   return geometry;
 }
 
-function starGeometry(count = 2200) {
+function starGeometry(count = 3400) {
   const position = new Float32Array(count * 3);
   const size = new Float32Array(count);
   const phase = new Float32Array(count);
+  const band = new Float32Array(count);
   let seed = 1234567;
   const random = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
   for (let i = 0; i < count; i++) {
-    const u = random() * 2 - 1;
-    const angle = random() * Math.PI * 2;
-    const r = Math.sqrt(1 - u * u);
-    position.set([r * Math.cos(angle) * 24, u * 24, r * Math.sin(angle) * 24], i * 3);
-    size[i] = random() < 0.05 ? 3.2 + random() * 2.2 : 1.5 + random() * 1.6;
+    band[i] = i > count * 0.6 ? 1 : 0;
+    const y = band[i] ? (random() + random() + random() + random() - 2) * 0.17 : random() * 2.12 - 1.06;
+    position.set([random() * 2.12 - 1.06, y, random()], i * 3);
+    size[i] = random() < 0.015 ? 2.6 + random() : (band[i] ? 0.7 + random() * 0.8 : 0.9 + random());
     phase[i] = random();
   }
   const geometry = new BufferGeometry();
   geometry.setAttribute("position", new BufferAttribute(position, 3));
   geometry.setAttribute("aSize", new BufferAttribute(size, 1));
   geometry.setAttribute("aPhase", new BufferAttribute(phase, 1));
+  geometry.setAttribute("aBand", new BufferAttribute(band, 1));
   return geometry;
 }
 
@@ -281,7 +396,7 @@ export function createScene({
     uniforms: {
       ...shared, uSpin: { value: 0 }, uDay: { value: null }, uNight: { value: null }, uHasDay: { value: 0 }, uHasNight: { value: 0 },
       uSun: { value: new Vector3(-0.74, 0.34, 0.58).normalize() }, uBounds: { value: new Vector4(-20, 50, 15, 45) },
-      uRim: { value: new Vector3(0.18, 0.78, 0.74) },
+      uRim: { value: new Vector3(0.08, 0.85, 1.0) },
     },
   }));
   earth.uniforms = earth.material.uniforms;
@@ -290,7 +405,7 @@ export function createScene({
   scene.add(earth);
 
   const haloUniforms = {
-    uColor: { value: new Vector3(0.22, 0.86, 0.8) }, uFade: { value: 1 }, uBoost: { value: 0 }, uInner: { value: 0.36 },
+    uColor: { value: new Vector3(0.08, 0.85, 1.0) }, uFade: { value: 1 }, uBoost: { value: 0 }, uInner: { value: 0.36 },
     uSun: { value: new Vector3(-0.74, 0.34, 0.58).normalize() },
   };
   const halo = new Mesh(new SphereGeometry(1.07, 96, 64), new ShaderMaterial({
@@ -301,14 +416,36 @@ export function createScene({
   halo.renderOrder = 1;
   scene.add(halo);
 
-  const starUniforms = { uTime: { value: 0 }, uPixels: { value: 1 } };
-  const stars = new Points(starGeometry(), new ShaderMaterial({
+  const skyAspect = { value: 1 };
+  const skyMirror = { value: 1 };
+  const galaxy = new Mesh(new PlaneGeometry(2, 2), new ShaderMaterial({
+    vertexShader: galaxyVertex, fragmentShader: galaxyFragment,
+    uniforms: { uAspect: skyAspect, uMirror: skyMirror, uFade: { value: 0.85 } },
+    transparent: true, depthWrite: false, blending: AdditiveBlending,
+  }));
+  galaxy.frustumCulled = false;
+  galaxy.renderOrder = -2;
+  scene.add(galaxy);
+
+  const starUniforms = { uTime: { value: 0 }, uPixels: { value: 1 }, uDrift: { value: new Vector2() }, uAspect: skyAspect, uMirror: skyMirror };
+  const stars = new Points(starGeometry(window.innerWidth < 700 ? 1800 : 3400), new ShaderMaterial({
     vertexShader: starVertex, fragmentShader: starFragment, uniforms: starUniforms,
     transparent: true, depthWrite: false, blending: AdditiveBlending,
   }));
   stars.frustumCulled = false;
   stars.renderOrder = -1;
   scene.add(stars);
+
+  // An artistic companion, separate from the Earth observations and decoding map.
+  const moon = new Mesh(new SphereGeometry(1, 48, 32), new ShaderMaterial({
+    vertexShader: moonVertex, fragmentShader: moonFragment,
+    uniforms: { uFade: { value: 1 }, uTurn: { value: 0 } },
+    transparent: true,
+  }));
+  moon.name = "moon";
+  moon.scale.setScalar(0.13);
+  moon.frustumCulled = false;
+  scene.add(moon);
 
   const loader = new TextureLoader();
   let disposed = false;
@@ -330,7 +467,7 @@ export function createScene({
     polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
   });
   const materials = {
-    grid: new LineBasicMaterial({ color: STYLE.grid, transparent: true, opacity: 0.3, depthWrite: false }),
+    grid: new LineBasicMaterial({ color: 0x8af5ed, transparent: true, opacity: 0.5, depthWrite: false }),
     active: decal(STYLE.active, 1),
     ripple: decal(STYLE.active, 0.6, true),
     bracket: decal(STYLE.bracket, 1),
@@ -409,6 +546,8 @@ export function createScene({
   let lostHandler = null;
   let onFrame = null;
   let frames = 0;
+  const pointer = new Vector2();
+  const pointerTarget = new Vector2();
 
   const frameFor = () => frame ?? createFrame(FALLBACK_FRAME);
   const mobileLayout = () => width / Math.max(1, height) < 0.9;
@@ -474,12 +613,13 @@ export function createScene({
       }
       materials.guide.opacity = 0.9 * guide.opacity;
     }
-    if (!frame || !model.rows || !model.cols || progress <= 0) return;
+    if (!frame || !model.rows || !model.cols) return;
     const rect = ([row, col]) => cellRect(frame.bounds, model.rows, model.cols, row, col);
     setLayer("grid", Object.assign(
       new LineSegments(new BufferGeometry().setAttribute("position",
-        new BufferAttribute(gridLines(frame, model.rows, model.cols, { t, lift: LIFT }), 3)), materials.grid),
+        new BufferAttribute(gridLines(frame, model.rows, model.cols, { t, lift: LIFT, spin: spinDeg }), 3)), materials.grid),
       { frustumCulled: false, renderOrder: 2 }));
+    if (progress <= 0) return;
     if (model.selected.length) {
       setLayer("brackets", mesh(bracketTriangles(frame, model.selected.map(rect), { t, lift: LIFT * 2, spin: spinDeg }), materials.bracket, null, 4));
     }
@@ -533,7 +673,7 @@ export function createScene({
   // ---- loop ----
   const heroActive = () => target === 0 && progress === 0;
   const continuous = () => !document.hidden && width > 0 && (
-    heroActive() || progress !== target || Boolean(guide) || rippleStart >= 0 && now() - rippleStart < RIPPLE_SECONDS * 1000 ||
+    (!isReduced() && heroActive()) || progress !== target || Boolean(guide) || rippleStart >= 0 && now() - rippleStart < RIPPLE_SECONDS * 1000 ||
     (dust !== null && dustUniforms.uReveal.value < 1) || model.active !== null || dust !== null);
 
   function draw() {
@@ -559,7 +699,9 @@ export function createScene({
     } else if (heroActive() && !isReduced()) {
       spin += SPIN_RAD_PER_SECOND * dt;
     }
-    heroZoom += (heroZoomTarget - heroZoom) * Math.min(1, dt * 7 || 1);
+    heroZoom += (heroZoomTarget - heroZoom) * (isReduced() ? 1 : Math.min(1, dt * 7 || 1));
+    if (isReduced()) pointer.set(0, 0);
+    else pointer.lerp(pointerTarget, Math.min(1, dt * 2.5));
 
     const f = frameFor();
     const t = unroll(progress);
@@ -567,7 +709,7 @@ export function createScene({
     const rect = progress > 0 ? stageRect() : null;
     const aspect = width / height;
     const heroDistance = (aspect > 1.3 ? HERO_DISTANCE : aspect > 0.9 ? HERO_DISTANCE + 0.6 : HERO_DISTANCE + 1.5) / heroZoom;
-    const heroShift = mobileLayout() ? 0 : (rtl ? -HERO_SHIFT : HERO_SHIFT);
+    const heroShift = (mobileLayout() ? 0 : (rtl ? -HERO_SHIFT : HERO_SHIFT)) + pointer.x * 0.012;
     const { view, world, projection } = cameraMatrices(f, progress, aspect, {
       rect, canvas: { width, height }, hero: { distance: heroDistance, shift: heroShift },
     });
@@ -576,10 +718,25 @@ export function createScene({
     camera.projectionMatrix.copy(projection);
     camera.projectionMatrixInverse.copy(projection).invert();
 
+    const motionTime = isReduced() ? 0 : time / 1000;
+    skyAspect.value = aspect;
+    skyMirror.value = rtl ? -1 : 1;
+    galaxy.material.uniforms.uFade.value = 0.85 * (1 - progress * 0.65);
+    const moonX = mobileLayout() ? -0.72 : (rtl ? 0.08 : -0.08);
+    const moonY = mobileLayout() ? 0.6 : 0.52;
+    moon.position.set(moonX + pointer.x * 0.025, moonY + Math.sin(motionTime * 0.18) * 0.012 + pointer.y * 0.015, 0.5)
+      .applyMatrix4(camera.projectionMatrixInverse);
+    moon.position.multiplyScalar(6 / -moon.position.z).applyMatrix4(world);
+    moon.quaternion.setFromRotationMatrix(world);
+    moon.material.uniforms.uFade.value = 1 - Math.min(1, progress * 3);
+    moon.material.uniforms.uTurn.value = motionTime * 0.012;
+    moon.visible = progress < 1 / 3;
+
     earth.uniforms.uSpin.value = (progress > 0 ? flightSpin(spinStartDeg, progress) : spin / DEG) * DEG;
     shared.uT.value = frame ? t : 0;
     haloUniforms.uFade.value = 1 - t;
-    starUniforms.uTime.value = time / 1000;
+    starUniforms.uTime.value = motionTime;
+    starUniforms.uDrift.value.copy(pointer).multiplyScalar(0.016);
     dustUniforms.uTime.value = time / 1000;
     if (dust) dustUniforms.uReveal.value = isReduced() ? 1 : Math.min(1, (time - revealStart) / 1000 / REVEAL_SECONDS);
 
@@ -609,6 +766,15 @@ export function createScene({
   const onResize = () => invalidate();
   window.addEventListener("resize", onResize);
   window.addEventListener("scroll", onResize, { passive: true });
+  const onPointerMove = (event) => {
+    if (event.pointerType !== "mouse" || !heroActive() || isReduced()) return;
+    pointerTarget.set(event.clientX / Math.max(1, width) * 2 - 1, 1 - event.clientY / Math.max(1, height) * 2);
+    invalidate();
+  };
+  const resetPointer = () => { pointerTarget.set(0, 0); invalidate(); };
+  window.addEventListener("pointermove", onPointerMove, { passive: true });
+  document.addEventListener("pointerleave", resetPointer);
+  window.addEventListener("blur", resetPointer);
   canvas.addEventListener("webglcontextlost", (event) => { event.preventDefault(); lostHandler?.(); });
   const observer = typeof window.ResizeObserver === "function" ? new window.ResizeObserver(onResize) : null;
 
@@ -616,7 +782,7 @@ export function createScene({
     canvas,
     get progress() { return progress; },
     get target() { return target; },
-    get stats() { return { pixelRatio, frames, dust: scene.userData.dustStats ?? null }; },
+    get stats() { return { pixelRatio, frames, stars: stars.geometry.attributes.position.count, moonVisible: moon.visible, dust: scene.userData.dustStats ?? null }; },
     onLost(handler) { lostHandler = handler; },
     onFrame(handler) { onFrame = handler; },
     setDirection(isRtl) { if (rtl !== isRtl) { rtl = isRtl; invalidate(); } },
@@ -669,10 +835,13 @@ export function createScene({
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", onResize);
+      window.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerleave", resetPointer);
+      window.removeEventListener("blur", resetPointer);
       for (const name of [...layers.keys()]) setLayer(name, null);
       if (dust) { dust.geometry.dispose(); dust = null; }
-      for (const geometry of [earth.geometry, halo.geometry, stars.geometry]) geometry.dispose();
-      for (const material of [earth.material, halo.material, stars.material, dustMaterial, ...Object.values(materials)]) material.dispose();
+      for (const geometry of [earth.geometry, halo.geometry, stars.geometry, galaxy.geometry, moon.geometry]) geometry.dispose();
+      for (const material of [earth.material, halo.material, stars.material, galaxy.material, moon.material, dustMaterial, ...Object.values(materials)]) material.dispose();
       earth.uniforms.uDay.value?.dispose();
       earth.uniforms.uNight.value?.dispose();
       for (const material of Object.values(glyphMaterials)) { material.map.dispose(); material.dispose(); }

@@ -42,6 +42,7 @@ export function createHero({ root, language, scene, transport, analyser = () => 
   el.steps.setAttribute("aria-label", text.stepsLabel);
   [...el.steps.querySelectorAll("[data-step]")].forEach((item, index) => {
     item.querySelector("span").textContent = text.steps[index];
+    item.querySelector("p").textContent = text.stepDescriptions[index];
   });
   el.zoomIn.setAttribute("aria-label", text.zoomIn);
   el.zoomOut.setAttribute("aria-label", text.zoomOut);
@@ -123,7 +124,8 @@ export function createHero({ root, language, scene, transport, analyser = () => 
     waveFrame = document.defaultView.requestAnimationFrame(tick);
   }
   document.addEventListener("visibilitychange", startWave, { signal });
-  new MutationObserver(startWave).observe(body, { attributes: true, attributeFilter: ["data-view"] });
+  const observer = new MutationObserver(startWave);
+  observer.observe(body, { attributes: true, attributeFilter: ["data-view"] });
   startWave();
 
   return {
@@ -132,6 +134,7 @@ export function createHero({ root, language, scene, transport, analyser = () => 
     get caseData() { return caseData; },
     dispose() {
       controller.abort();
+      observer.disconnect();
       unsubscribe();
       if (waveFrame) document.defaultView.cancelAnimationFrame(waveFrame);
     },

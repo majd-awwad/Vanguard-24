@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { extname, resolve, sep } from "node:path";
 
 const root = fileURLToPath(new URL("../dist", import.meta.url));
-const port = Number(process.argv[2] ?? 4173);
+const port = Number(process.argv[2] ?? process.env.PORT ?? 4174);
 const types = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8", ".json": "application/json", ".jpg": "image/jpeg",
@@ -16,6 +16,12 @@ const types = {
 const server = createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
+    // Existing bookmarks lead to the one current frontend, preserving the language.
+    if (["/decode-3d.html", "/decode.html", "/forest.html"].includes(pathname)) {
+      const search = new URL(request.url, "http://localhost").search;
+      response.writeHead(302, { Location: "/" + search }).end();
+      return;
+    }
     const file = resolve(root, "." + pathname + (pathname.endsWith("/") ? "index.html" : ""));
     if (!file.startsWith(root + sep) || !(await stat(file)).isFile()) {
       response.writeHead(404).end();
