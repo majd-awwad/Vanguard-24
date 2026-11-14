@@ -98,6 +98,26 @@ async function journey(lang, width) {
     await page.locator("#guided-note").waitFor();
     await page.locator("#guided-cell-evidence summary").click();
     assert.equal(await page.locator("#guided-cell-rows td:visible").count(), 15);
+    const evidenceLink = page.locator("#guided-cell-rows a").first();
+    const referenceUrl = new URL(await evidenceLink.evaluate(link => link.href));
+    assert.equal(referenceUrl.searchParams.get("first"), "geos-fp-dust-20250819-1930");
+    assert.equal(referenceUrl.searchParams.get("lang"), lang);
+    const linkedPage = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: "reduce" });
+    try {
+      // Use a fresh browser page so the result is reproduced without Guided state.
+      await linkedPage.goto(referenceUrl.href);
+      await linkedPage.locator("#observatory-field").waitFor();
+      assert.equal(await linkedPage.locator("#observatory-first").inputValue(), referenceUrl.searchParams.get("first"));
+      const position = await linkedPage.locator("#observatory-cell-position").textContent();
+      const coordinates = ["row", "col"].map(key => Number(referenceUrl.searchParams.get(key)) + 1);
+      const expected = await linkedPage.evaluate(({ lang, coordinates }) => {
+        const [row, col] = coordinates.map(value => new Intl.NumberFormat(lang).format(value));
+        return lang === "ar" ? `الصف ${row}، العمود ${col}` : `Row ${row}, column ${col}`;
+      }, { lang, coordinates });
+      assert.ok(position.startsWith(expected), position);
+    } finally {
+      await linkedPage.close();
+    }
     for (const [row, value] of ["north", "middle", "south"].entries()) {
       await page.locator("#guided-calculation-band").selectOption(value);
       assert.ok((await page.locator("#guided-calculation-equation").textContent()).endsWith("≈ " + formatter.format(means[row])));
@@ -116,6 +136,7 @@ async function journey(lang, width) {
     assert.equal(await page.locator("#guided-note").textContent(), "");
     assert.equal(await page.locator("#guided-context-image").getAttribute("src"), null);
     assert.equal(await page.locator("#guided-cell-rows td").count(), 0);
+    assert.equal(await page.locator("#guided-cell-rows a").count(), 0);
     await page.locator("#guided-observatory").click();
     await page.locator("#observatory-field").waitFor();
     await page.locator("#observatory-guided").click();

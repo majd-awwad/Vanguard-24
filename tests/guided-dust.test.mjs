@@ -2,11 +2,26 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { validateDecodeCase } from "../web/contracts/validate.js";
-import { bandIds, buildBandPlayback, compareDustBands, completedBandCount } from "../web/experiences/decode/guided-dust.js";
+import { bandIds, buildBandPlayback, compareDustBands, completedBandCount, observatoryReference } from "../web/experiences/decode/guided-dust.js";
 
 const production = validateDecodeCase(JSON.parse(await readFile(new URL(
   "../web/assets/decode/data/dust-geos-fp-20250819-1930-north-africa-med.json", import.meta.url,
 ), "utf8")));
+
+test("Quick evidence points to the cells containing its centres on the reference map", async () => {
+  const root = new URL("../web/assets/decode/dust-v2/", import.meta.url);
+  const grid = JSON.parse(await readFile(new URL("grid.json", root), "utf8"));
+  for (const cell of production.levels.quick.cells) {
+    const location = observatoryReference(production, cell);
+    assert.equal(location.first, "geos-fp-dust-20250819-1930");
+    const bounds = grid.cells[location.row * grid.cols + location.col].bounds;
+    assert.ok(cell.lat <= bounds.north && cell.lat > bounds.south);
+    assert.ok(cell.lon >= bounds.west && cell.lon < bounds.east);
+  }
+  const cell = production.levels.quick.cells[0];
+  assert.equal(observatoryReference({ ...production, fixture: true }, cell), null);
+  assert.equal(observatoryReference(production, { ...cell, lat: 90 }), null);
+});
 
 function compareRows(rows) {
   const cells = rows.flatMap((values, row) => values.map((value, col) => ({

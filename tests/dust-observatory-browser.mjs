@@ -115,7 +115,123 @@ async function journey(lang, width) {
   }
 }
 
+async function shareJourney() {
+  const page = await browser.newPage({ viewport: { width: 375, height: 900 }, reducedMotion: "reduce" });
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  const matching = catalog.snapshots.filter(entry => entry.modelSource === reference.modelSource && entry.id !== reference.id);
+  const comparison = matching.at(-1);
+  const incompatible = catalog.snapshots.find(entry => entry.modelSource !== reference.modelSource);
+  const firstId = reference.id;
+  const secondId = comparison.id;
+  const url = new URL("dust-observatory.html", base);
+  const compareValue = snapshots.get(secondId).values[3 * 40 + 7] - snapshots.get(firstId).values[3 * 40 + 7];
+  try {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "clipboard", {
+        configurable: true,
+        value: { writeText: value => {
+          window.copiedView = value;
+          if (window.holdClipboard) {
+            return new Promise((_resolve, reject) => { window.rejectClipboard = reject; });
+          }
+          return new URL(location.href).searchParams.get("lang") === "ar"
+            ? Promise.reject(new Error("Clipboard denied")) : Promise.resolve();
+        } },
+      });
+    });
+    url.search = new URLSearchParams({ lang: "en", first: firstId, second: secondId, row: "3", col: "7" });
+    await page.goto(url.href);
+    const field = page.locator("#observatory-field");
+    await field.waitFor();
+    assert.equal(await page.locator("#observatory-first").inputValue(), firstId);
+    assert.equal(await page.locator("#observatory-second").inputValue(), secondId);
+    assert.equal(await page.locator("#observatory-mode").inputValue(), "comparison");
+    assert.match(await page.locator("#observatory-cell-position").textContent(), /Row 4, column 8/);
+    assert.ok((await page.locator("#observatory-cell-value").textContent())
+      .includes(new Intl.NumberFormat("en", { maximumSignificantDigits: 5 }).format(compareValue)));
+    const share = page.locator("#observatory-share");
+    await share.click();
+    assert.equal(await page.locator("#observatory-share-status").textContent(), "Link copied.");
+    assert.equal(await page.evaluate(() => window.copiedView), page.url());
+    assert.equal(await page.locator("#observatory-share-fallback").isVisible(), false);
+
+    await page.locator("#observatory-language").click();
+    await field.waitFor();
+    const shared = new URL(page.url());
+    assert.deepEqual(Object.fromEntries(shared.searchParams),
+      { lang: "ar", first: firstId, second: secondId, row: "3", col: "7" });
+    await share.click();
+    const fallback = page.locator("#observatory-share-url");
+    await fallback.waitFor();
+    assert.equal(await fallback.inputValue(), shared.href);
+    assert.equal(await fallback.getAttribute("readonly"), "");
+    assert.equal(await page.locator(":focus").getAttribute("id"), "observatory-share-url");
+    assert.equal(await fallback.evaluate(input => input.selectionEnd - input.selectionStart), shared.href.length);
+
+    await page.evaluate(() => { window.holdClipboard = true; });
+    await share.click();
+    await page.locator(".observatory-map-area").focus();
+    await page.keyboard.press("ArrowRight");
+    assert.equal(new URL(page.url()).searchParams.get("col"), "8");
+    await page.evaluate(() => window.rejectClipboard(new Error("Clipboard denied")));
+    assert.equal(await fallback.isVisible(), false);
+    assert.equal(await page.locator(".observatory-map-area").evaluate(node => document.activeElement === node), true);
+    await page.reload();
+    await field.waitFor();
+    assert.equal(new URL(page.url()).searchParams.get("col"), "8");
+
+    for (const invalid of [incompatible.id, firstId, "../catalog"]) {
+      url.search = new URLSearchParams({ first: firstId, second: invalid, row: "25", col: "-1" });
+      await page.goto(url.href);
+      await field.waitFor();
+      assert.equal(await page.locator("#observatory-mode").inputValue(), "snapshot");
+      const normalized = new URL(page.url()).searchParams;
+      assert.equal(normalized.get("second"), null);
+      assert.equal(normalized.get("row"), "14");
+      assert.equal(normalized.get("col"), "15");
+    }
+    url.search = new URLSearchParams({ first: "../unknown", second: secondId, row: "24", col: "39" });
+    await page.goto(url.href);
+    await field.waitFor();
+    const boundary = new URL(page.url()).searchParams;
+    assert.equal(boundary.get("first"), firstId);
+    assert.equal(boundary.get("second"), null);
+    assert.equal(boundary.get("row"), "24");
+    assert.equal(boundary.get("col"), "39");
+
+    let release;
+    let notify;
+    const requested = new Promise(resolve => { notify = resolve; });
+    const delayed = new Promise(resolve => { release = resolve; });
+    await page.route(`**/${comparison.path}`, async route => {
+      notify();
+      await delayed;
+      await route.fulfill({ json: snapshots.get(secondId) });
+    });
+    const firstChoice = page.locator("#observatory-first");
+    await firstChoice.selectOption(secondId);
+    await requested;
+    await firstChoice.selectOption(incompatible.id);
+    await field.waitFor();
+    assert.equal(new URL(page.url()).searchParams.get("first"), incompatible.id);
+    const olderFinished = page.waitForResponse(response => response.url().endsWith(comparison.path));
+    release();
+    await olderFinished;
+    await page.locator("#observatory-share").click();
+    const latestCopied = new URL(await page.evaluate(() => window.copiedView));
+    assert.equal(latestCopied.searchParams.get("first"), incompatible.id);
+    assert.equal(latestCopied.searchParams.get("row"), "24");
+    assert.equal(latestCopied.searchParams.get("col"), "39");
+    assert.deepEqual(errors, []);
+    console.log("Dust Observatory link restores the exact comparison and cell across reloads and languages; clipboard fallback and invalid-link normalization passed.");
+  } finally {
+    await page.close();
+  }
+}
+
 try {
+  await shareJourney();
   for (const lang of ["en", "ar"]) {
     for (const width of [1440, 375]) await journey(lang, width);
   }

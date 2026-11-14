@@ -1,5 +1,5 @@
 import { createTransport } from "./audio/transport.js";
-import { bandIds, buildBandPlayback, compareDustBands, completedBandCount } from "./experiences/decode/guided-dust.js";
+import { bandIds, buildBandPlayback, compareDustBands, completedBandCount, observatoryReference } from "./experiences/decode/guided-dust.js";
 import { decodeMessage } from "./i18n/decode-messages.js";
 import { loadDecodeCase } from "./sources/decode/index.js";
 import { drawDustMapBase } from "./visual/dust-basemap.js";
@@ -87,6 +87,10 @@ const messages = {
   cellExplanation: ["Read each row from west to east. A missing cell is excluded from the average.", "اقرأ كل صف من الغرب للشرق. الخلية المفقودة مستبعدة من حساب المتوسط."],
   cellBand: ["Band", "النطاق"],
   cellColumn: ["Column {number}", "العمود {number}"],
+  inspectCentre: ["Inspect centre", "افحص المركز"],
+  inspectCentreOf: ["Inspect centre: {band}, column {number}", "افحص المركز: {band}، العمود {number}"],
+  centreExplanation: ["Each link opens the Observatory cell at the centre of this Quick cell, using the same three-hour source window. The finer cell covers a different area, so its average can differ.",
+    "كل رابط بيفتح خلية المرصد اللي فيها مركز خلية Quick، باستخدام نفس فترة الثلاث ساعات. الخلية الأدق بتغطّي مساحة مختلفة، فممكن يكون متوسطها مختلف."],
   cellMean: ["Mean", "المتوسط"],
   calculationBand: ["Trace the mean for a band", "تتبّع حساب متوسط نطاق"],
   calculationResult: ["{band}: sum of the available cell values {sum}, divided by {count}, gives a mean of {mean}.", "{band}: اقسم مجموع قيم الخلايا المتاحة، {sum}، على عددها، {count}، لتحصل على المتوسط {mean}."],
@@ -398,7 +402,21 @@ function mountGuided(data) {
       const row = document.createElement("tr");
       row.append(makeCell("th", t(band.id), "row"));
       const values = cells.filter(cell => cell.row === index).sort((a, b) => a.col - b.col);
-      for (const cell of values) row.append(makeCell("td", cell.value === null ? t("missing") : number(cell.value)));
+      for (const cell of values) {
+        const reading = makeCell("td", cell.value === null ? t("missing") : number(cell.value));
+        const reference = observatoryReference(data, cell);
+        if (reference && cell.value !== null) {
+          const link = document.createElement("a");
+          link.className = "guided-cell-link";
+          link.textContent = t("inspectCentre");
+          link.setAttribute("aria-label", fill(t("inspectCentreOf"), {
+            band: t(band.id), number: number(cell.col + 1),
+          }));
+          link.href = "./dust-observatory.html?" + new URLSearchParams({ lang: language, ...reference });
+          reading.append(link);
+        }
+        row.append(reading);
+      }
       row.append(makeCell("td", band.mean === null ? t("missing") : number(band.mean)));
       return row;
     }));

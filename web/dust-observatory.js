@@ -43,6 +43,10 @@ const copy = {
   interval: ["Two notes: rising means an increase, falling means a decrease, repeated means unchanged. A wider interval means a larger change, up to the displayed scale.", "نغمتان: صعودهما يعني زيادة، وهبوطهما يعني انخفاضًا، وتكرارهما يعني عدم تغيّر. اتساع المسافة بينهما يعني تغيّرًا أكبر حتى طرف المقياس المعروض."],
   muted: ["Sound is muted.", "الصوت مكتوم."],
   audioUnavailable: ["Audio is unavailable. Use the map and numeric reading.", "الصوت غير متاح. استخدم الخريطة والقراءة الرقمية."],
+  share: ["Copy link to this view", "انسخ رابط هذا العرض"],
+  link: ["Link to the selected dates and cell", "رابط التواريخ والخلية المختارة"],
+  copied: ["Link copied.", "تم نسخ الرابط."],
+  copyManually: ["Copy the selected link to share this view.", "انسخ الرابط المحدّد لمشاركة هذا العرض."],
   source: ["Data and provenance", "البيانات ومصدرها"],
   coverage: ["Usable cells: {n} of {total}", "الخلايا الصالحة: {n} من {total}"],
   method: ["NASA GEOS-FP DUEXTTAU at 550 nm, dimensionless. Each of the 25 × 40 cells is an area-weighted mean of overlapping native model cells. Any invalid contributor makes the cell missing.", "العمق البصري لغبار NASA GEOS-FP (‏DUEXTTAU عند ٥٥٠ نانومتر) بلا وحدة. كل خلية من شبكة ٢٥ × ٤٠ هي متوسط موزون بالمساحة لخلايا النموذج المتداخلة. أي قيمة غير صالحة تجعل الخلية مفقودة."],
@@ -71,7 +75,8 @@ const copy = {
   svsContext: ["The August 19 frame is related context from a separate GEOS-FP 2 km Replay at 20:00 UTC. Its pixels are not aligned to these modeled cells.", "صورة ١٩ أغسطس سياق علمي من تشغيل GEOS-FP Replay منفصل بدقة ٢ كم عند ٢٠:٠٠ بالتوقيت العالمي. بكسلاتها غير محاذاة لخلايا النموذج هنا."],
 };
 
-const language = new URL(location.href).searchParams.get("lang") === "ar" ? "ar" : "en";
+const initialParams = new URLSearchParams(location.search);
+const language = initialParams.get("lang") === "ar" ? "ar" : "en";
 const t = (key, params = {}) => copy[key][language === "ar" ? 1 : 0].replace(/\{(\w+)\}/g, (_, name) => params[name]);
 const number = new Intl.NumberFormat(language, { maximumSignificantDigits: 5 }).format;
 const date = new Intl.DateTimeFormat(language, { dateStyle: "medium", timeZone: "UTC" });
@@ -93,6 +98,10 @@ const snapshotRequests = new Map();
 const history = byId("history");
 const historyStatus = byId("history-status");
 const historyRetry = byId("history-retry");
+const shareStatus = byId("share-status");
+const shareFallback = byId("share-fallback");
+const shareUrl = byId("share-url");
+const languageLink = byId("language");
 const loadedHistory = new Map();
 let grid;
 let entries = [];
@@ -101,6 +110,7 @@ let sources = [];
 let cellPosition = { row: 14, col: 15 };
 let renderedCells = [];
 let selection = 0;
+let shareAttempt = 0;
 let historyLoading;
 let historyLoaded = false;
 
@@ -129,13 +139,50 @@ function fillDates(select, available, preferred) {
   if (available.some(entry => entry.id === preferred)) select.value = preferred;
 }
 
-function syncDates() {
+function syncDates(preferred = second.value) {
   const comparing = differenceMode();
   byId("second-field").hidden = !comparing;
   byId("first-label").textContent = t(comparing ? "first" : "date");
   if (!comparing) return;
   const selected = entries.find(entry => entry.id === first.value);
-  fillDates(second, compatibleDates(entries, selected), second.value);
+  fillDates(second, compatibleDates(entries, selected), preferred);
+}
+
+function boundedIndex(name, length, fallback) {
+  const raw = initialParams.get(name);
+  if (raw === null || !/^\d{1,2}$/.test(raw)) return Math.min(fallback, length - 1);
+  const value = Number(raw);
+  return value < length ? value : Math.min(fallback, length - 1);
+}
+
+function restoreView() {
+  const requestedFirst = entries.find(entry => entry.id === initialParams.get("first"));
+  const baseline = requestedFirst ?? entries.find(entry => entry.phase === "reference") ?? entries[0];
+  const requestedSecond = requestedFirst && compatibleDates(entries, baseline)
+    .find(entry => entry.id === initialParams.get("second"));
+  fillDates(first, entries, baseline.id);
+  mode.value = requestedSecond ? "comparison" : "snapshot";
+  syncDates(requestedSecond?.id);
+  cellPosition = {
+    row: boundedIndex("row", grid.rows, cellPosition.row),
+    col: boundedIndex("col", grid.cols, cellPosition.col),
+  };
+}
+
+function syncShareView() {
+  ++shareAttempt;
+  const params = new URLSearchParams({
+    lang: language, first: sources[0].id, row: cellPosition.row, col: cellPosition.col,
+  });
+  if (sources[1]) params.set("second", sources[1].id);
+  const url = new URL(location.href);
+  url.search = params;
+  if (url.href !== location.href) window.history.replaceState(window.history.state, "", url);
+  shareUrl.value = url.href;
+  params.set("lang", languageLink.lang);
+  languageLink.href = "?" + params;
+  shareStatus.textContent = "";
+  shareFallback.hidden = true;
 }
 
 function snapshot(id) {
@@ -169,6 +216,7 @@ async function readSelection() {
     sources = snapshots;
     renderField(comparing);
     field.hidden = false;
+    syncShareView();
     if (history.open) renderHistory();
     status.textContent = t("coverage", { n: number(data.statistics.valid), total: number(grid.cells.length) });
   } catch {
@@ -373,6 +421,7 @@ function selectCell(position) {
   audioStatus.textContent = "";
   cellPosition = position;
   renderCell(true);
+  syncShareView();
   renderHistory();
 }
 
@@ -383,8 +432,7 @@ async function bootstrap() {
     const [catalog, geometry] = await Promise.all([loadDustCatalog(), loadDustGrid()]);
     grid = geometry;
     entries = catalog.snapshots.toSorted((a, b) => a.time.center.localeCompare(b.time.center));
-    const preferred = entries.find(item => item.phase === "reference")?.id;
-    fillDates(first, entries, preferred);
+    restoreView();
     // The contour overlays the lightly opaque filled grid so the regional
     // geometry remains visible in both the snapshot and difference views.
     drawDustMapBase(byId("coast"), grid.bounds);
@@ -402,9 +450,10 @@ document.title = `${t("title")} · EARTHPULSE`;
 for (const element of document.querySelectorAll("[data-observatory]")) element.textContent = t(element.dataset.observatory);
 byId("home").href = `./?lang=${language}`;
 byId("guided").href = `./dust.html?lang=${language}`;
-const languageLink = byId("language");
 languageLink.lang = languageLink.hreflang = language === "ar" ? "en" : "ar";
-languageLink.href = `?lang=${languageLink.lang}`;
+const alternateParams = new URLSearchParams(initialParams);
+alternateParams.set("lang", languageLink.lang);
+languageLink.href = "?" + alternateParams;
 languageLink.textContent = language === "ar" ? "English" : "العربية";
 byId("directions").setAttribute("aria-label", t("direction"));
 for (const input of [mode, first]) input.addEventListener("change", () => {
@@ -412,6 +461,28 @@ for (const input of [mode, first]) input.addEventListener("change", () => {
   readSelection();
 });
 second.addEventListener("change", readSelection);
+byId("share").addEventListener("click", async event => {
+  const button = event.currentTarget;
+  const attempt = ++shareAttempt;
+  const url = shareUrl.value;
+  const revision = selection;
+  let copied = false;
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      copied = true;
+    }
+  } catch {
+    // Some hosts disallow clipboard access. Keep the copyable URL available.
+  }
+  if (shareAttempt !== attempt || selection !== revision || field.hidden) return;
+  shareStatus.textContent = t(copied ? "copied" : "copyManually");
+  shareFallback.hidden = copied;
+  if (!copied && document.activeElement === button) {
+    shareUrl.focus();
+    shareUrl.select();
+  }
+});
 retry.addEventListener("click", () => entries.length ? readSelection() : bootstrap());
 history.addEventListener("toggle", () => {
   if (!history.open) return;

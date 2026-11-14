@@ -1,6 +1,24 @@
 import { continuousVoice } from "../../audio/voices.js";
 
 export const bandIds = ["north", "middle", "south"];
+
+// This reference shares the production granule and extent with the Quick grid.
+// Its 25 × 40 partition is separate, so select the cell containing the Quick
+// cell's centre. Keep links disabled for fixtures and other sources.
+export function observatoryReference(data, cell) {
+  if (data.fixture || data.id !== "dust-geos-fp-20250819-1930-north-africa-med" ||
+      data.source.time.start !== "2025-08-19T18:00:00Z" ||
+      data.source.time.end !== "2025-08-19T21:00:00Z") return null;
+  const { north, south, west, east } = data.bounds;
+  if (north !== 45 || south !== 15 || west !== -20 || east !== 50 ||
+      !Number.isFinite(cell.lat) || !Number.isFinite(cell.lon) ||
+      cell.lat > north || cell.lat <= south || cell.lon < west || cell.lon >= east) return null;
+  return {
+    first: "geos-fp-dust-20250819-1930",
+    row: Math.floor((north - cell.lat) / ((north - south) / 25)),
+    col: Math.floor((cell.lon - west) / ((east - west) / 40)),
+  };
+}
 const slotS = 1.5;
 const noteSpacingS = 0.37;
 

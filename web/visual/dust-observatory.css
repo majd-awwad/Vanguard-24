@@ -135,6 +135,18 @@ svg#observatory-map { display: block; width: 100%; height: 100%; position: absol
 .observatory-page button { min-block-size: 2.75rem; border-radius: .4rem; }
 #observatory-mute[aria-pressed="true"] { border-color: var(--obs-focus); }
 .observatory-evidence { grid-column: 1 / -1; }
+.observatory-share { border-block-start: 1px solid var(--obs-stroke); padding-block-start: .65rem; }
+#observatory-share-status:not(:empty) { margin-block-start: .45rem; }
+#observatory-share-fallback { display: grid; gap: .25rem; margin-block-start: .45rem; font-size: .85rem; }
+#observatory-share-url {
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding: .4rem .55rem;
+  border: 1px solid var(--obs-stroke);
+  border-radius: .35rem;
+  background: #203332;
+  color: var(--obs-paper);
+}
 #observatory-granules { display: flex; flex-wrap: wrap; gap: .65rem; padding: 0; list-style-type: none; }
 #observatory-granules li {
   flex: 1 1 16rem;

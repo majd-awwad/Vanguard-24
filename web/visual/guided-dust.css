@@ -205,6 +205,7 @@ body:has(.guided-main) {
 .guided-cell-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: clamp(.73rem, 1.6vw, .95rem); }
 .guided-cell-table :is(th, td) { padding: .35rem .25rem; text-align: start; overflow-wrap: anywhere; border-block-end: 1px solid var(--guided-line); }
 .guided-cell-table td { font-variant-numeric: tabular-nums; }
+.guided-cell-link { display: block; inline-size: fit-content; margin-block-start: .3rem; color: var(--accent); }
 #guided-note { white-space: pre-line; }
 .guided-detective { margin-block-start: 1.25rem; }
 @media (max-width: 55rem) {

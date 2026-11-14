@@ -96,6 +96,14 @@
         </div>
         <p id="observatory-sound-key"></p>
         <p id="observatory-audio-status" role="status"></p>
+        <div class="observatory-share">
+          <button class="outline" type="button" id="observatory-share" data-observatory="share"></button>
+          <p id="observatory-share-status" role="status"></p>
+          <label id="observatory-share-fallback" hidden>
+            <span data-observatory="link"></span>
+            <input id="observatory-share-url" type="url" readonly dir="ltr" spellcheck="false">
+          </label>
+        </div>
       </section>
       <details id="observatory-history" class="observatory-history">
         <summary data-observatory="history"></summary>
