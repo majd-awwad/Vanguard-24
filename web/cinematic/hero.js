@@ -24,7 +24,6 @@ export function createHero({ root, language, scene, transport, analyser = () => 
   };
   let session = null;
   let caseData = null;
-  let phase = "intro";
   let snapshot = null;
   let waveFrame = 0;
   let unsubscribe = () => {};
@@ -77,8 +76,7 @@ export function createHero({ root, language, scene, transport, analyser = () => 
     unsubscribe();
     unsubscribe = session.subscribe((state) => {
       snapshot = state;
-      phase = state.phase;
-      setView(phase);
+      setView(state.phase);
       const guidePlaying = state.playMode === "legend" && ["playing", "starting"].includes(state.transport.status);
       el.play.setAttribute("aria-pressed", guidePlaying ? "true" : "false");
       el.playLabel.textContent = guidePlaying ? text.stopGuide : text.playGuide;
@@ -98,12 +96,20 @@ export function createHero({ root, language, scene, transport, analyser = () => 
     else session.dispatch({ type: "play", mode: "legend" });
   }, { signal });
 
-  el.start.addEventListener("click", () => {
-    if (!session) return;
+  function enterDecode() {
+    if (!session) return false;
     // intro -> legend -> listen: one click, because the sound guide already plays from the hero.
     for (let guard = 0; guard < 3 && !DECODING.has(session.getState().phase); guard++) {
       session.dispatch({ type: "next" });
     }
+    root.querySelector("#decode-phase").focus();
+    root.querySelector("#decode-phase").scrollIntoView({ block: "nearest" });
+    return true;
+  }
+
+  el.start.addEventListener("click", enterDecode, { signal });
+  query("#cine-skip").addEventListener("click", (event) => {
+    if (enterDecode()) event.preventDefault();
   }, { signal });
 
   el.zoomIn.addEventListener("click", () => scene?.zoom(1.18), { signal });
@@ -112,18 +118,20 @@ export function createHero({ root, language, scene, transport, analyser = () => 
   el.sound.addEventListener("click", () => transport.setMuted(!transport.snapshot().muted), { signal });
 
   // ---- live waveform from the real audio output ----
+  const waveOptions = { color: "#5eead4" };
   function startWave() {
     if (waveFrame || document.hidden || body.dataset.view !== "hero") return;
-    const tick = () => {
-      waveFrame = 0;
-      if (document.hidden || body.dataset.view !== "hero") return;
-      drawWaveform(el.wave, analyser(), { color: "#5eead4" });
-      waveFrame = document.defaultView.requestAnimationFrame(tick);
-    };
-    waveFrame = document.defaultView.requestAnimationFrame(tick);
+    const reading = snapshot?.playMode === "legend" && snapshot.transport.status === "playing"
+      && !snapshot.transport.muted;
+    drawWaveform(el.wave, reading ? analyser() : null, waveOptions);
+    if (reading) {
+      waveFrame = document.defaultView.requestAnimationFrame(() => {
+        waveFrame = 0;
+        startWave();
+      });
+    }
   }
   document.addEventListener("visibilitychange", startWave, { signal });
-  new MutationObserver(startWave).observe(body, { attributes: true, attributeFilter: ["data-view"] });
   startWave();
 
   return {

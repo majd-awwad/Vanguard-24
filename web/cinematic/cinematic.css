@@ -184,6 +184,9 @@ body.cine #decode-page button.cine-orbit:hover { transform: scale(1.04); box-sha
 @keyframes cine-orbit { to { transform: rotate(360deg); } }
 
 .cine-rail { position: fixed; z-index: 5; inset-inline-end: 1.1rem; inset-block-start: 50%; transform: translateY(-50%); display: grid; gap: .5rem; }
+.cine-access-links { display: flex; gap: 0.8rem 1rem; flex-wrap: wrap; font-size: 0.875rem; margin-block: 0.65rem 0.5rem; }
+.cine-access-links a { color: #d1e2dc; text-underline-offset: 0.2em; }
+body.cine[data-renderer="svg"] .cine-rail { display: none; }
 .cine-compass { position: relative; }
 .cine-compass span { position: absolute; inset-block-start: -.55rem; inset-inline-start: 50%; transform: translateX(-50%); font: 700 .58rem/1 var(--sans); color: var(--cine-teal); }
 
@@ -326,17 +329,18 @@ body.cine #decode-svs-card figure { max-inline-size: 15rem; }
 
 /* ---- small screens ---- */
 @media (max-width: 900px) {
-  .cine-links { display: none; }
-  .cine-nav { justify-content: space-between; }
+  .cine-nav { justify-content: space-between; flex-wrap: wrap; row-gap: .35rem; background: rgb(5 11 18 / .94); }
+  .cine-links { order: 1; flex-basis: 100%; justify-content: space-between; gap: .45rem; }
+  .cine-links a { letter-spacing: normal; }
   .cine-copy { max-inline-size: none; }
-  .cine-hero { align-items: flex-start; padding-block-start: 5.5rem; }
+  .cine-hero { align-items: flex-start; padding-block-start: 7.75rem; background: linear-gradient(var(--cine-bg), rgb(5 11 18 / .76) 46%, transparent 88%); }
   body.cine #decode-title { font-size: clamp(3rem, 15vw, 6rem); }
   .cine-bar { inset-inline-end: var(--cine-pad); inset-block-end: 11rem; }
   body.cine #decode-page button.cine-orbit { inset-inline-end: 50%; transform: translateX(50%); inset-block-end: 1rem; }
   body.cine #decode-page button.cine-orbit:hover { transform: translateX(50%) scale(1.04); }
   .cine-rail { display: none; }
   #cine-wave { inline-size: 5.2rem; }
-  body.cine[data-view="decode"] #decode-page { grid-template-columns: minmax(0, 1fr); grid-template-areas: "map" "dock" "status" "evidence"; padding-block-start: 4.6rem; }
+  body.cine[data-view="decode"] #decode-page { grid-template-columns: minmax(0, 1fr); grid-template-areas: "map" "dock" "status" "evidence"; padding-block-start: 6.5rem; }
   body.cine[data-view="decode"] #decode-interface { position: static; }
   body.cine[data-view="decode"] .cine-bar { display: none; }
 }

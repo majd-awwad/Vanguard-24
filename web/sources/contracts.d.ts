@@ -1,6 +1,6 @@
 export type SourceStatus = 'VERIFIED_MATCHED' | 'VERIFIED_RELATED_VISUAL' | 'PROPOSED_NOT_VERIFIED' | 'BLOCKED';
 export type Coordinates = { lat: number; lon: number };
-export type ScientificTime = { start: string; end: string; granule?: string };
+export type ScientificTime = { start: string; end: string; endExclusive?: boolean; granule?: string };
 export type Bounds = { north: number; south: number; east: number; west: number };
 
 export interface SourceReference {
@@ -19,11 +19,18 @@ export interface GriddedSeries {
   sites: (Coordinates & { id: string })[];
   times: ScientificTime[];
   cells: (Coordinates & {
-    samples: { value: number | null; error: number | null; mask: number | null }[];
+    samples: { value: number | null; error: number | null; mask: number; status: 'available' | 'incomplete-coverage' | 'missing' | 'masked' }[];
   })[];
   unit: '°C' | 'mm/day';
   bounds: Bounds;
   step: number;
+  sampling: {
+    nativeLatDegrees: number;
+    nativeLonDegrees: number;
+    retainedLatStrideDegrees: number;
+    retainedLonStrideDegrees: number;
+    temporalSupport: 'daily-utc' | 'weekly-samples-of-daily-analysis';
+  };
   subsetUrl?: string;
 }
 
@@ -37,11 +44,15 @@ export interface WindowedEvents {
   unit: 'MW';
   bounds: Bounds;
   subsetUrl: string;
+  sampling: { temporalSupport: 'overlapping-five-day-windows'; nominalResolutionMeters: number };
   windows: (ScientificTime & { detections: (Coordinates & {
     acquisitionTime: string;
     sensor: string;
     confidence: string;
-    frpMW: number | null;
+    frpMW: number;
+    scanKm: number;
+    trackKm: number;
+    dayNight: 'D' | 'N';
   })[] })[];
 }
 

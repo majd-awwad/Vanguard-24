@@ -1,3 +1,5 @@
+import { createAtmosphere } from "./atmosphere.js";
+
 function webAudio() {
   const Context = globalThis.AudioContext ?? globalThis.webkitAudioContext;
   if (!Context) throw new Error("Web Audio is unavailable.");
@@ -12,7 +14,7 @@ export function createTransport({
 } = {}) {
   const listeners = new Set();
   const pending = new Set();
-  let plan, context, master, frame;
+  let plan, context, master, frame, atmosphere;
   let revision = 0;
   let token = 0;
   let position = 0;
@@ -22,6 +24,7 @@ export function createTransport({
   let status = "idle";
   let speed = 1;
   let volume = 0.72;
+  let atmosphereVolume = 0.32;
   let muted = false;
   let playback = "audio";
   let audioUnavailable = false;
@@ -33,7 +36,7 @@ export function createTransport({
     return {
       planRevision: revision, status, positionS, activeEventId: current?.id ?? null,
       awaitingOnset: status === "playing" && clock() < origin,
-      speed, volume, muted, playback, audioUnavailable,
+      speed, volume, atmosphereVolume, muted, playback, audioUnavailable,
     };
   }
 
@@ -48,6 +51,7 @@ export function createTransport({
     frame = undefined;
     for (const node of pending) node.stop();
     pending.clear();
+    atmosphere?.stop();
   }
 
   function updateVolume() {
@@ -56,6 +60,19 @@ export function createTransport({
   }
 
   function scheduleAudio() {
+    if (plan.texture) {
+      try {
+        if (!atmosphere) {
+          atmosphere = createAtmosphere(context, master);
+          atmosphere?.setVolume(atmosphereVolume, true);
+        }
+        atmosphere?.start(plan.texture, { origin, position, limit, speed });
+      } catch {
+        // The optional texture must never disable numerical audio cues.
+        atmosphere?.dispose();
+        atmosphere = null;
+      }
+    }
     for (const event of plan.events) {
       if (!event.tone || event.onsetS >= limit) continue;
       const voices = event.tone.pulses ?? [0];
@@ -213,6 +230,12 @@ export function createTransport({
       if (!Number.isFinite(next)) return;
       volume = Math.max(0, Math.min(1, next));
       updateVolume();
+      emit();
+    },
+    setAtmosphereVolume(next) {
+      if (!Number.isFinite(next)) return;
+      atmosphereVolume = Math.max(0, Math.min(1, next));
+      atmosphere?.setVolume(atmosphereVolume);
       emit();
     },
     setMuted(next) {

@@ -28,7 +28,22 @@ export async function startCinematic(root) {
   const links = { "#cine-nav-decode": text.nav.decode, "#cine-nav-about": text.nav.about, "#cine-nav-science": text.nav.science, "#cine-nav-dataset": text.nav.dataset };
   for (const [selector, label] of Object.entries(links)) document.querySelector(selector).textContent = label;
   document.querySelector(".cine-links").setAttribute("aria-label", text.nav.label);
-  document.querySelector("#decode-home").href = language === "ar" ? "./?lang=ar" : "./";
+  const paths = {
+    "#decode-home": "./index.html",
+    "#cine-nav-about": "./index.html#about",
+    "#cine-nav-science": "./index.html#lens",
+    "#cine-nav-dataset": "./index.html#atlas",
+    "#cine-flat": "./decode.html",
+    "#cine-text": "./decode.html?condition=text",
+  };
+  for (const [selector, relative] of Object.entries(paths)) {
+    const target = new URL(relative, document.URL);
+    if (language === "ar") target.searchParams.set("lang", language);
+    document.querySelector(selector).href = target.href;
+  }
+  document.querySelector("#cine-flat").textContent = text.flat;
+  document.querySelector("#cine-text").textContent = text.text;
+  document.querySelector("#cine-skip").textContent = text.skip;
   document.querySelector(".cine-lang").setAttribute("aria-label", text.language);
   for (const code of ["en", "ar"]) {
     const link = document.querySelector("#cine-lang-" + code);
@@ -87,6 +102,7 @@ export async function startCinematic(root) {
       } catch (error) {
         if (error instanceof TypeError) {
           state.textContent = decodeMessage(language, "general.error");
+          retry.hidden = false;
           return;
         }
         throw error;

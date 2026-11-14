@@ -60,6 +60,7 @@
                 <path d="M0 .8L.8 0M.2 1L1 .2" stroke="#8b9191" stroke-width=".08"></path>
               </pattern>
             </defs>
+            <image href="./assets/map/dust.jpg" width="1" height="1" preserveAspectRatio="none"></image>
             <g id="observatory-values"></g>
             <g id="observatory-coast"></g>
             <rect id="observatory-cursor" aria-hidden="true"></rect>
@@ -75,6 +76,7 @@
           </div>
           <p id="observatory-scale"></p>
           <p data-observatory="coast"></p>
+          <p><a href="https://www.earthdata.nasa.gov/data/tools/gibs">NASA EOSDIS GIBS</a></p>
         </figcaption>
       </figure>
       <section class="observatory-inspector" aria-labelledby="observatory-inspector-heading">
@@ -94,6 +96,11 @@
           <button class="solid" type="button" id="observatory-listen" data-observatory="listen"></button>
           <button class="outline" type="button" id="observatory-mute" aria-pressed="false" data-observatory="mute"></button>
         </div>
+        <label class="atmosphere-mix" for="observatory-atmosphere">
+          <span data-observatory="atmosphere"></span>
+          <input id="observatory-atmosphere" type="range" min="0" max="100" value="32" aria-describedby="observatory-atmosphere-help">
+        </label>
+        <p id="observatory-atmosphere-help" class="atmosphere-help" data-observatory="atmosphereHelp"></p>
         <p id="observatory-sound-key"></p>
         <p id="observatory-audio-status" role="status"></p>
         <div class="observatory-share">

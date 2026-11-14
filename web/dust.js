@@ -54,6 +54,9 @@ const messages = {
   paused: ["Playback paused.", "التشغيل متوقّف مؤقتًا."],
   replay: ["Replay", "إعادة التشغيل"],
   mute: ["Mute", "كتم الصوت"],
+  atmosphere: ["Dust texture level", "مستوى صوت الغبار"],
+  atmosphereHelp: ["An optional airy texture follows each band’s modeled optical depth. Set it to zero to hear the rank notes alone.",
+    "يتبع نسيج صوتي هوائي اختياري العمق البصري المحاكى لكل نطاق. اضبطه على صفر لسماع نغمات الترتيب وحدها."],
   transcript: ["Read the sound cues", "اقرأ الإشارات الصوتية"],
   cue: ["{band}: {count} {notes}", "{band}: عدد النغمات {count}"],
   cueOne: ["note", "نغمة"],
@@ -275,7 +278,7 @@ function mountGuided(data) {
     example = practice;
     silentComparison = silent;
     lastBands = bands;
-    plan = buildBandPlayback(bands, { caseId: data.id, example });
+    plan = buildBandPlayback(bands, { caseId: data.id, example, texture: data.fixture === false });
     transport.load(plan);
     byId("replay").disabled = false;
     showStatus(example ? t("practice") : "");
@@ -358,6 +361,9 @@ function mountGuided(data) {
     const muted = !transport.snapshot().muted;
     transport.setMuted(muted);
     event.currentTarget.setAttribute("aria-pressed", String(muted));
+  });
+  byId("atmosphere").addEventListener("input", event => {
+    transport.setAtmosphereVolume(Number(event.currentTarget.value) / 100);
   });
   window.addEventListener("pagehide", () => {
     userPaused = false;

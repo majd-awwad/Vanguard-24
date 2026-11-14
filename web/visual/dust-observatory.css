@@ -96,6 +96,7 @@
 svg#observatory-map { display: block; width: 100%; height: 100%; position: absolute; inset: 0; }
 #observatory-values { shape-rendering: crispEdges; }
 #observatory-coast .dust-basemap-land { fill: transparent; stroke: #e9f1d1; stroke-width: 1; opacity: .85; pointer-events: none; }
+#observatory-values { opacity: .78; }
 #observatory-cursor {
   fill: #fff2ba30;
   stroke: #fff2ba;
@@ -127,6 +128,9 @@ svg#observatory-map { display: block; width: 100%; height: 100%; position: absol
 #observatory-cell-position { border-block-start: 1px solid var(--obs-stroke); padding-block-start: .65rem; }
 #observatory-cell-value { color: var(--obs-focus); font-size: 1.15rem; font-weight: 700; }
 #observatory-cell-detail, #observatory-sound-key, #observatory-keyboard { font-size: .87rem; }
+.atmosphere-mix { display: grid; gap: .35rem; max-width: 16rem; margin-block: .75rem .25rem; font-size: .85rem; }
+.atmosphere-mix input { width: 100%; min-height: 1.7rem; accent-color: #8b5f32; }
+.atmosphere-help { margin-block: 0 .75rem; font-size: .8rem; }
 .observatory-step {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

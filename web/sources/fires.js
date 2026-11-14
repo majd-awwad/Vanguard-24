@@ -1,4 +1,5 @@
 import { sources } from "./catalog.js";
+import { csvNumber, isCanonicalUtc } from "./numeric.js";
 
 const archive = "https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-21-viirs-c2/csv/J2_VIIRS_C2_Europe_7d.csv";
 const sites = [
@@ -12,17 +13,18 @@ export function parseFires(csv) {
   if (header !== "latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,satellite,confidence,version,bright_ti5,frp,daynight"
     || rows.length !== 1811) throw new Error("Unexpected FIRMS snapshot schema.");
   const detections = rows.map((row) => {
-    const [latitude, longitude, , , , date, hour, sensor, confidence, version, , frp] = row.split(",");
-    const acquisitionTime = `${date}T${hour.slice(0, 2)}:${hour.slice(2)}:00Z`;
-    const [lat, lon, frpMW] = [latitude, longitude, frp].map(Number);
-    if (sensor !== "N21" || version !== "2.0NRT" || !["low", "nominal", "high"].includes(confidence)
-      || !/^\d{4}$/.test(hour) || !Number.isFinite(Date.parse(acquisitionTime)) || !latitude || !longitude || !frp
-      || !Number.isFinite(lat) || !Number.isFinite(lon) || !Number.isFinite(frpMW)
+    const [latitude, longitude, , scan, track, date, hour, sensor, confidence, version, , frp, dayNight, extra] = row.split(",");
+    const acquisitionTime = `${date}T${hour?.slice(0, 2)}:${hour?.slice(2)}:00Z`;
+    const [lat, lon, frpMW, scanKm, trackKm] = [latitude, longitude, frp, scan, track].map(csvNumber);
+    if (extra !== undefined || sensor !== "N21" || version !== "2.0NRT"
+      || !["low", "nominal", "high"].includes(confidence) || !["D", "N"].includes(dayNight)
+      || !/^\d{4}$/.test(hour) || !isCanonicalUtc(acquisitionTime)
+      || ![lat, lon, frpMW, scanKm, trackKm].every(Number.isFinite) || scanKm <= 0 || trackKm <= 0
       || Math.abs(lat) > 90 || Math.abs(lon) > 180 || frpMW < 0) throw new Error("Invalid FIRMS detection.");
-    return { lat, lon, acquisitionTime, sensor, confidence, frpMW };
+    return { lat, lon, acquisitionTime, sensor, confidence, frpMW, scanKm, trackKm, dayNight };
   });
   const times = ["2026-11-07", "2026-11-08"].map((day, index) => ({
-    start: `${day}T00:00:00Z`, end: `2026-11-${12 + index}T00:00:00Z`, granule: archive,
+    start: `${day}T00:00:00Z`, end: `2026-11-${12 + index}T00:00:00Z`, endExclusive: true, granule: archive,
   }));
   const windows = times.map(({ start, end }) => ({ start, end,
     detections: detections.filter((row) => row.acquisitionTime >= start && row.acquisitionTime < end && row.confidence !== "low"),
@@ -30,6 +32,7 @@ export function parseFires(csv) {
   return {
     id: "fires", kind: "windowed-events", source: sources.find(({ id }) => id === "fires"),
     coordinates: "EPSG:4326", times, windows, sites, unit: "MW", subsetUrl: archive,
+    sampling: { temporalSupport: "overlapping-five-day-windows", nominalResolutionMeters: 375 },
     bounds: { south: 38, north: 54, west: 13, east: 42 },
   };
 }

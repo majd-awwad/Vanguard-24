@@ -81,6 +81,11 @@
             <button class="outline" id="guided-replay" type="button" disabled data-message="replay"></button>
             <button class="outline" id="guided-mute" type="button" aria-pressed="false" data-message="mute"></button>
           </div>
+          <label class="atmosphere-mix" for="guided-atmosphere">
+            <span data-message="atmosphere"></span>
+            <input id="guided-atmosphere" type="range" min="0" max="100" value="32" aria-describedby="guided-atmosphere-help">
+          </label>
+          <p id="guided-atmosphere-help" class="atmosphere-help" data-message="atmosphereHelp"></p>
           <details id="guided-transcript">
             <summary data-message="transcript"></summary>
             <ul id="guided-transcript-lines"></ul>

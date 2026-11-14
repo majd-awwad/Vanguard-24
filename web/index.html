@@ -23,10 +23,13 @@
         <h1 id="hero-title" data-copy="title">Hear the unseen.</h1>
         <p data-copy="intro">Three regions. One dust question. Listen to the signals, choose a region, then reveal what the NASA model shows.</p>
         <div class="actions">
-          <a class="solid" id="dust-discovery" href="./dust.html" data-copy="dustDiscovery">Explore dust with sound</a>
-          <a class="outline" href="#atlas" data-copy="explore">Explore Earth</a>
+          <a class="solid" id="cinematic-entry" href="./decode-3d.html" data-copy="cinematicEntry">Launch Earth Detective in 3D</a>
+          <a class="outline" id="forest-entry" href="./forest.html" data-copy="forestEntry">The Invisible Forest</a>
         </div>
-        <a id="dust-text-entry" href="./decode.html?condition=text" data-copy="dustTextEntry">Play Earth Detective without sound</a>
+        <div class="arrival-access">
+          <a id="flat-entry" href="./decode.html" data-copy="flatEntry">Open 2D</a>
+          <a id="dust-text-entry" href="./decode.html?condition=text" data-copy="dustTextEntry">Play Earth Detective without sound</a>
+        </div>
       </div>
       <figure class="earth-frame dust-hero-frame">
         <img src="./assets/decode/svs-5669-context.webp" width="1920" height="1080" fetchpriority="high" data-alt="dustHeroAlt" alt="NASA simulation of atmospheric aerosols, with dust in pink and magenta">
@@ -83,9 +86,24 @@
         <div class="observatory">
           <div class="scientific-stage">
             <div class="stage-top"><span id="map-title"></span><span id="map-date"></span></div>
+            <div class="map-toolbar">
+              <div role="group" id="map-camera" aria-label="Map navigation">
+                <button id="map-minus" type="button" class="outline" data-copy="mapMinus">Zoom out</button>
+                <button id="map-plus" type="button" class="outline" data-copy="mapPlus">Zoom in</button>
+                <button id="map-reset" type="button" class="outline" data-copy="mapReset">Reset view</button>
+              </div>
+              <label class="check"><input id="map-layer" type="checkbox" checked><span data-copy="mapLayer">Show data layer</span></label>
+            </div>
+            <div id="map-pan" class="map-pan" role="group" aria-label="Pan map" hidden>
+              <button type="button" class="outline" data-x="80" data-y="0" data-map-label="mapWest">←</button>
+              <button type="button" class="outline" data-x="0" data-y="65" data-map-label="mapNorth">↑</button>
+              <button type="button" class="outline" data-x="0" data-y="-65" data-map-label="mapSouth">↓</button>
+              <button type="button" class="outline" data-x="-80" data-y="0" data-map-label="mapEast">→</button>
+            </div>
             <div id="data-map" class="data-map"></div>
             <div id="map-legend" class="map-legend"></div>
             <p id="map-note" class="map-note"></p>
+            <p class="map-attribution"><a href="https://www.earthdata.nasa.gov/data/tools/gibs" data-copy="mapCredit">Basemap · NASA EOSDIS GIBS</a></p>
           </div>
           <aside class="reading-summary" aria-labelledby="reading-label">
             <p class="eyebrow" id="reading-label"></p>
@@ -131,10 +149,12 @@
             <div class="studio-controls">
               <label class="field"><span data-copy="timbre">Tone color</span><select id="timbre"><option value="sine" data-copy="pure">Pure sine</option><option value="triangle" data-copy="soft">Soft triangle</option></select></label>
               <label class="field"><span data-copy="volume">Volume</span><input id="volume" type="range" min="0" max="100" value="54"></label>
+              <label id="atlas-atmosphere" class="field" hidden><span data-copy="atlasAtmosphere">Rain texture</span><input id="atmosphere" type="range" min="0" max="100" value="32" aria-describedby="atlas-atmosphere-note"></label>
               <label class="check"><input id="mute" type="checkbox"><span data-copy="mute">Mute</span></label>
               <label class="check"><input id="visual-only" type="checkbox"><span data-copy="silent">Visual playback</span></label>
             </div>
             <p id="mapping"></p>
+            <p id="atlas-atmosphere-note" data-copy="atlasAtmosphereNote" hidden>Optional synthesized rain texture follows the selected daily rate.</p>
           </div>
         </details>
       </div>

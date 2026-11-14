@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import { dirname, join, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import { buildSite } from "../scripts/build.mjs";
 import { assertRelativeReferences, packSite, verifyBuild } from "../scripts/release.mjs";
@@ -52,13 +52,15 @@ test("ZIP32 packaging keeps original bytes, sorted portable paths, and stable ou
 });
 
 test("the host payload is derived from a fresh build and rejects fixture or compromised science files", async () => {
-  const parent = tmpdir();
-  const stage = await mkdtemp(join(parent, "earthpulse-release-test-"));
+  const parent = fileURLToPath(new URL("../", import.meta.url)).replace(/[\\/]$/, "");
+  const stage = await mkdtemp(join(parent, ".earthpulse-release-test-"));
   try {
     await buildSite(stage);
     const files = await verifyBuild(stage);
     const requirePath = path => assert.ok(files.has(path), "Missing " + path);
     requirePath("dust-observatory.html");
+    requirePath("decode-3d.html");
+    requirePath("assets/map/rain.jpg");
     requirePath("assets/decode/dust-v2/catalog.json");
     requirePath("assets/gedi/sample.json");
     assert.ok([...files].every(([path]) => !path.includes("\\") && !path.includes(".gitignore")));
@@ -69,7 +71,7 @@ test("the host payload is derived from a fresh build and rejects fixture or comp
     await writeFile(broken, "broken science asset");
     await assert.rejects(verifyBuild(stage), /Science checksum mismatch: assets\/atlas\/mur-sst.csv/);
   } finally {
-    if (dirname(stage) === parent && stage.startsWith(parent + sep + "earthpulse-release-test-")) {
+    if (dirname(stage) === parent && stage.startsWith(parent + sep + ".earthpulse-release-test-")) {
       await rm(stage, { recursive: true, force: true });
     }
   }

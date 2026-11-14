@@ -8,9 +8,56 @@ import { makeTemporalPlan } from "../web/audio/temporal-plan.js";
 import { sources } from "../web/sources/catalog.js";
 
 const sample = (file) => readFile(new URL(`../science/atlas/${file}`, import.meta.url), "utf8");
-const ocean = parseOcean(await sample("mur-sst.csv"), await sample("mur-sst-url.txt"));
-const rain = parseRain(await sample("imerg.csv"));
-const fires = parseFires(await sample("firms-noaa21-europe.csv"));
+const oceanCsv = await sample("mur-sst.csv");
+const oceanUrl = await sample("mur-sst-url.txt");
+const rainCsv = await sample("imerg.csv");
+const fireCsv = await sample("firms-noaa21-europe.csv");
+const ocean = parseOcean(oceanCsv, oceanUrl);
+const rain = parseRain(rainCsv);
+const fires = parseFires(fireCsv);
+
+function changeFirstRecord(csv, index, value, skip = 1) {
+  const lines = csv.split(/\r?\n/);
+  const columns = lines[skip].split(",");
+  columns[index] = value;
+  lines[skip] = columns.join(",");
+  return lines.join("\n");
+}
+
+test("MUR rejects blank open-water fields, unsafe links and unsupported masks", () => {
+  for (const index of [3, 4]) {
+    assert.throws(() => parseOcean(changeFirstRecord(oceanCsv, index, "", 2), oceanUrl), /Invalid open-water/);
+  }
+  assert.throws(() => parseOcean(changeFirstRecord(oceanCsv, 5, "0", 2), oceanUrl), /mask/);
+  assert.throws(() => parseOcean(oceanCsv, "https://example.org/mur.csv"), /subset URL/);
+  const missing = parseOcean(changeFirstRecord(oceanCsv, 5, "-128", 2), oceanUrl).cells[0].samples[0];
+  assert.deepEqual(missing, { value: null, error: null, mask: -128, status: "missing" });
+  assert.equal(ocean.sampling.nativeLatDegrees, 0.01);
+  assert.equal(ocean.sampling.retainedLatStrideDegrees, 1.5);
+});
+
+test("IMERG rejects shifted centres and keeps dry, missing and partial days distinct", () => {
+  assert.throws(() => parseRain(changeFirstRecord(rainCsv, 1, "23.0502")), /Invalid IMERG sample/);
+  assert.throws(() => parseRain(changeFirstRecord(rainCsv, 3, " ")), /Invalid IMERG sample/);
+  const missing = parseRain(changeFirstRecord(rainCsv, 3, "")).cells[0].samples[0];
+  const partial = parseRain(changeFirstRecord(rainCsv, 4, "47")).cells[0].samples[0];
+  assert.equal(rain.cells[0].samples[0].value, 0);
+  assert.deepEqual(missing, { value: null, error: null, mask: 48, status: "missing" });
+  assert.deepEqual(partial, { value: null, error: null, mask: 47, status: "incomplete-coverage" });
+  assert.ok(rain.times.every((day) => day.endExclusive && Date.parse(day.end) - Date.parse(day.start) === 86400000));
+  assert.equal(rain.sampling.nativeLonDegrees, 0.1);
+  assert.equal(rain.sampling.retainedLonStrideDegrees, 2);
+});
+
+test("FIRMS rejects rolled dates and blank FRP and retains actual source pixel metadata", () => {
+  assert.throws(() => parseFires(changeFirstRecord(fireCsv, 5, "2026-11-31")), /Invalid FIRMS detection/);
+  assert.throws(() => parseFires(changeFirstRecord(fireCsv, 6, "2400")), /Invalid FIRMS detection/);
+  assert.throws(() => parseFires(changeFirstRecord(fireCsv, 11, " ")), /Invalid FIRMS detection/);
+  assert.throws(() => parseFires(changeFirstRecord(fireCsv, 3, "0")), /Invalid FIRMS detection/);
+  const detection = fires.windows[0].detections[0];
+  assert.ok(detection.scanKm > 0 && detection.trackKm > 0 && ["D", "N"].includes(detection.dayNight));
+  assert.equal(fires.sampling.nominalResolutionMeters, 375);
+});
 
 test("MUR retains exact open-water values, quality and a comparison-safe pitch scale", () => {
   assert.equal(ocean.cells.length, 143);

@@ -29,7 +29,7 @@ async function journey(lang, width) {
   });
   try {
     await page.goto(new URL("?lang=" + lang, root).href);
-    await page.locator("#dust-discovery").click();
+    await page.locator("#dust-path-guided").click();
     await page.locator("#guided-interface").waitFor();
     assert.equal(await page.locator("html").getAttribute("dir"), lang === "ar" ? "rtl" : "ltr");
     assert.equal(await page.locator(".guided-map-stage").getAttribute("dir"), "ltr");

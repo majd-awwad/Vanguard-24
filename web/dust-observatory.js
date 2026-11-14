@@ -1,4 +1,5 @@
 import { createTransport } from "./audio/transport.js";
+import { atmosphereFor } from "./audio/atmosphere.js";
 import {
   cellHistory, cellSound, compatibleDates, fieldColor, fieldPalette, historyPlot, moveCell, opticalDepthLimit,
 } from "./experiences/decode/observatory-field.js";
@@ -39,6 +40,9 @@ const copy = {
   west: ["West", "غرب"],
   listen: ["Listen to cell", "استمع إلى الخلية"],
   mute: ["Mute", "كتم الصوت"],
+  atmosphere: ["Dust texture level", "مستوى صوت الغبار"],
+  atmosphereHelp: ["The airy texture follows optical depth in a snapshot. The pitch interval alone conveys signed change.",
+    "يتبع النسيج الصوتي الهوائي العمق البصري في اللقطة الواحدة. وتعبّر المسافة بين النغمتين وحدها عن اتجاه التغيّر."],
   pitch: ["A higher pitch means higher depth. Loudness is fixed. Depths outside the displayed scale share its highest pitch.", "النغمة الأعلى تعني عمقًا بصريًا أكبر. شدّة الصوت ثابتة. القيم فوق المقياس المعروض تستخدم أعلى نغمة فيه."],
   interval: ["Two notes: rising means an increase, falling means a decrease, repeated means unchanged. A wider interval means a larger change, up to the displayed scale.", "نغمتان: صعودهما يعني زيادة، وهبوطهما يعني انخفاضًا، وتكرارهما يعني عدم تغيّر. اتساع المسافة بينهما يعني تغيّرًا أكبر حتى طرف المقياس المعروض."],
   muted: ["Sound is muted.", "الصوت مكتوم."],
@@ -523,11 +527,17 @@ byId("listen").addEventListener("click", () => {
     audioStatus.textContent = t("muted");
     return;
   }
-  const events = cellSound(renderedCells[cellIndex(cellPosition)], differenceMode());
+  const cell = renderedCells[cellIndex(cellPosition)];
+  const difference = differenceMode();
+  const events = cellSound(cell, difference);
   if (!events.length) return;
   audioStatus.textContent = "";
-  transport.load({ events, durationS: 1 });
+  const texture = difference ? undefined : atmosphereFor("dust", [{ onsetS: 0, evidence: cell }], 1.25);
+  transport.load({ events, durationS: texture ? 1.25 : 1, texture });
   transport.play();
+});
+byId("atmosphere").addEventListener("input", event => {
+  transport.setAtmosphereVolume(Number(event.currentTarget.value) / 100);
 });
 byId("mute").addEventListener("click", event => {
   const mute = !transport.snapshot().muted;

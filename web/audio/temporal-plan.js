@@ -1,4 +1,5 @@
 import { regionDetections } from "../sources/fires.js";
+import { atmosphereFor } from "./atmosphere.js";
 
 export const slotSeconds = 0.9;
 const clamp = (value) => Math.max(0, Math.min(1, value));
@@ -24,7 +25,10 @@ export function makeTemporalPlan(data, site, waveform = "sine") {
       evidence: { ...sample, time, site, unit: data.unit, mappingVersion },
     };
   });
-  return { events, durationS: events.length * slotSeconds, mappingVersion };
+  return {
+    events, durationS: events.length * slotSeconds, mappingVersion,
+    ...(rain ? { texture: atmosphereFor("rain", events, slotSeconds) } : {}),
+  };
 }
 
 function makeFirePlan(data, site, waveform) {

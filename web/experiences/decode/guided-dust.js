@@ -1,4 +1,5 @@
 import { continuousVoice } from "../../audio/voices.js";
+import { atmosphereFor } from "../../audio/atmosphere.js";
 
 export const bandIds = ["north", "middle", "south"];
 
@@ -45,7 +46,7 @@ export function compareDustBands({ levels: { quick } }) {
   return { bands, strongest: ranked.filter(band => band.notes === rank).map(band => band.id) };
 }
 
-export function buildBandPlayback(bands, { caseId, example = false }) {
+export function buildBandPlayback(bands, { caseId, example = false, texture = false }) {
   const events = bands.flatMap(({ id, notes }, index) => {
     const row = example ? index : bandIds.indexOf(id);
     return Array.from({ length: notes || 1 }, (_, note) => ({
@@ -56,8 +57,14 @@ export function buildBandPlayback(bands, { caseId, example = false }) {
       } : null,
     }));
   });
-  return { caseId, level: "quick", mode: "contrast", mappingVersion: "dust-band-rank-v2",
+  const plan = { caseId, level: "quick", mode: "contrast", mappingVersion: "dust-band-rank-v2",
     durationS: bands.length * slotS, events };
+  if (texture && !example) {
+    plan.texture = atmosphereFor("dust", bands.map(({ mean }, index) => ({
+      onsetS: index * slotS, evidence: { value: mean },
+    })), slotS);
+  }
+  return plan;
 }
 
 // Use the transport's position, rather than a second timer, to make the visual

@@ -12,15 +12,15 @@
   <link rel="stylesheet" href="./cinematic/cinematic.css">
 </head>
 <body class="cine" data-view="hero">
-  <a class="skip" href="#decode-interface">Skip to the decoding controls</a>
+  <a id="cine-skip" class="skip" href="#cine-start">Skip to the decoding controls</a>
 
   <header class="cine-nav">
-    <a id="decode-home" class="cine-logo" href="./">EARTH<span>PULSE</span></a>
+    <a id="decode-home" class="cine-logo" href="./index.html">EARTH<span>PULSE</span></a>
     <nav class="cine-links" aria-label="Main">
       <a id="cine-nav-decode" href="./decode-3d.html" aria-current="page">Decode</a>
-      <a id="cine-nav-about" href="./#about">About</a>
-      <a id="cine-nav-science" href="./#lens">Science</a>
-      <a id="cine-nav-dataset" href="./#atlas">Dataset</a>
+      <a id="cine-nav-about" href="./index.html#about">About</a>
+      <a id="cine-nav-science" href="./index.html#lens">Science</a>
+      <a id="cine-nav-dataset" href="./index.html#atlas">Dataset</a>
     </nav>
     <div class="cine-tools">
       <span class="cine-lang" role="group" aria-label="Language">
@@ -51,6 +51,10 @@
             <canvas id="cine-wave" width="168" height="34" aria-hidden="true"></canvas>
           </button>
           <p id="cine-guide-caption" class="cine-guide-caption" hidden></p>
+        </div>
+        <div class="cine-access-links">
+          <a id="cine-flat" href="./decode.html">Open 2D</a>
+          <a id="cine-text" href="./decode.html?condition=text">Explore with text cues</a>
         </div>
 
         <ol id="cine-steps" class="cine-icon-steps">
@@ -117,6 +121,11 @@
           <progress id="decode-progress" max="1" value="0"></progress>
           <span id="decode-playback-label"></span>
         </div>
+        <details id="decode-transcript" class="decode-transcript" hidden>
+          <summary id="decode-transcript-title"></summary>
+          <p id="decode-transcript-help"></p>
+          <ol id="decode-transcript-cues"></ol>
+        </details>
       </section>
     </div>
 
@@ -134,17 +143,20 @@
         <p id="decode-south"></p>
         <p id="decode-map-key"></p>
         <p id="decode-selections"></p>
+        <p id="decode-grid-keys" hidden></p>
         <div class="decode-cell-actions" hidden>
           <button type="button" id="decode-probe"></button>
           <p id="decode-probe-reading"></p>
+          <p id="decode-cue-announcement" class="sr-only" role="status" aria-atomic="true"></p>
         </div>
+        <button type="button" id="decode-review-evidence" hidden></button>
       </div>
     </div>
     <p id="decode-status" role="status" aria-live="polite"></p>
 
     <section id="decode-evidence" aria-labelledby="decode-evidence-title" hidden>
       <div class="decode-evidence-card">
-        <h2 id="decode-evidence-title"></h2>
+        <h2 id="decode-evidence-title" tabindex="-1"></h2>
         <p id="decode-finding"></p>
         <p id="decode-score"></p>
         <p id="decode-limits"></p>

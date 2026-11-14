@@ -5,7 +5,8 @@ import { loadFires, regionDetections } from "./sources/fires.js";
 import { createTransport } from "./audio/transport.js";
 import { makeTemporalPlan, slotSeconds } from "./audio/temporal-plan.js";
 import { message } from "./i18n/platform-messages.js";
-import { land } from "./visual/land.js";
+import { createAtlasMap, svg } from "./visual/atlas-map.js";
+import { atmosphereFor } from "./audio/atmosphere.js";
 
 const byId = (id) => document.getElementById(id);
 const transport = createTransport();
@@ -13,13 +14,14 @@ transport.setVolume(0.54);
 let language = new URLSearchParams(location.search).get("lang") === "ar" ? "ar" : "en";
 const t = (key) => message(language, key);
 let data, plan, comparePlan, active, rendered, requested, failed = false, requestNumber = 0;
+let sites = [];
 let previewing = false;
 let locationPlans = new Map();
 const loaders = { ocean: loadOcean, rain: loadRain, fires: loadFires };
 const cache = new Map();
 const contextAssets = { ocean: "svs-5101.jpg", rain: "svs-4285.jpg", fires: "svs-5113.jpg" };
-const siteOf = () => data.sites.find((site) => site.id === byId("site").value);
-const comparisonOf = () => data.sites.find((site) => site.id === byId("compare-site").value);
+const siteOf = () => sites.find((site) => site.id === byId("site").value);
+const comparisonOf = () => sites.find((site) => site.id === byId("compare-site").value);
 const number = (value, digits = 2) => new Intl.NumberFormat(language, { maximumFractionDigits: digits, useGrouping: false }).format(value);
 const display = (value, digits = 2) => value === null ? t("missing") : `${number(value, digits)} ${t(data.unit)}`;
 const dateLabel = (time) => {
@@ -29,6 +31,32 @@ const dateLabel = (time) => {
 };
 const scienceCopy = (suffix) => t(data.id + suffix);
 const mode = () => byId("visual-only").checked ? "silent" : "audio";
+const siteLabel = (site) => site.id.startsWith("cell:")
+  ? `${number(site.lat)}°, ${number(site.lon)}°` : t(site.id);
+const map = createAtlasMap(byId("data-map"), {
+  onSelect(id) {
+    if (byId("site").value === id) return;
+    byId("site").value = id;
+    chooseSite();
+  },
+  onZoom(scale) {
+    byId("map-minus").disabled = scale <= 1;
+    byId("map-plus").disabled = scale >= 5;
+    byId("map-reset").disabled = scale <= 1;
+    byId("map-pan").hidden = scale <= 1;
+    byId("data-map").classList.toggle("is-zoomed", scale > 1);
+  },
+});
+
+function mapSites(source) {
+  if (source.kind === "windowed-events") return source.sites;
+  const named = new Map(source.sites.map((site) => [`${site.lat},${site.lon}`, site.id]));
+  const observed = source.cells.map((cell) => ({
+    ...cell, id: named.get(`${cell.lat},${cell.lon}`) ?? `cell:${cell.lat},${cell.lon}`,
+  }));
+  const namedSites = source.sites.map(({ id }) => observed.find((site) => site.id === id));
+  return [...namedSites, ...observed.filter((site) => site.id.startsWith("cell:"))];
+}
 
 function planFor(site) {
   if (!locationPlans.has(site.id)) locationPlans.set(site.id, makeTemporalPlan(data, site, byId("timbre").value));
@@ -118,7 +146,12 @@ function translate() {
     element.replaceChildren(...lines.flatMap((line, index) => index ? [document.createElement("br"), line] : [line]));
   }
   for (const element of document.querySelectorAll("[data-alt]")) element.alt = t(element.dataset.alt);
-  byId("dust-discovery").href = urlWithLanguage("./dust.html");
+  byId("map-camera").setAttribute("aria-label", t("mapNavigation"));
+  byId("map-pan").setAttribute("aria-label", t("mapPan"));
+  for (const button of byId("map-pan").children) button.setAttribute("aria-label", t(button.dataset.mapLabel));
+  byId("cinematic-entry").href = urlWithLanguage("./decode-3d.html");
+  byId("forest-entry").href = urlWithLanguage("./forest.html");
+  byId("flat-entry").href = urlWithLanguage("./decode.html");
   byId("dust-text-entry").href = urlWithLanguage("./decode.html?condition=text");
   byId("dust-path-guided").href = urlWithLanguage("./dust.html");
   byId("dust-path-observatory").href = urlWithLanguage("./dust-observatory.html");
@@ -149,10 +182,10 @@ function siteOptions() {
   const compare = byId("compare-site");
   const primary = main.value;
   const secondary = compare.value;
-  main.replaceChildren(...data.sites.map(({ id }) => new Option(t(id), id)));
-  main.value = data.sites.some(({ id }) => id === primary) ? primary : data.sites[0].id;
-  compare.replaceChildren(new Option(t("none"), ""), ...data.sites.filter(({ id }) => id !== main.value).map(({ id }) => new Option(t(id), id)));
-  compare.value = secondary !== main.value && data.sites.some(({ id }) => id === secondary) ? secondary : "";
+  main.replaceChildren(...sites.map((site) => new Option(siteLabel(site), site.id)));
+  main.value = sites.some(({ id }) => id === primary) ? primary : sites[0].id;
+  compare.replaceChildren(new Option(t("none"), ""), ...sites.filter(({ id }) => id !== main.value).map((site) => new Option(siteLabel(site), site.id)));
+  compare.value = secondary !== main.value && sites.some(({ id }) => id === secondary) ? secondary : "";
 }
 
 function renderLabels() {
@@ -164,6 +197,8 @@ function renderLabels() {
   text("detective-title", scienceCopy("MissionTitle"));
   text("mission", scienceCopy("Mission"));
   text("mapping", scienceCopy("Mapping"));
+  byId("atlas-atmosphere").hidden = data.id !== "rain";
+  byId("atlas-atmosphere-note").hidden = data.id !== "rain";
   const context = byId("context-link");
   context.href = svsUrl(data.source);
   context.textContent = `NASA SVS ${data.source.svs} ↗`;
@@ -210,6 +245,7 @@ async function show(id, focus = false) {
     const loaded = cache.get(id) ?? await loaders[id]();
     if (request !== requestNumber) return;
     data = loaded;
+    sites = mapSites(loaded);
     cache.set(id, data);
     byId("lens").dataset.signal = id;
     byId("site").replaceChildren();
@@ -259,75 +295,19 @@ function sampleColor(value) {
     : `hsl(${197 - normalized * 168} 82% ${48 + normalized * 10}%)`;
 }
 
-const svgNS = "http://www.w3.org/2000/svg";
-function svg(name, attributes, value) {
-  const item = document.createElementNS(svgNS, name);
-  for (const [key, attribute] of Object.entries(attributes)) item.setAttribute(key, attribute);
-  if (value !== undefined) item.textContent = value;
-  return item;
-}
-
 function renderMap(event) {
-  const { west, east, north, south } = data.bounds;
-  const x = (lon) => 48 + (lon - west) / (east - west) * 612;
-  const y = (lat) => 27 + (north - lat) / (north - south) * 288;
-  const map = svg("svg", { viewBox: "0 0 706 342", "aria-hidden": "true", focusable: "false" });
-  const clip = svg("clipPath", { id: "map-area" });
-  clip.append(svg("rect", { x: 48, y: 27, width: 612, height: 288 }));
-  map.append(clip, svg("path", { d: land[data.id], class: "map-land", "clip-path": "url(#map-area)" }));
-  const { index, evidence } = event;
-  const events = data.kind === "windowed-events";
-  const latitudes = events ? [40, 43, 46, 49, 52] : [...new Set(data.cells.map(({ lat }) => lat))];
-  const longitudes = events ? [15, 20, 25, 30, 35, 40] : [...new Set(data.cells.map(({ lon }) => lon))];
-  for (const [index, lat] of latitudes.entries()) {
-    map.append(svg("line", { x1: 48, y1: y(lat), x2: 660, y2: y(lat), class: "gridline" }));
-    if (index % 2 === 0) map.append(svg("text", { x: 39, y: y(lat) + 4, class: "gridlabel", "text-anchor": "end" }, `${number(lat)}°`));
-  }
-  for (const [index, lon] of longitudes.entries()) {
-    map.append(svg("line", { x1: x(lon), y1: 27, x2: x(lon), y2: 315, class: "gridline" }));
-    if (index % 2 === 0) map.append(svg("text", { x: x(lon), y: 333, class: "gridlabel", "text-anchor": "middle" }, `${number(lon)}°`));
-  }
-  if (events) {
-    for (const site of data.sites) {
-      const { south, north, west, east } = site.bounds;
-      map.append(svg("rect", { x: x(west), y: y(north), width: x(east) - x(west), height: y(south) - y(north),
-        class: site.id === evidence.site.id ? "fire-box active" : "fire-box" }));
-      for (const detection of regionDetections(data, site, index)) {
-        map.append(svg("circle", { cx: x(detection.lon), cy: y(detection.lat), r: 2.5 + Math.sqrt(Math.min(1, detection.frpMW / 300)) * 6,
-          fill: sampleColor(detection.frpMW), class: "fire-dot" }));
-      }
-    }
-    if (evidence.peak) map.append(svg("circle", { cx: x(evidence.peak.lon), cy: y(evidence.peak.lat), r: 11, class: "fire-peak" }));
-  } else {
-    for (const cell of data.cells) {
-      const sample = cell.samples[index];
-      map.append(svg("circle", { cx: x(cell.lon), cy: y(cell.lat), r: 7, fill: sampleColor(sample.value), class: "sample-dot" }));
-    }
-  }
-  for (const site of events ? [] : data.sites) {
-    const selected = site.id === evidence.site.id;
-    const comparison = !selected && site.id === comparisonOf()?.id;
-    const mark = svg("g", { class: `map-site${selected ? " active" : ""}${comparison ? " comparison" : ""}` });
-    const cx = x(site.lon), cy = y(site.lat);
-    mark.append(svg("circle", { cx, cy, r: 15, class: "site-ring" }));
-    mark.append(svg("circle", { cx, cy, r: 22, class: "site-hit" }));
-    mark.addEventListener("click", () => {
-      byId("site").value = site.id;
-      siteOptions();
-      setPlan(index);
-      seek(index, true);
-    });
-    map.append(mark);
-  }
-  const host = byId("data-map");
-  host.dataset.event = event.id;
-  host.replaceChildren(map);
+  map.render({
+    data, event, sites, comparisonId: comparisonOf()?.id,
+    label: number, color: sampleColor, detections: regionDetections,
+  });
 }
 
 function renderTrend(event) {
   const timeline = svg("svg", { viewBox: "0 0 700 44", preserveAspectRatio: "none", focusable: "false" });
   const sequence = planFor(event.evidence.site).events;
-  const allValues = data.sites.flatMap((site) => planFor(site).events.map(({ evidence }) => evidence.value)).filter((value) => value !== null);
+  const allValues = data.kind === "windowed-events"
+    ? data.sites.flatMap((site) => planFor(site).events.map(({ evidence }) => evidence.value)).filter((value) => value !== null)
+    : data.cells.flatMap(({ samples }) => samples.map(({ value }) => value)).filter((value) => value !== null);
   const lower = data.id === "ocean" ? Math.floor(Math.min(...allValues) / 5) * 5 : 0;
   const step = data.id === "ocean" ? 5 : 10;
   const upper = Math.max(lower + step, Math.ceil(Math.max(...allValues) / step) * step);
@@ -360,7 +340,7 @@ function render(state) {
   const reading = display(evidence.value);
   text("reading-value", reading);
   byId("reading-value").dataset.event = active.id;
-  text("reading-location", t(evidence.site.id));
+  text("reading-location", siteLabel(evidence.site));
   text("reading-detail", evidence.count === undefined ? "" : `${number(evidence.count, 0)} · ${t("detections")}`);
   text("map-date", `${dateLabel(evidence.time)} · ${evidence.time.start.slice(0, 4)} UTC`);
   byId("date-scrub").value = index;
@@ -373,7 +353,7 @@ function render(state) {
   byId("hear-comparison").hidden = !compare;
   const other = evidence.site.id === compare?.id ? siteOf() : compare;
   const compareSample = other && planFor(other).events[index].evidence;
-  text("compare-reading", other ? `${t(other.id)} · ${display(compareSample.value)}` : "");
+  text("compare-reading", other ? `${siteLabel(other)} · ${display(compareSample.value)}` : "");
   const busy = state.status === "playing" || state.status === "starting";
   if (previewing && (state.status === "ended" || state.status === "paused")) {
     previewing = false;
@@ -450,7 +430,8 @@ function revealMission(focus = true) {
     }
     const first = values[0].value;
     const last = values.at(-1).value;
-    return `${t(site.id)} · ${display(first)} → ${display(last)} (${number(last - first)} °C)`;
+    return first === null || last === null ? `${siteLabel(site)} · ${t("missing")}`
+      : `${siteLabel(site)} · ${display(first)} → ${display(last)} (${number(last - first)} °C)`;
   });
   text("mission-result", outcome.join(" / "));
   byId("mission-result").hidden = false;
@@ -478,11 +459,19 @@ byId("pause").addEventListener("click", () => transport.pause());
 byId("replay").addEventListener("click", () => play(true));
 byId("date-scrub").addEventListener("input", (event) => seek(+event.target.value));
 byId("date-scrub").addEventListener("change", (event) => seek(+event.target.value, true));
-byId("site").addEventListener("change", () => {
+function chooseSite() {
   siteOptions();
   setPlan(active.index);
   seek(active.index, true);
-});
+}
+byId("site").addEventListener("change", chooseSite);
+byId("map-plus").addEventListener("click", () => map.zoom(1.5));
+byId("map-minus").addEventListener("click", () => map.zoom(1 / 1.5));
+byId("map-reset").addEventListener("click", () => map.reset());
+byId("map-layer").addEventListener("change", (event) => map.showLayer(event.target.checked));
+for (const button of byId("map-pan").children) {
+  button.addEventListener("click", () => map.move(+button.dataset.x, +button.dataset.y));
+}
 byId("compare-site").addEventListener("change", () => {
   if (comparePlan) setPlan(active.index);
   render(transport.snapshot());
@@ -492,7 +481,9 @@ byId("hear-comparison").addEventListener("click", () => {
   if (!compare) return;
   const first = plan.events[active.index];
   const second = planFor(compare).events[active.index];
-  comparePlan = { events: [{ ...first, onsetS: 0 }, { ...second, onsetS: slotSeconds }], durationS: slotSeconds * 2 };
+  const events = [{ ...first, onsetS: 0 }, { ...second, onsetS: slotSeconds }];
+  comparePlan = { events, durationS: slotSeconds * 2,
+    ...(data.id === "rain" ? { texture: atmosphereFor("rain", events, slotSeconds) } : {}) };
   transport.load(comparePlan);
   transport.play(mode());
 });
@@ -500,7 +491,7 @@ byId("read-measurement").addEventListener("click", () => {
   if (!active) return;
   transport.pause();
   const { evidence } = active;
-  const reading = `${t(evidence.site.id)}. ${dateLabel(evidence.time)}. ${display(evidence.value)}.${evidence.count === undefined ? "" : ` ${number(evidence.count, 0)} ${t("detections")}.`}`;
+  const reading = `${siteLabel(evidence.site)}. ${dateLabel(evidence.time)}. ${display(evidence.value)}.${evidence.count === undefined ? "" : ` ${number(evidence.count, 0)} ${t("detections")}.`}`;
   if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
     speechSynthesis.cancel();
     const speech = new SpeechSynthesisUtterance(reading);
@@ -528,6 +519,7 @@ byId("timbre").addEventListener("change", () => {
 byId("mute").addEventListener("change", (event) => transport.setMuted(event.target.checked));
 byId("visual-only").addEventListener("change", () => transport.pause());
 byId("volume").addEventListener("input", (event) => transport.setVolume(+event.target.value / 100));
+byId("atmosphere").addEventListener("input", (event) => transport.setAtmosphereVolume(+event.target.value / 100));
 byId("preview").addEventListener("click", async () => {
   if (previewing) {
     transport.pause();

@@ -481,7 +481,8 @@ test("English and Arabic carry the same copy keys, and case facts are never hard
     assert.doesNotMatch(all, /0\.2|2025|Mediterranean|المتوسط/, "no date, threshold or region in the copy");
   }
   assert.equal(fill(copy.en.challenge, { measure: "dust optical depth", threshold: "0.20" }), "Challenge: find the cells with dust optical depth ≥ 0.20");
-  assert.match(copy.en.caption.dust, /measured GEOS-FP dust optical depth per cell; positions inside a cell are artistic/);
+  assert.match(copy.en.caption.dust, /GEOS-FP modeled dust optical depth per cell/);
+  assert.match(copy.en.caption.dust, /positions inside each cell are illustrative/);
   assert.match(read("web/cinematic/hero.js"), /data\.levels\.quick\.truth\.threshold/, "the threshold is read from the loaded case");
   assert.match(read("web/cinematic/hero.js"), /data\.source\.product/, "the source is read from the loaded case");
 });

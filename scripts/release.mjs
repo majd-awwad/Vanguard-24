@@ -22,13 +22,16 @@ const generated = [
   "assets/atlas/mur-sst-url.txt",
   ...[...atlasChecksums.keys()].map(name => "assets/atlas/" + name),
 ];
-const entrypoints = ["index.html", "dust.html", "decode.html", "dust-observatory.html", "forest.html"];
+const entrypoints = ["index.html", "dust.html", "decode.html", "decode-3d.html", "dust-observatory.html", "forest.html"];
 // These are assembled by runtime imports and asset resolvers rather than
 // appearing as complete URL literals in markup.
 const dynamicDependencies = [
   "audio/spatial-plan.js", "visual/decode-visual.js",
   "assets/atlas/svs-4285.jpg", "assets/atlas/svs-5113.jpg",
   "assets/gedi/cerrado-dusk.jpg",
+  "assets/earth/blue-marble-2048.jpg", "assets/earth/blue-marble-4096.jpg",
+  "assets/earth/black-marble-2048.jpg", "assets/earth/black-marble-3600.jpg",
+  "assets/map/provenance.json",
 ];
 const sha256 = data => createHash("sha256").update(data).digest("hex");
 
@@ -108,6 +111,15 @@ export async function verifyBuild(folder) {
   assertRelativeReferences(files);
 
   const readJson = path => JSON.parse(files.get(path).toString("utf8"));
+  const mapAssets = readJson("assets/map/provenance.json").assets;
+  for (const id of ["ocean", "rain", "fires", "dust"]) {
+    const path = "assets/map/" + id + ".jpg";
+    const info = mapAssets[id];
+    const bytes = files.get(path);
+    if (info?.file !== id + ".jpg" || !bytes || bytes.length !== info.bytes || sha256(bytes) !== info.sha256) {
+      throw Error("Map asset checksum mismatch: " + path);
+    }
+  }
   const assertDigest = (path, digest) => {
     if (!files.has(path) || sha256(files.get(path)) !== digest) throw Error("Science checksum mismatch: " + path);
   };

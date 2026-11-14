@@ -1,4 +1,5 @@
 import { sources } from "./catalog.js";
+import { csvNumber, isRegularCoordinate } from "./numeric.js";
 
 const sites = [
   { id: "south", lat: 35, lon: -68 },
@@ -16,31 +17,47 @@ export function parseOcean(csv, subsetUrl) {
       || units !== "UTC,degrees_north,degrees_east,degree_C,degree_C," || rows.length !== 1001) {
     throw new Error("Unexpected MUR SST subset schema.");
   }
+  const query = new URL(subsetUrl.trim());
+  if (query.origin !== "https://coastwatch.pfeg.noaa.gov"
+      || query.pathname !== "/erddap/griddap/jplMURSST41.csv") {
+    throw new Error("Unexpected MUR subset URL.");
+  }
   const cells = new Map();
   for (const row of rows) {
-    const [time, latText, lonText, valueText, errorText, maskText] = row.split(",");
-    const [lat, lon, value, error, mask] = [latText, lonText, valueText, errorText, maskText].map(Number);
+    const [time, latText, lonText, valueText, errorText, maskText, extra] = row.split(",");
+    const [lat, lon, value, error, mask] = [latText, lonText, valueText, errorText, maskText].map(csvNumber);
     const index = expectedTimes.indexOf(time);
-    if (index < 0 || !Number.isInteger((lat - 32) / 1.5) || !Number.isInteger((lon + 74) / 1.5)
-        || lat < 32 || lat > 47 || lon < -74 || lon > -56 || !Number.isInteger(mask)) {
+    if (extra !== undefined || index < 0 || !isRegularCoordinate(lat, 32, 1.5) || !isRegularCoordinate(lon, -74, 1.5)
+        || lat < 32 || lat > 47 || lon < -74 || lon > -56 || !Number.isInteger(mask)
+        || (mask !== -128 && (mask < 1 || mask > 31))) {
       throw new Error(`Unexpected MUR coordinate, timestamp or mask: ${row}`);
     }
     const key = `${lat},${lon}`;
     if (!cells.has(key)) cells.set(key, { lat, lon, samples: Array(7) });
     const cell = cells.get(key);
     if (cell.samples[index] !== undefined) throw new Error(`Duplicate MUR cell: ${row}`);
-    if (mask === 1 && (!Number.isFinite(value) || value < -7.767 || value > 57.767 || !Number.isFinite(error) || error < 0)) {
+    if (mask === 1 && (!Number.isFinite(value) || value < -7.767 || value > 57.767
+        || !Number.isFinite(error) || error < 0 || error > 327.67)) {
       throw new Error(`Invalid open-water SST sample: ${row}`);
     }
-    cell.samples[index] = { value: mask === 1 ? value : null, error: mask === 1 ? error : null, mask };
+    cell.samples[index] = {
+      value: mask === 1 ? value : null,
+      error: mask === 1 ? error : null,
+      mask,
+      status: mask === 1 ? "available" : mask === -128 ? "missing" : "masked",
+    };
   }
   if (sites.some(({ lat, lon }) => !cells.get(`${lat},${lon}`)?.samples.every(({ value }) => value !== null))) {
     throw new Error("MUR comparison sites must be open ocean for all seven dates.");
   }
   return {
     id: "ocean", kind: "gridded-time-series", source: sources[0], coordinates: "EPSG:4326",
-    subsetUrl: subsetUrl.trim(), unit: "°C", sites, cells: [...cells.values()],
+    subsetUrl: query.href, unit: "°C", sites, cells: [...cells.values()],
     bounds: { south: 31.25, north: 47.75, west: -74.75, east: -55.25 }, step: 1.5,
+    sampling: {
+      nativeLatDegrees: 0.01, nativeLonDegrees: 0.01,
+      retainedLatStrideDegrees: 1.5, retainedLonStrideDegrees: 1.5, temporalSupport: "weekly-samples-of-daily-analysis",
+    },
     times: expectedTimes.map((time, index) => ({ start: time, end: time,
       granule: `https://cmr.earthdata.nasa.gov/search/concepts/${granuleIds[index]}-POCLOUD.html`,
     })),

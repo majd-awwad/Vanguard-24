@@ -1,0 +1,21 @@
+# EARTHPULSE 2.0 architecture
+
+The deployed unit is a static site. Native HTML, CSS and JavaScript support the application's existing browser and offline model. Tests use Node's native runner and a Python reference. `web/` is the executable source, `science/` is the extraction, raw-source and provenance boundary, and `scripts/` verifies and assembles a public bundle.
+
+| Boundary | Implemented contract and verification |
+| --- | --- |
+| Science → case | `web/sources/` parses each product using its own units, caps, screening and time bounds. Atlas contracts define gridded centers and FIRMS temporal windows. GEDI IDs remain decimal strings; its data and pinned provenance are loaded together. Tests assert exact identities, timestamps, missingness and normalization using authentic packaged cases. |
+| Case → experience | `web/platform.js` owns Atlas selection, evidence and one transport. `web/experiences/invisible-forest/session.js` owns footprint, height and guided comparison. The existing Decode spatial session owns level, phase, answers and review. Each route has one coordinator; presentation sends intents back to it. |
+| Case + selection → sound | Pure plan modules return ordered events carrying the evidence identity, time, scientific tone or silence and optional texture metadata. `web/audio/transport.js` schedules them, and the active event drives the evidence and display. Optional atmosphere is bounded and clocked with the same plan. It receives no raw sensor audio. The test suite checks the scientific mappings, tempo, volume, lifecycle and no-data edges. |
+| Case + selection → geography | `web/visual/atlas-map.js` draws each region in geographic EPSG:4326 against local NASA GIBS imagery and Natural Earth coastline. It transforms basemap, overlay and observation targets together and handles camera input. Each case supplies true sample coordinates and time. Pointer hits and location selectors carry the same site ID. The Dust Observatory adds terrain in its previously aligned projection. |
+| Cinematic renderer → same Decode | `web/cinematic/` handles lighting, camera, render-only particles and intro controls. It consumes the shared Decode session and audio/evidence controls. WebGL capability selects the Three.js renderer or the SVG map. The manual 2D and text routes mount the same scientific case and share the scoring and result table. |
+| Accessible and localized surfaces | `web/accessibility/` keeps semantic controls, focus and evidence behavior. Native sibling controls offer all essential map choices; the SVG is hidden from assistive technology. `web/i18n/` selects AR/EN, localized dates and numerals. Science identifiers and coordinate directions keep their technical meaning in RTL. |
+| Deployment | The build copies runtime assets and pins numerical sources. Release verifies static paths and asset checksums, excludes fixtures and raw science files, and packages deterministic ZIP and SHA-256. The browser requires no origin secrets and uses relative routes under a static hosting prefix. |
+
+## Rendering choice
+
+MapLibre GL JS provides global WebGL map styling, layer sources and tiles. CesiumJS provides a high-precision 3D globe and terrain streaming. The app has four fixed regional extents and bounded observations. An SVG renderer over static georeferenced rasters preserves numeric sample locations, offline delivery, and GPU-independent access with fewer moving parts. Three.js stays scoped to the existing cinematic Earth. A later global or tile-scale offering would justify revisiting vector tiles and globe terrain. [MapLibre documentation](https://maplibre.org/maplibre-gl-js/docs/) · [CesiumJS documentation](https://cesium.com/platform/cesiumjs/)
+
+## Extending the application
+
+An additional scientific experience needs an attributed source adapter, an explicit scientific state and evidence model, a plan that obeys the transport's clock and identity contract, and a route with a keyboard-readable alternative. An Atlas case can reuse its location/date instrument when its data fit a supported contract. New calendars, terrain, instruments and mappings earn separate modules when they have validated measurements. The original [GEDI checkpoint](../science/gedi/README.md) and [data ledger](DATA_PROVENANCE.md) describe the concrete science contracts.

@@ -48,6 +48,8 @@ h1, h2, h3, p, figure { margin: 0; }
 .earth-frame figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3px 12px; padding: 8px 11px; font-size: 13px; color: var(--sub); }
 .dust-hero-frame { border-color: #6b8071; box-shadow: 0 1rem 3.75rem #06110c66; }
 .dust-hero-frame img { aspect-ratio: 16 / 9; object-fit: contain; background: #101519; }
+.arrival-access { display: flex; gap: 0.4rem 1rem; flex-wrap: wrap; margin-block-start: .75rem; }
+.arrival-access a { text-underline-offset: 0.2em; }
 .atlas-preview {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem; align-items: center; margin-block: .6rem 1.25rem;
@@ -94,6 +96,16 @@ h1, h2, h3, p, figure { margin: 0; }
 [dir="rtl"] .stage-top { font-family: var(--sans); }
 #map-date { color: var(--accent); }
 .data-map svg { width: 100%; height: auto; display: block; }
+.map-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 7px 14px; gap: 5px 10px; }
+.map-toolbar [role="group"] { display: flex; flex-wrap: wrap; gap: 5px; }
+.map-toolbar .outline { font-size: 0.75rem; padding-inline: 0.6rem; min-height: 33px; }
+.map-toolbar .check { font-size: 0.8rem; }
+.map-pan { display: flex; gap: 5px; padding-inline: 14px; direction: ltr; }
+.map-pan .outline { min-height: 32px; min-width: 34px; padding: 2px; }
+.map-attribution { color: var(--sub); padding: 0 14px 9px; font-size: 11px; }
+.data-map.is-zoomed svg { cursor: grab; touch-action: none; }
+.data-map.is-zoomed svg:active { cursor: grabbing; }
+.map-coast { fill: none; stroke: #c4dece; stroke-width: .75; opacity: .6; vector-effect: non-scaling-stroke; }
 .map-land { fill: #365450; stroke: #7e9890; stroke-width: 1; fill-rule: evenodd; }
 [data-signal="rain"] .map-land { fill: #36415a; stroke: #818cab; }
 [data-signal="fires"] .map-land { fill: #49342b; stroke: #927567; }
@@ -104,7 +116,7 @@ h1, h2, h3, p, figure { margin: 0; }
 .map-site.active .site-ring { stroke: #fff1a7; stroke-width: 3; stroke-dasharray: none; }
 .map-site.comparison .site-ring { stroke: #e7ddff; stroke-width: 3; }
 .site-hit { fill: transparent; cursor: pointer; }
-.fire-box { fill: #21171633; stroke: #b28774; stroke-width: 1; stroke-dasharray: 4 4; }
+.fire-box { fill: #21171633; stroke: #b28774; stroke-width: 1; stroke-dasharray: 4 4; cursor: pointer; }
 .fire-box.active { stroke: #ffc196; stroke-width: 2; }
 .fire-dot { opacity: .86; }
 .fire-peak { fill: none; stroke: #fff4ca; stroke-width: 2; }
@@ -116,6 +128,7 @@ h1, h2, h3, p, figure { margin: 0; }
 .reading-summary { padding-block-end: 6px; }
 .reading-controls { grid-row: 2; padding-block-start: 6px; }
 #reading-value { font: clamp(30px, 4.5vw, 66px)/1 var(--serif); color: var(--accent); }
+[dir="rtl"] #reading-value { font: clamp(28px, 3vw, 48px)/1.15 var(--sans); unicode-bidi: plaintext; }
 #reading-location, #reading-detail, #compare-reading { color: var(--sub); font-size: 14px; }
 .field { display: grid; gap: 4px; color: var(--sub); font-size: 13px; }
 .reading-controls .field { margin-block-start: 5px; }

@@ -55,6 +55,25 @@ try {
   assert.match(await page.locator("#evidence-body").textContent(), /Scheduled pulses6/);
   await page.keyboard.press("Escape");
 
+  const map = page.locator("#data-map");
+  await page.locator("#map-plus").focus();
+  await page.keyboard.press("Enter");
+  assert.equal(await map.getAttribute("data-zoom"), "1.5");
+  const beforePan = await map.getAttribute("data-pan-x");
+  await page.getByRole("button", { name: "Pan west" }).focus();
+  await page.keyboard.press("Enter");
+  assert.notEqual(await map.getAttribute("data-pan-x"), beforePan);
+  await page.locator("#map-layer").uncheck();
+  assert.equal(await page.locator(".atlas-observations").isVisible(), false);
+  await page.locator("#map-layer").check();
+  await page.locator("#map-reset").click();
+  assert.equal(await map.getAttribute("data-zoom"), "1");
+  await page.locator('#data-map [data-site="cell:23.05,-90.95"]').click();
+  assert.equal(await page.locator("#site").inputValue(), "cell:23.05,-90.95");
+  await page.locator("#open-evidence").click();
+  assert.match(await page.locator("#evidence-body").textContent(), /23\.05°.*-90\.95°/);
+  await page.keyboard.press("Escape");
+
   await page.locator("#signal").selectOption("fires");
   await page.waitForFunction(() => document.querySelector("#lens").dataset.signal === "fires");
   assert.equal(await page.locator("#reading-value").textContent(), "17.37 MW");

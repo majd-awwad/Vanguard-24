@@ -1,4 +1,5 @@
 import { continuousVoice, crackleVoice, GAIN_CEILING } from "./voices.js";
+import { atmosphereFor } from "./atmosphere.js";
 
 export const mappingVersion = "decode-spatial-v1";
 const dimensions = { quick: [3, 4], advanced: [6, 8] };
@@ -129,8 +130,12 @@ export function makeSpatialPlan(data, { level = "quick", mode = "sweep", row, ce
       };
     });
   }
-  return { caseId: data.id, level, mappingVersion, mode,
+  const result = { caseId: data.id, level, mappingVersion, mode,
     durationS: mode === "legend" ? 6 : events.length * slotS, events };
+  if (data.phenomenon === "dust" && data.fixture === false && mode !== "legend") {
+    result.texture = atmosphereFor("dust", events, slotS, ({ status }) => status === "measured");
+  }
+  return result;
 }
 
 /** Non-numeric listening feedback; boundaries are thirds of peak output gain. */

@@ -1,6 +1,12 @@
 # EARTHPULSE 2.0 — The Sound Atlas
 
-Team Vanguard’s bilingual Earth-science listening platform. Explore ocean heat, rainfall, active-fire detections and forest structure through their numerical evidence. The atlas opens the three temporal cases in a common Sonic Lens. The Forest route (`forest.html`) retains the original discrete track and vertical waveform instrument. The browser uses only packaged assets and needs no credentials or network connection for playback.
+Team Vanguard’s bilingual Earth-science listening platform. Start with cinematic Earth Detective or go directly to **The Invisible Forest**. The Atlas opens ocean temperature, rainfall and thermal detections in a common, geographically registered Sonic Lens. The Forest instrument explores a discrete GEDI track and return waveform. Playback uses only packaged assets and needs no credentials or internet access.
+
+## Walkthrough
+
+1. From the home page, launch Earth Detective in 3D. Play the sound guide, Start Decoding, listen to a pass, select cells and reveal the modeled dust values. If WebGL is disabled, the same route switches to SVG. Separate 2D and text-cue links are also available.
+2. Follow **Science** to the Sonic Lens or **Dataset** to the Atlas. Select Rainfall, zoom to or select a retained sample, step to a date, listen and open the evidence. The region and sampling are fixed to the packaged subset.
+3. Open **The Invisible Forest** and compare the guided footprints across the same height band, then hold one footprint and scan its return vertically. The evidence lists the shot and processing details.
 
 ## Dust discovery
 
@@ -12,7 +18,7 @@ See [the guided method](docs/guided-dust.md), [the data validation and extractio
 
 ## Run locally
 
-Use Node.js 22 or later. From this directory, run:
+Use Node.js 22 or later. The runtime needs no npm dependency installation. From this directory, run:
 
 ```sh
 npm start
@@ -36,13 +42,13 @@ npm test
 python -B science/gedi/validate_sample.py
 ```
 
-The Node tests also call the existing Python reference, which uses the standard library for event generation. Set `EARTHPULSE_PYTHON` if your executable is named something other than `python`. With the local server running, run `node tests/atlas-browser.mjs` and `node tests/browser-smoke.mjs` with Playwright available, or set `EARTHPULSE_PLAYWRIGHT` to the absolute path of its `index.mjs` and `EARTHPULSE_BROWSER` to the Chrome executable. Set `EARTHPULSE_URL` to test a different deployment base URL.
+The Node tests also call the existing Python reference, which uses the standard library for event generation. Set `EARTHPULSE_PYTHON` if your executable is named something other than `python`. With the local server running, run `node tests/cinematic-browser.mjs`, `node tests/atlas-browser.mjs` or `node tests/browser-smoke.mjs` with Playwright available. Set `EARTHPULSE_PLAYWRIGHT` to the absolute path of its `index.mjs` and `EARTHPULSE_BROWSER` to the Chrome executable if using a managed installation. Set `EARTHPULSE_URL` to test a different deployment base URL. See the [quality report](docs/QUALITY_REPORT.md) for all commands and the [architecture](docs/ARCHITECTURE.md) for source boundaries.
 
 The browser suite covers the keyboard journey, playback and plot synchronization, pinned evidence, Arabic and English switching at mobile widths, data-load recovery and visual playback after audio initialization fails. A manual NVDA session and human listening study remain open. The science checkpoint records the open V002 and SVS alignment questions.
 
 ## Measurements and sound
 
-The [source ledger](docs/source-status.md) records the temporal cases, original queries and granules, processing rules, EIC visual status, and verification limits.
+The [data ledger](docs/DATA_PROVENANCE.md) records products, exact source windows, units, data versus illustration and limits. The [asset ledger](docs/ASSET_PROVENANCE.md) credits map, texture, font and other media. Optional GEDI V002 and additional scientific inputs are specified in [DATA_REQUEST.md](DATA_REQUEST.md).
 
 The current mapping uses the GEDI checkpoint’s background-corrected, thresholded return fraction in a fixed −10 to 22 m window above estimated ground. The vertical scan plays one-metre bands at 0.13 seconds per metre at 1×. The track scan plays one event per footprint at its measured along-track distance divided by 65 metres per playback second at 1×. Both modes use a 440 Hz sine tone, 95 ms duration, 9 ms attack and 26 ms release at 1×. Peak gain is `0.32 × sqrt(fraction)`. The volume control scales all events together. A bin below the threshold is available for inspection as a silent event. The gaps between footprints have no events.
 

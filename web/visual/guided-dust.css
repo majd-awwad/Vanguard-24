@@ -148,6 +148,9 @@ body:has(.guided-main) {
 }
 #guided-pair-help { font-size: .9rem; }
 .guided-transport { padding-block-start: .55rem; border-block-start: 1px solid var(--guided-line); }
+.atmosphere-mix { display: grid; gap: .35rem; max-width: 16rem; margin-block: .75rem .25rem; font-size: .85rem; }
+.atmosphere-mix input { width: 100%; min-height: 1.7rem; accent-color: #8b5f32; }
+.atmosphere-help { margin-block: 0 .75rem; font-size: .8rem; }
 #guided-mute[aria-pressed="true"] { border-color: var(--guided-gold); }
 #guided-status { min-block-size: 1.5em; }
 #guided-guess { margin-block-start: 1rem; }
