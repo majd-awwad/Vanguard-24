@@ -9,17 +9,19 @@
   <link rel="stylesheet" href="./visual/guided-dust.css">
 </head>
 <body>
+  <a class="skip" href="#guided-main" data-message="skip"></a>
   <header class="wrap guided-header">
     <a id="guided-home" class="brand" href="./">EARTH<span>PULSE</span></a>
     <a id="guided-language" class="outline" href="?lang=ar" lang="ar" hreflang="ar">العربية</a>
   </header>
-  <main class="wrap guided-main">
+  <main class="wrap guided-main" id="guided-main" tabindex="-1">
     <header class="guided-intro">
       <p class="eyebrow" data-message="guide"></p>
       <h1 data-message="question"></h1>
       <p data-message="intro"></p>
     </header>
     <p id="guided-load" role="status"></p>
+    <button class="outline" id="guided-retry" type="button" data-message="retry" hidden></button>
     <div id="guided-interface" class="guided-layout" hidden>
       <figure class="guided-map">
         <div class="guided-map-heading">
@@ -40,13 +42,25 @@
       <div class="guided-controls">
         <section aria-labelledby="guided-listen-heading">
           <h2 id="guided-listen-heading" data-message="listen"></h2>
-          <p data-message="mapping"></p>
+          <p id="guided-mapping" data-message="mapping"></p>
           <div class="guided-actions">
             <button class="solid" id="guided-compare" type="button" data-message="compare"></button>
             <button class="outline" id="guided-example" type="button" data-message="example"></button>
           </div>
-          <div id="guided-listen-bands" class="guided-actions"></div>
-          <div class="guided-actions">
+          <div id="guided-listen-bands" class="guided-actions" role="group" aria-labelledby="guided-solo-label">
+            <span class="guided-control-label" id="guided-solo-label" data-message="solo"></span>
+          </div>
+          <details id="guided-pair">
+            <summary data-message="pair"></summary>
+            <div class="guided-actions guided-pair-options">
+              <label><span data-message="firstBand"></span><select id="guided-pair-first"></select></label>
+              <label><span data-message="secondBand"></span><select id="guided-pair-second"></select></label>
+              <button class="outline" id="guided-play-pair" type="button" data-message="playPair" aria-describedby="guided-pair-help"></button>
+            </div>
+            <p id="guided-pair-help" data-message="pairHelp"></p>
+          </details>
+          <div class="guided-actions guided-transport">
+            <button class="outline" id="guided-pause" type="button" aria-disabled="true" data-message="pause"></button>
             <button class="outline" id="guided-replay" type="button" disabled data-message="replay"></button>
             <button class="outline" id="guided-mute" type="button" aria-pressed="false" data-message="mute"></button>
           </div>
@@ -54,18 +68,19 @@
             <summary data-message="transcript"></summary>
             <ul id="guided-transcript-lines"></ul>
           </details>
-          <p id="guided-status" role="status"></p>
+          <p id="guided-status" role="status" aria-atomic="true"></p>
         </section>
         <form id="guided-guess">
           <fieldset>
             <legend data-message="guess"></legend>
+            <p class="guided-guess-help" data-message="guessHelp"></p>
             <div id="guided-options" class="guided-options"></div>
           </fieldset>
           <button class="solid" type="submit" data-message="reveal"></button>
         </form>
       </div>
       <section id="guided-result" class="guided-result" aria-labelledby="guided-result-title" hidden>
-        <h2 id="guided-result-title" tabindex="-1"></h2>
+        <h2 id="guided-result-title" tabindex="-1" aria-describedby="guided-feedback"></h2>
         <p id="guided-feedback"></p>
         <div class="guided-evidence">
           <section class="guided-averages" aria-labelledby="guided-averages-title">
@@ -83,6 +98,15 @@
             </figcaption>
           </figure>
         </div>
+        <details id="guided-cell-evidence">
+          <summary data-message="cellEvidence"></summary>
+          <p data-message="cellExplanation"></p>
+          <table class="guided-cell-table">
+            <caption class="sr-only" data-message="cellEvidence"></caption>
+            <thead id="guided-cell-columns"></thead>
+            <tbody id="guided-cell-rows"></tbody>
+          </table>
+        </details>
         <details id="guided-provenance" open>
           <summary data-message="provenance"></summary>
           <p id="guided-source"></p>
@@ -96,6 +120,7 @@
       <h2 id="guided-detective-title" data-message="detective"></h2>
       <p id="guided-detective-description"></p>
       <div class="guided-actions">
+        <a id="guided-observatory" class="outline" href="./dust-observatory.html" data-message="observatory"></a>
         <a class="outline" id="guided-quick" href="./decode.html" data-message="quick"></a>
         <a class="outline" id="guided-advanced" href="./decode.html?level=advanced" data-message="advanced"></a>
       </div>

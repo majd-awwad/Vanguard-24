@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { validateDecodeCase } from "../web/contracts/validate.js";
-import { bandIds, buildBandPlayback, compareDustBands } from "../web/experiences/decode/guided-dust.js";
+import { bandIds, buildBandPlayback, compareDustBands, completedBandCount } from "../web/experiences/decode/guided-dust.js";
 
 const production = validateDecodeCase(JSON.parse(await readFile(new URL(
   "../web/assets/decode/data/dust-geos-fp-20250819-1930-north-africa-med.json", import.meta.url,
@@ -49,4 +49,28 @@ test("rank playback is deterministic, keeps pitch and gain constant, and schedul
   assert.ok(plan.events.every(event => event.onsetS + (event.tone?.durationS ?? 0) < plan.durationS));
   const example = buildBandPlayback([1, 2, 3].map(notes => ({ notes })), { ...options, example: true });
   assert.equal(example.events.length, 6);
+});
+
+test("a two-band clip preserves the original rank cues and the requested playback order", () => {
+  const { bands } = compareDustBands(production);
+  const choices = [bands[2], bands[0]];
+  const plan = buildBandPlayback(choices, { caseId: production.id });
+  for (const [slot, band] of choices.entries()) {
+    const onsets = plan.events.filter(event => event.row === bandIds.indexOf(band.id));
+    assert.equal(onsets.length, band.notes);
+    assert.equal(onsets[0].onsetS, slot * plan.durationS / choices.length);
+    assert.equal(new Set(onsets.map(event => event.tone.frequencyHz)).size, 1);
+  }
+});
+
+test("the transcript waits until each band slot ends and restart clears every completed cue", () => {
+  const { bands } = compareDustBands(production);
+  const { durationS } = buildBandPlayback(bands, { caseId: production.id });
+  const boundary = durationS / bands.length;
+  assert.equal(completedBandCount(bands.length, boundary - .001), 0);
+  assert.equal(completedBandCount(bands.length, boundary), 1);
+  assert.equal(completedBandCount(bands.length, boundary * 2), 2);
+  assert.equal(completedBandCount(bands.length, durationS), 3);
+  assert.equal(completedBandCount(bands.length, durationS + 10), 3);
+  assert.equal(completedBandCount(bands.length, 0), 0);
 });

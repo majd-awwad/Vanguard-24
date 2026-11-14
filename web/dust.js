@@ -1,36 +1,51 @@
 import { createTransport } from "./audio/transport.js";
-import { bandIds, buildBandPlayback, compareDustBands } from "./experiences/decode/guided-dust.js";
+import { bandIds, buildBandPlayback, compareDustBands, completedBandCount } from "./experiences/decode/guided-dust.js";
 import { decodeMessage } from "./i18n/decode-messages.js";
 import { loadDecodeCase } from "./sources/decode/index.js";
-import { land } from "./visual/land.js";
+import { drawDustMapBase } from "./visual/dust-basemap.js";
 
 const caseId = "dust-geos-fp-20250819-1930-north-africa-med";
 const messages = {
+  skip: ["Skip to the dust challenge", "انتقل إلى تحدّي الغبار"],
+  retry: ["Retry loading the dust data", "أعِد تحميل بيانات الغبار"],
   guide: ["Guided Discovery", "استكشاف موجّه"],
   question: ["Which region has the strongest modeled dust signal?", "أي منطقة فيها أقوى إشارة غبار في النموذج؟"],
-  intro: ["Listen to three latitude bands across North Africa and the Mediterranean. Compare north, middle and south, then check your guess against the model.",
-    "استمع إلى ثلاثة نطاقات عرضية عبر شمال أفريقيا والبحر المتوسّط. قارن الشمال والوسط والجنوب، ثم تحقّق من تخمينك بالرجوع إلى النموذج."],
+  intro: ["Trace a real NASA dust case across North Africa and the Mediterranean. Compare three bands by sound or text, make your prediction, then check it against the model.",
+    "تتبّع حالة غبار حقيقية من بيانات ناسا عبر شمال أفريقيا والبحر المتوسّط. قارن ثلاثة نطاقات بالصوت أو بالنص، وبعدين اختبر توقّعك مقابل بيانات النموذج."],
   region: ["North Africa & Mediterranean", "شمال أفريقيا والبحر المتوسّط"],
   mediterranean: ["Mediterranean Sea", "البحر المتوسّط"],
   sahara: ["Sahara", "الصحراء الكبرى"],
   atlantic: ["Atlantic", "المحيط الأطلسي"],
-  mapReady: ["Choose a band or compare all three", "اختَر نطاقًا أو قارن النطاقات الثلاثة"],
+  mapReady: ["The map highlights each band as it plays", "الخريطة بتضيء كل نطاق وقت تشغيله"],
   practiceSignal: ["Practice example", "مثال تدريبي"],
   playingBand: ["Now playing: {band}", "التشغيل الآن: {band}"],
   mapCredit: ["Coastlines: Natural Earth. The bands run west to east.", "السواحل من Natural Earth. تمتد النطاقات من الغرب إلى الشرق."],
   listen: ["Listen and compare", "استمع وقارن"],
-  mapping: ["More notes mean a higher rank in this comparison. Pitch and loudness stay fixed. The note count gives the order only, not an optical-depth value.",
-    "كلما زاد عدد النغمات ارتفعت مرتبة النطاق في المقارنة. تبقى حدّة النغمة وشدّتها ثابتتين. عدد النغمات يعبّر عن الترتيب فقط، ولا يمثّل قيمة العمق البصري."],
+  mapping: ["Count the notes in each band. More notes means a higher rank among the three. Every note uses the same pitch and loudness, and the count only tells you the order.",
+    "عُدّ النغمات بكل نطاق. نغمات أكثر يعني مرتبة أعلى بين النطاقات الثلاثة. كل النغمات إلها نفس الحدّة والشدّة، وعددها بيدلّ على الترتيب بس."],
   compare: ["Compare all three", "قارن النطاقات الثلاثة"],
   example: ["Play a practice example", "شغّل مثالًا تدريبيًا"],
-  practice: ["Practice only: one, two, then three notes. The example uses no measurements.", "مثال تدريبي: نغمة واحدة، ثم نغمتان، ثم ثلاث. المثال لا يستخدم قياسات."],
+  practice: ["Practice: one, two, then three notes. The example uses no measurements.", "مثال تدريبي: نغمة واحدة، ثم نغمتان، ثم ثلاث. المثال لا يستخدم قياسات."],
+  solo: ["Listen to a single band", "استمع لنطاق واحد"],
+  pair: ["Compare two bands", "قارن نطاقين"],
+  firstBand: ["First band", "النطاق الأول"],
+  secondBand: ["Second band", "النطاق الثاني"],
+  playPair: ["Play both", "شغّل النطاقين"],
+  pairHelp: ["Choose two different bands. Each keeps its rank among all three.", "اختَر نطاقين مختلفين. كل نطاق بيحتفظ بترتيبه بين النطاقات الثلاثة."],
+  pause: ["Pause", "إيقاف مؤقت"],
+  resume: ["Resume", "تابع التشغيل"],
+  paused: ["Playback paused.", "التشغيل متوقّف مؤقتًا."],
   replay: ["Replay", "إعادة التشغيل"],
   mute: ["Mute", "كتم الصوت"],
   transcript: ["Read the sound cues", "اقرأ الإشارات الصوتية"],
-  cue: ["{band}: notes heard — {count}", "{band}: عدد النغمات — {count}"],
+  cue: ["{band}: {count} {notes}", "{band}: عدد النغمات {count}"],
+  cueOne: ["note", "نغمة"],
+  cueMany: ["notes", "نغمات"],
+  waitingCue: ["{band}: waiting for playback", "{band}: بانتظار التشغيل"],
   cueMissing: ["{band}: no usable readings", "{band}: لا توجد قراءات صالحة"],
   noClip: ["Play a region or the comparison first.", "شغّل صوت منطقة أو المقارنة أولًا."],
   guess: ["Choose the strongest region", "اختَر المنطقة الأقوى"],
+  guessHelp: ["Which band played the most notes?", "أي نطاق شغّل نغمات أكثر؟"],
   unknown: ["Reveal without guessing", "اكشف النتيجة بدون تخمين"],
   reveal: ["Reveal the comparison", "اكشف نتيجة المقارنة"],
   reset: ["Try the comparison again", "جرّب المقارنة مرة ثانية"],
@@ -38,7 +53,7 @@ const messages = {
   middle: ["Middle", "الوسط"],
   south: ["South", "الجنوب"],
   ended: ["Playback complete.", "انتهى التشغيل."],
-  unavailable: ["Audio unavailable. You can still reveal the comparison.", "الصوت غير متاح. بإمكانك كشف نتيجة المقارنة."],
+  unavailable: ["Audio unavailable. Follow the map or open the sound cues.", "الصوت غير متاح. تابع الخريطة أو افتح الإشارات الصوتية."],
   missing: ["No usable readings", "لا توجد قراءات صالحة"],
   incomplete: ["Some bands have no usable readings. The result compares the available bands.", "بعض النطاقات بلا قراءات صالحة. تقارن النتيجة النطاقات المتاحة."],
   strongest: ["Strongest modeled band", "أقوى نطاق في النموذج"],
@@ -51,6 +66,11 @@ const messages = {
   coverage: ["{count} of {total} cells", "{count} من أصل {total} خلايا"],
   method: ["Each figure is an arithmetic mean of the available Quick-grid cells in that band. Every available cell has equal weight, including zero and readings below the grid cutoff. Missing cells are excluded.",
     "كل نتيجة هي المتوسط الحسابي لخلايا الشبكة السريعة المتاحة في النطاق. كل خلية متاحة إلها نفس الوزن، بما فيها الصفر والقراءات تحت حدّ الشبكة. الخلايا المفقودة مستبعدة."],
+  cellEvidence: ["See the grid values behind each average", "شوف قيم الخلايا اللي حسبنا منها المتوسط"],
+  cellExplanation: ["Read each row from west to east. A missing cell is excluded from the average.", "اقرأ كل صف من الغرب للشرق. الخلية المفقودة مستبعدة من حساب المتوسط."],
+  cellBand: ["Band", "النطاق"],
+  cellColumn: ["Column {number}", "العمود {number}"],
+  cellMean: ["Mean", "المتوسط"],
   limits: ["Dust optical depth describes how dust dims light through the whole atmospheric column. It does not measure ground-level PM2.5 or health risk.",
     "العمق البصري للغبار يصف كيف يخفّف الغبار الضوء عبر عمود الغلاف الجوي كاملًا. لا يقيس جسيمات PM2.5 عند سطح الأرض أو المخاطر الصحية."],
   provenance: ["Data and NASA image provenance", "مصدر البيانات وعلاقتها بصورة ناسا"],
@@ -60,6 +80,7 @@ const messages = {
   contextAlt: ["Global NASA aerosol visualization for 19 August 2025, showing modeled dust in pink and magenta.", "تصوّر عالمي من ناسا للهباء الجوي في 19 أغسطس 2025، يظهر فيه الغبار المحاكى باللونين الوردي والأرجواني."],
   alignment: ["The separate SVS Replay frame is scientific context and is not pixel-aligned to this map.", "صورة SVS من تشغيل منفصل للسياق العلمي ولا تطابق بكسلات هذه الخريطة."],
   detective: ["Go deeper with Earth Detective", "تعمّق مع محقّق الأرض"],
+  observatory: ["Explore dates in the Dust Observatory", "استكشف التواريخ في مرصد الغبار"],
   detectiveDescription: ["In the grid challenge, higher pitch means farther north, left and right mean west and east, and louder means more dust among cells that meet the cutoff. The {threshold} optical-depth cutoff is a game rule. A quiet cell can still contain dust.",
     "في تحدّي الشبكة، النغمة الأعلى بتدلّك على الشمال، واليسار واليمين على الغرب والشرق، والصوت الأشد يعني غبارًا أكثر بين الخلايا اللي حقّقت الشرط. حدّ العمق البصري {threshold} قاعدة للتحدّي. سكوت الخلية ما يعني إنّها بلا غبار."],
   quick: ["Quick grid · 3 × 4", "الشبكة السريعة · 3 × 4"],
@@ -72,24 +93,11 @@ const byId = id => document.getElementById("guided-" + id);
 const number = new Intl.NumberFormat(language, { maximumSignificantDigits: 6 }).format;
 const fill = (text, fields) => text.replace(/\{(\w+)\}/g, (_, key) => fields[key]);
 const appMessage = key => decodeMessage(language, key);
-const svgNS = "http://www.w3.org/2000/svg";
-
-function svg(tag, attributes) {
-  const element = document.createElementNS(svgNS, tag);
-  for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
-  return element;
-}
-
 function renderCoast(bounds) {
-  // Natural Earth land.fires uses the Atlas Plate Carrée viewport documented
-  // in platform.js and fires.js. Invert its affine projection to reuse it.
-  const x = lon => 48 + (lon - 13) * 612 / 29;
-  const y = lat => 27 + (54 - lat) * 288 / 16;
   const coast = byId("coast");
-  coast.setAttribute("viewBox", [x(bounds.west), y(bounds.north),
-    x(bounds.east) - x(bounds.west), y(bounds.south) - y(bounds.north)].join(" "));
+  coast.setAttribute("viewBox", "0 0 1 1");
   coast.setAttribute("preserveAspectRatio", "none");
-  coast.append(svg("path", { d: land.fires }));
+  drawDustMapBase(coast, bounds);
   for (const [name, lon, lat] of [["atlantic", -13, 29], ["mediterranean", 22, 37], ["sahara", 15, 23]]) {
     const place = document.createElement("span");
     place.textContent = t(name);
@@ -112,13 +120,24 @@ function mountGuided(data) {
   const activeLabel = byId("active-label");
   const pulses = byId("pulses");
   const contextImage = byId("context-image");
+  const pauseButton = byId("pause");
+  const pairFirst = byId("pair-first");
+  const pairSecond = byId("pair-second");
+  const playPair = byId("play-pair");
+  const cellHead = byId("cell-columns");
+  const cellRows = byId("cell-rows");
   let plan;
   let example = false;
   let lastBands = [];
+  let completedBands = 0;
+  let userPaused = false;
   let previousStatus;
   let activeEvent;
   let activeBand;
   const showStatus = text => { if (status.textContent !== text) status.textContent = text; };
+  const describeCue = band => fill(t(band.notes ? "cue" : "cueMissing"), {
+    band: t(band.id), count: number(band.notes), notes: t(band.notes === 1 ? "cueOne" : "cueMany"),
+  });
 
   function renderSignal(event) {
     if (event === activeEvent) return;
@@ -134,13 +153,13 @@ function mountGuided(data) {
       transcriptLines.replaceChildren();
       return;
     }
-    const lines = !plan ? [t("noClip")] : example ? [t("practice")] : lastBands.map(band =>
-      fill(t(band.notes ? "cue" : "cueMissing"), { band: t(band.id), count: number(band.notes) }));
-    transcriptLines.replaceChildren(...lines.map(text => {
-      const line = document.createElement("li");
-      line.textContent = text;
-      return line;
-    }));
+    const lines = !plan ? [t("noClip")] : example ? [t("practice")] : lastBands.map((band, index) =>
+      index >= completedBands ? fill(t("waitingCue"), { band: t(band.id) }) : describeCue(band));
+    while (transcriptLines.childElementCount > lines.length) transcriptLines.lastElementChild.remove();
+    for (const [index, text] of lines.entries()) {
+      const line = transcriptLines.children[index] ?? transcriptLines.appendChild(document.createElement("li"));
+      if (line.textContent !== text) line.textContent = text;
+    }
   }
 
   renderCoast(data.bounds);
@@ -168,7 +187,13 @@ function mountGuided(data) {
     button.setAttribute("aria-label", (language === "ar" ? "استمع إلى " : "Listen to ") + t(band.id));
     button.addEventListener("click", () => playBands([band]));
     byId("listen-bands").append(button);
+    for (const select of [pairFirst, pairSecond]) select.add(new Option(t(band.id), band.id));
   }
+  pairSecond.value = "south";
+  const updatePair = () => { playPair.setAttribute("aria-disabled", String(pairFirst.value === pairSecond.value)); };
+  pairFirst.addEventListener("change", updatePair);
+  pairSecond.addEventListener("change", updatePair);
+  updatePair();
   for (const option of formOptions) {
     const label = document.createElement("label");
     const radio = document.createElement("input");
@@ -180,7 +205,12 @@ function mountGuided(data) {
     byId("options").append(label);
   }
 
+  form.addEventListener("change", event => {
+    for (const [id, zone] of zones) zone.toggleAttribute("data-predicted", id === event.target.value);
+  });
+
   function playBands(bands, practice = false) {
+    userPaused = false;
     example = practice;
     lastBands = bands;
     plan = buildBandPlayback(bands, { caseId: data.id, example });
@@ -192,40 +222,107 @@ function mountGuided(data) {
   }
 
   transport.subscribe(snapshot => {
+    const finished = plan ? completedBandCount(lastBands.length, snapshot.positionS) : 0;
+    const freshCues = !example && transcript.open ? lastBands.slice(completedBands, finished) : [];
+    if (finished !== completedBands) {
+      completedBands = finished;
+      renderTranscript();
+    }
     const event = snapshot.status === "playing" && !snapshot.awaitingOnset
       ? plan?.events.find(({ id }) => id === snapshot.activeEventId) : undefined;
     const active = event && !example ? bandIds[event.row] : undefined;
     renderSignal(event);
+    let announcement = "";
     if (active !== activeBand) {
       activeBand = active;
       for (const [id, zone] of zones) zone.toggleAttribute("data-active", id === active);
-      if (active) showStatus(fill(t(event.tone ? "playingBand" : "cueMissing"), { band: t(active) }));
+      if (active) announcement = fill(t(event.tone ? "playingBand" : "cueMissing"), { band: t(active) });
     }
-    if (snapshot.status === "ended" && previousStatus === "playing") showStatus(t("ended"));
-    if (snapshot.audioUnavailable) showStatus(t("unavailable"));
+    const running = snapshot.status === "starting" || snapshot.status === "playing";
+    pauseButton.setAttribute("aria-disabled", String(!running && !userPaused));
+    pauseButton.textContent = t(userPaused ? "resume" : "pause");
+    if (snapshot.status === "ended" && previousStatus === "playing") announcement = t("ended");
+    else if (snapshot.audioUnavailable && running && snapshot.status !== previousStatus && transcript.open === false) {
+      announcement = t("unavailable");
+    }
+    if (announcement || freshCues.length) {
+      showStatus([...freshCues.map(band => describeCue(band) + "."), announcement].filter(Boolean).join(" "));
+    }
     previousStatus = snapshot.status;
   });
 
   byId("compare").addEventListener("click", () => playBands(result.bands));
+  playPair.addEventListener("click", () => {
+    if (pairFirst.value === pairSecond.value) return;
+    return playBands([pairFirst.value, pairSecond.value].map(id => result.bands.find(band => band.id === id)));
+  });
   transcript.addEventListener("toggle", renderTranscript);
   byId("example").addEventListener("click", () => playBands([1, 2, 3].map(notes => ({ notes })), true));
   byId("replay").addEventListener("click", () => {
-    if (example) showStatus(t("practice"));
+    userPaused = false;
+    showStatus(example ? t("practice") : "");
     return transport.replay(transport.snapshot().muted ? "silent" : "audio");
+  });
+  pauseButton.addEventListener("click", () => {
+    if (pauseButton.getAttribute("aria-disabled") === "true") return;
+    if (userPaused) {
+      // Restart the current band so the first note is never lost during a pause.
+      transport.seek(completedBands * plan.durationS / lastBands.length);
+      userPaused = false;
+      showStatus(example ? t("practice") : "");
+      return transport.play(transport.snapshot().muted ? "silent" : "audio");
+    }
+    userPaused = true;
+    transport.pause();
+    showStatus(t("paused"));
   });
   byId("mute").addEventListener("click", event => {
     const muted = !transport.snapshot().muted;
     transport.setMuted(muted);
     event.currentTarget.setAttribute("aria-pressed", String(muted));
   });
-  window.addEventListener("pagehide", () => transport.pause());
+  window.addEventListener("pagehide", () => {
+    userPaused = false;
+    transport.pause();
+  });
+
+  function renderCellEvidence() {
+    const makeCell = (tag, text, scope) => {
+      const cell = document.createElement(tag);
+      if (scope) cell.scope = scope;
+      cell.textContent = text;
+      return cell;
+    };
+    const head = document.createElement("tr");
+    head.append(makeCell("th", t("cellBand"), "col"));
+    const { cells, cols } = data.levels.quick;
+    for (let col = 0; col < cols; col++) {
+      head.append(makeCell("th", fill(t("cellColumn"), { number: number(col + 1) }), "col"));
+    }
+    head.append(makeCell("th", t("cellMean"), "col"));
+    cellHead.replaceChildren(head);
+    cellRows.replaceChildren(...result.bands.map((band, index) => {
+      const row = document.createElement("tr");
+      row.append(makeCell("th", t(band.id), "row"));
+      const values = cells.filter(cell => cell.row === index).sort((a, b) => a.col - b.col);
+      for (const cell of values) row.append(makeCell("td", cell.value === null ? t("missing") : number(cell.value)));
+      row.append(makeCell("td", band.mean === null ? t("missing") : number(band.mean)));
+      return row;
+    }));
+  }
 
   form.addEventListener("submit", event => {
     event.preventDefault();
     const guess = new FormData(form).get("band");
+    userPaused = false;
     transport.pause();
+    pauseButton.setAttribute("aria-disabled", "true");
+    pauseButton.textContent = t("pause");
     showStatus("");
-    for (const [id, zone] of zones) zone.toggleAttribute("data-strongest", result.strongest.includes(id));
+    for (const [id, zone] of zones) {
+      zone.removeAttribute("data-predicted");
+      zone.toggleAttribute("data-strongest", result.strongest.includes(id));
+    }
     const strongest = result.strongest.map(t).join(language === "ar" ? "، " : ", ");
     const heading = byId("result-title");
     heading.textContent = strongest
@@ -261,6 +358,7 @@ function mountGuided(data) {
       }
       return block;
     }));
+    renderCellEvidence();
     const interval = new Intl.DateTimeFormat(language, {
       dateStyle: "medium", timeStyle: "short", timeZone: "UTC",
     }).formatRange(date, new Date(data.source.time.end));
@@ -285,12 +383,17 @@ function mountGuided(data) {
   });
 
   byId("reset").addEventListener("click", () => {
+    userPaused = false;
     transport.pause();
     plan = undefined;
+    completedBands = 0;
     byId("result").hidden = true;
     byId("result-title").textContent = byId("feedback").textContent =
       byId("source").textContent = byId("note").textContent = "";
     byId("readings").replaceChildren();
+    cellHead.replaceChildren();
+    cellRows.replaceChildren();
+    byId("cell-evidence").open = false;
     byId("sources").replaceChildren();
     byId("provenance").open = true;
     byId("context").hidden = true;
@@ -298,6 +401,8 @@ function mountGuided(data) {
     for (const zone of zones.values()) zone.removeAttribute("data-strongest");
     form.reset();
     form.hidden = false;
+    pauseButton.setAttribute("aria-disabled", "true");
+    pauseButton.textContent = t("pause");
     byId("replay").disabled = true;
     transcript.open = false;
     transcriptLines.replaceChildren();
@@ -316,15 +421,25 @@ switchLanguage.lang = switchLanguage.hreflang = alternate;
 switchLanguage.href = "?lang=" + alternate;
 switchLanguage.textContent = alternate === "ar" ? "العربية" : "English";
 byId("home").href = "./?lang=" + language;
+byId("observatory").href = "./dust-observatory.html?lang=" + language;
 byId("quick").href = "./decode.html?lang=" + language;
 byId("advanced").href = "./decode.html?level=advanced&lang=" + language;
-byId("load").textContent = appMessage("general.loading");
-try {
-  const data = await loadDecodeCase(caseId);
-  mountGuided(data);
-  byId("interface").hidden = false;
-  byId("load").textContent = "";
-} catch (error) {
-  console.error(error);
-  byId("load").textContent = appMessage("general.error");
+async function initialize() {
+  const restoreFocus = document.activeElement === byId("retry");
+  byId("retry").hidden = true;
+  byId("load").textContent = appMessage("general.loading");
+  try {
+    const data = await loadDecodeCase(caseId);
+    mountGuided(data);
+    byId("interface").hidden = false;
+    byId("load").textContent = "";
+    if (restoreFocus) byId("compare").focus();
+  } catch (error) {
+    console.error(error);
+    byId("load").textContent = appMessage("general.error");
+    byId("retry").hidden = false;
+    if (restoreFocus) byId("retry").focus();
+  }
 }
+byId("retry").addEventListener("click", initialize);
+await initialize();

@@ -1,7 +1,8 @@
 import { continuousVoice } from "../../audio/voices.js";
 
 export const bandIds = ["north", "middle", "south"];
-const slotS = 1.35;
+const slotS = 1.5;
+const noteSpacingS = 0.37;
 
 // One Quick row per band. Equal weight per available Quick cell, including
 // below-threshold values and zero. This is a comparison of grid-cell means.
@@ -30,13 +31,20 @@ export function buildBandPlayback(bands, { caseId, example = false }) {
   const events = bands.flatMap(({ id, notes }, index) => {
     const row = example ? index : bandIds.indexOf(id);
     return Array.from({ length: notes || 1 }, (_, note) => ({
-      id: `band-${index}-${note}`, row, col: 0, onsetS: index * slotS + note * 0.34,
+      id: `band-${index}-${note}`, row, col: 0, onsetS: index * slotS + note * noteSpacingS,
       tone: notes ? {
         ...continuousVoice({ frequencyHz: 440, gain: 0.14 }),
         durationS: 0.24, attackS: 0.015, releaseS: 0.045,
       } : null,
     }));
   });
-  return { caseId, level: "quick", mode: "contrast", mappingVersion: "dust-band-rank-v1",
+  return { caseId, level: "quick", mode: "contrast", mappingVersion: "dust-band-rank-v2",
     durationS: bands.length * slotS, events };
+}
+
+// Use the transport's position, rather than a second timer, to make the visual
+// and readable cues follow the same scheduled onsets as the audio. A band is
+// described when its slot is complete. Pause or reset never reveals later cues.
+export function completedBandCount(bandCount, positionS) {
+  return Math.min(bandCount, Math.floor(Math.max(0, positionS) / slotS));
 }
