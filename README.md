@@ -8,7 +8,7 @@ Team Vanguard’s bilingual Earth-science listening platform. Explore ocean heat
 - [Earth Detective](web/decode.html) keeps the original spatial grid challenge. Quick has 12 cells and Advanced has 48. Pitch locates north and south, stereo places west and east, and loudness varies among qualifying cells. The 0.20 cutoff is a challenge rule. [Text cues without sound](web/decode.html?condition=text) make the challenge playable through qualitative cell cues.
 - [Dust Observatory](web/dust-observatory.html) lets you inspect the 1,000-cell map across 13 verified three-hour snapshots and compare compatible dates. Open a cell's date history to read individual values and model builds, or start a comparison from that table. Each plotted point is a selected observation window.
 
-See [the guided method](docs/guided-dust.md), [the data validation and extraction ledger](docs/dust-v2-data.md), and [the demo and accessibility handoff](docs/dust-demo.md).
+See [the guided method](docs/guided-dust.md), [the data validation and extraction ledger](docs/dust-v2-data.md), [the demo and accessibility handoff](docs/dust-demo.md), and [the bilingual submission copy](docs/submission.md).
 
 ## Run locally
 
@@ -19,6 +19,8 @@ npm start
 ```
 
 Open <http://127.0.0.1:4173/>. Run `npm run build` to generate the portable static site in `dist/`. Serve that directory over HTTP, including when hosting it under a path prefix. The build checks the pinned scientific subsets and GEDI context frame, then packages the source evidence.
+
+Run `npm run verify:build` to check the existing static output. Run `npm run release` to build and verify a fresh static archive. To host it, extract the ZIP and serve the directory containing `index.html` over HTTP.
 
 On the managed Windows workspace, if Node reports an `EPERM` while resolving the user profile, run this in PowerShell before running npm:
 

@@ -6,8 +6,8 @@ Open the Sound Atlas, then choose **Explore dust with sound**. The entire path u
 
 1. Ask “Which region has the strongest modeled dust signal?” Open the short practice if the audience needs to learn the cue. One, two or three notes convey the order of the three band means. Pitch and loudness stay fixed in this stage.
 2. Use the mission controls to listen or read the cues without audio. Compare all three bands, or replay a pair for a closer comparison. Let the judge choose a band before revealing.
-3. Reveal the bars and the mean for each band. Open the calculation for the winning band and show which cells entered the mean. Each band uses its available Quick-grid cells, including values below the separate game threshold.
-4. Open the Dust Observatory to inspect a location on the 1,000-cell map. Start with the August 19 reference, open that cell’s date history, and choose another date from the same model build. Explain that the difference is the second selected window minus the first.
+3. Reveal the bars and the mean for each band. Open the calculation for the winning band and show which cells entered the mean. Each band uses its available Quick-grid cells, including values below the separate game threshold. Follow **Inspect centre** on a cell to open the finer map at the corresponding location and reference window.
+4. In the Dust Observatory, open that cell’s date history and choose another date from the same model build. Explain that the difference is the second selected window minus the first. Use **Copy link to this view** to keep the exact dates and cell for review.
 5. Open Earth Detective for cell-level exploration. Use Quick in the live demo and reserve Advanced for a deeper inspection. In this mode, pitch, stereo position, and loudness have different roles from the guided note count. The text-cue route supports the same guessing and Reveal flow without opening an audio device.
 
 ## What the data support
