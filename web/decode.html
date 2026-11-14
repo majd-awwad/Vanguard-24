@@ -24,6 +24,7 @@
     <button type="button" id="decode-retry" hidden></button>
 
     <div id="decode-interface" hidden>
+      <p class="decode-cue-mode"><a id="decode-cue-mode" class="outline" href="?condition=text" hidden></a></p>
       <div class="decode-brief">
         <div class="decode-case">
           <p id="decode-region"></p>
@@ -51,6 +52,11 @@
           <progress id="decode-progress" max="1" value="0"></progress>
           <span id="decode-playback-label"></span>
         </div>
+        <details id="decode-transcript" class="decode-transcript" hidden>
+          <summary id="decode-transcript-title"></summary>
+          <p id="decode-transcript-help"></p>
+          <ol id="decode-transcript-cues"></ol>
+        </details>
       </section>
     </div>
 
@@ -71,6 +77,7 @@
         <div class="decode-cell-actions" hidden>
           <button type="button" id="decode-probe"></button>
           <p id="decode-probe-reading"></p>
+          <p id="decode-cue-announcement" class="sr-only" role="status" aria-atomic="true"></p>
         </div>
       </div>
     </div>

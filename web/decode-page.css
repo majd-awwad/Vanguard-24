@@ -42,6 +42,19 @@ body:has(#decode-page) {
 #decode-question { font-size: clamp(1.16rem, 3vw, 1.65rem); font-weight: 650; max-inline-size: 42ch; }
 #decode-method, #decode-description { color: var(--decode-muted); margin-block-start: .48rem; max-inline-size: 68ch; }
 #decode-notice { color: var(--decode-gold); margin-block: .75rem; }
+.decode-cue-mode:has(a[hidden]) { display: none; }
+.decode-cue-mode { margin-block-end: .85rem; }
+.decode-transcript {
+  margin-block-start: .8rem;
+  padding: .65rem .85rem;
+  border: 1px solid var(--decode-line);
+  border-radius: .55rem;
+  background: var(--decode-paper);
+}
+.decode-transcript summary { color: var(--decode-teal); font-weight: 650; }
+.decode-transcript p, .decode-transcript ol { margin-block-start: .55rem; color: var(--decode-muted); }
+.decode-transcript ol { padding-inline-start: 1.7rem; margin-block-end: .25rem; }
+.decode-transcript li + li { margin-block-start: .3rem; }
 
 #decode-steps {
   gap: .25rem .55rem;

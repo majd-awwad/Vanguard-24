@@ -119,6 +119,67 @@ const systemCopy = {
   },
 };
 
+const textCueCopy = {
+  en: {
+    switchToText: "Use text cues (no audio)",
+    switchToSound: "Switch to spatial sound",
+    notice: "Text cue mode · no audio is played.",
+    instructions: {
+      intro: "Read short clues from the same map used in sound mode, then mark the cells you think reached the challenge threshold.",
+      legend: "Each text cue gives the cell position and the strength of its mapped tone. Silence can mean the cell did not reach the challenge threshold or that its reading is missing.",
+      listen: "Read the cues as the scan moves west to east, from north to south within each column. You can pause or replay the scan.",
+      decode: "Select the cells with a mapped tone. Move with the arrow keys, press Enter to read a cell’s cue, and press Space to select it. You can also use the Read focused cell button.",
+    },
+    next: { intro: "Learn the text cues", legend: "Go to the scan", listen: "Make your guesses" },
+    shortSteps: ["Explore", "Text guide", "Read", "Guess", "Reveal"],
+    guide: "Text cue guide",
+    cues: [["↔", "Columns run west to east"], ["↕", "Rows run north to south"], ["◖", "Quiet, moderate or strong describes the mapped tone"]],
+    scan: "Start text scan",
+    scanFinished: "Text scan complete. Read the transcript or choose your cells.",
+    scanHeading: "Read the scan",
+    probe: "Read focused cell",
+    transcript: "Scan transcript",
+    transcriptHelp: "Text cues appear as the scan reaches each cell. The scan follows the same order as spatial sound.",
+    cue: "Text cue: {cue}.",
+    silence: "No mapped tone. A quiet slot can still contain dust, or the reading may be missing.",
+    planUnavailable: "This cue could not be prepared. Try reading the cell again.",
+    weights: { low: "Quiet", mid: "Moderate", high: "Strong" },
+  },
+  ar: {
+    switchToText: "استخدم الإشارات النصية بدون صوت",
+    switchToSound: "انتقل إلى الصوت المكاني",
+    notice: "وضع الإشارات النصية · بدون تشغيل صوت.",
+    instructions: {
+      intro: "اقرأ إشارات قصيرة من نفس الخريطة المستخدمة بوضع الصوت، وبعدين اختار الخلايا اللي بتتوقع إنها وصلت لحدّ التحدّي.",
+      legend: "كل إشارة نصية بتعطيك موقع الخلية وقوة نغمتها. غياب النغمة ممكن يعني إن الخلية ما وصلت لحدّ التحدّي أو إن القراءة مفقودة.",
+      listen: "اقرأ الإشارات أثناء المسح من الغرب للشرق، ومن الشمال للجنوب بكل عمود. بإمكانك توقّف المسح أو تعيده.",
+      decode: "اختار الخلايا اللي إلها نغمة. تنقّل بالأسهم، واضغط Enter لقراءة الإشارة ومفتاح المسافة للتحديد. كمان بإمكانك تستخدم زر «اقرأ الخلية الحالية».",
+    },
+    next: { intro: "تعرّف على الإشارات النصية", legend: "انتقل للمسح", listen: "خمّن الخلايا" },
+    shortSteps: ["استكشف", "دليل النص", "اقرأ", "خمّن", "اكشف"],
+    guide: "دليل الإشارات النصية",
+    cues: [["↔", "الأعمدة من الغرب للشرق"], ["↕", "الصفوف من الشمال للجنوب"], ["◖", "الإشارة خافتة أو متوسطة أو قوية حسب النغمة"]],
+    scan: "ابدأ المسح النصي",
+    scanFinished: "اكتمل المسح النصي. اقرأ السجل أو اختار الخلايا.",
+    scanHeading: "اقرأ المسح",
+    probe: "اقرأ الخلية الحالية",
+    transcript: "سجل المسح",
+    transcriptHelp: "الإشارة النصية بتظهر لما يوصل المسح للخلية. ترتيب الخلايا هو نفسه في الصوت المكاني.",
+    cue: "الإشارة النصية: {cue}.",
+    silence: "ما في نغمة. ممكن تضل الخلية الصامتة فيها غبار، أو تكون القراءة مفقودة.",
+    planUnavailable: "تعذّر تجهيز الإشارة. جرّب تقرأ الخلية مرة ثانية.",
+    weights: { low: "خافتة", mid: "متوسطة", high: "قوية" },
+  },
+};
+
+function cueTransport(transport) {
+  return {
+    ...transport,
+    play: () => transport.play("silent"),
+    replay: () => transport.replay("silent"),
+  };
+}
+
 // Mount after the session has published its initial case snapshot.
 export function mountDecodeAccessibility(gridRoot, session, { language = "en" } = {}) {
   return mountDecodeGrid(gridRoot, session, {
@@ -157,6 +218,13 @@ export function createDecodePlayback(transport) {
     },
     get durationS() { return plan?.durationS ?? 0; },
     get mode() { return plan?.mode; },
+    scanCells(snapshot) {
+      const state = snapshot.transport;
+      if (plan?.mode !== "sweep" || plan.caseId !== snapshot.caseId || plan.level !== snapshot.level ||
+          revision !== snapshot.planRevision || revision !== state.planRevision || state.awaitingOnset ||
+          !["playing", "ended"].includes(state.status)) return null;
+      return plan.events.filter(event => event.onsetS <= state.positionS).map(({ row, col }) => [row, col]);
+    },
     withActiveCell(snapshot) {
       const state = snapshot.transport;
       const current = plan && plan.mode !== "legend" && plan.caseId === snapshot.caseId &&
@@ -217,9 +285,26 @@ function evidenceRows(document, cells, text, t, format) {
 
 export async function mountDecode(root, {
   language = "en", makePlan, heardClass, mountVisual, transport = createTransport(),
-  loadCase = loadDecodeCase, caseId = dustCaseId, testPlayback = false, level = "quick",
+  loadCase = loadDecodeCase, caseId = dustCaseId, testPlayback = false, level = "quick", textCues = false,
 }) {
-  const t = (key, params) => decodeMessage(language, key, params);
+  const cueCopy = textCues ? textCueCopy[language] : null;
+  const textCue = heard => heard === "silent" ? cueCopy.silence : fill(cueCopy.cue, { cue: cueCopy.weights[heard] });
+  const t = (key, params) => {
+    if (cueCopy) {
+      if (key === "listen.start") return cueCopy.scan;
+      if (key === "listen.completed") return cueCopy.scanFinished;
+      if (key === "stage.legend") return cueCopy.guide;
+      if (key === "stage.listen") return cueCopy.scanHeading;
+      if (key === "grid.probeRequested") return cueCopy.probe;
+      if (key === "discovery.cellReadout" && params?.lastProbe?.row === params.row &&
+        params.lastProbe.col === params.col && (params.lastProbe.heard === "silent" ||
+          Object.hasOwn(cueCopy.weights, params.lastProbe.heard))) {
+        const position = decodeMessage(language, "grid.position", { row: params.row + 1, col: params.col + 1 });
+        return position + ". " + textCue(params.lastProbe.heard);
+      }
+    }
+    return decodeMessage(language, key, params);
+  };
   const text = { ...systemCopy[language], ...copy[language] };
   const document = root.ownerDocument;
   const byId = id => root.querySelector("#decode-" + id);
@@ -245,6 +330,9 @@ export async function mountDecode(root, {
   const progress = byId("progress");
   const selectionLabel = byId("selections");
   const probeReading = byId("probe-reading");
+  const transcript = byId("transcript");
+  const transcriptCues = byId("transcript-cues");
+  const probeAnnouncement = byId("cue-announcement");
   const playbackLabel = byId("playback-label");
   const map = byId("map");
   const mapTop = map.querySelector(".decode-map-top");
@@ -261,18 +349,45 @@ export async function mountDecode(root, {
   let lastTransportLabel;
   let lastChoiceText;
   let lastProbeText;
+  let lastProbeRevision;
   let caseData;
   let grid, visual, stopRendering;
+  let scan;
   const handlers = new AbortController();
-  const playback = createDecodePlayback(transport);
+  const playback = createDecodePlayback(textCues ? cueTransport(transport) : transport);
   const session = createDecodeSession({
     cases: [caseId], makePlan, heardClass, transport: playback.transport,
-    level, mode: "discovery", condition: "sound",
+    // The existing research condition "text" reserves the coarse regional description.
+    // For cell-level product cues, run the same spatial plans silently in "both".
+    level, mode: "discovery", condition: textCues ? "both" : "sound",
     async loadCase(id) {
       caseData = await loadCase(id);
       return caseData;
     },
   });
+
+  function updateTranscript(snapshot) {
+    const { transport: state, phase, level } = snapshot;
+    if (phase === "intro" || phase === "reveal") {
+      scan = null;
+      if (transcriptCues.firstChild) transcriptCues.replaceChildren();
+      return;
+    }
+    const cells = playback.scanCells(snapshot);
+    if (!cells) return;
+    if (!scan || scan.revision !== state.planRevision || state.positionS < scan.position) {
+      scan = { revision: state.planRevision, position: state.positionS, count: 0 };
+      transcriptCues.replaceChildren();
+    }
+    scan.position = state.positionS;
+    for (const [row, col] of cells.slice(scan.count)) {
+      const item = document.createElement("li");
+      const position = t("grid.position", { row: row + 1, col: col + 1 });
+      item.textContent = position + ". " + textCue(heardClass(caseData, level, row, col));
+      transcriptCues.append(item);
+    }
+    scan.count = cells.length;
+  }
 
   function setPhase(snapshot) {
     const { phase } = snapshot;
@@ -283,15 +398,18 @@ export async function mountDecode(root, {
       else li.removeAttribute("aria-current");
     }
     heading.textContent = t("stage." + stages[phase]);
-    description.textContent = text.instructions[phase];
+    description.textContent = cueCopy?.instructions[phase] ?? text.instructions[phase];
     stage.hidden = !["listen", "decode", "reveal"].includes(phase);
     cellActions.hidden = phase !== "decode";
     byId("legend").hidden = phase !== "legend";
-    play.hidden = !["legend", "listen", "decode"].includes(phase);
+    play.hidden = !(cueCopy ? ["listen", "decode"] : ["legend", "listen", "decode"]).includes(phase);
     play.textContent = phase === "legend" ? text.calibration : t("listen.start");
+    transcript.hidden = !cueCopy || !["listen", "decode"].includes(phase);
+    if (phase === "intro") transcript.open = true;
+    if (phase !== "decode") probeAnnouncement.textContent = "";
     next.hidden = !text.next[phase];
-    if (!next.hidden) next.textContent = text.next[phase];
-    const primary = { intro: next, legend: play, listen: play, decode: submit, reveal: restart }[phase];
+    if (!next.hidden) next.textContent = cueCopy?.next[phase] ?? text.next[phase];
+    const primary = { intro: next, legend: cueCopy ? next : play, listen: play, decode: submit, reveal: restart }[phase];
     for (const button of [next, play, submit, restart]) button.toggleAttribute("data-primary", button === primary);
     submit.hidden = phase !== "decode";
     restart.hidden = phase !== "reveal";
@@ -374,6 +492,7 @@ export async function mountDecode(root, {
     notice.textContent = [
       caseData.fixture && t("explore.fixtureDisclaimer"),
       testPlayback && text.testAudio,
+      cueCopy?.notice,
     ].filter(Boolean).join(" ");
     notice.hidden = !notice.textContent;
     byId("date").textContent = caseData.fixture ? "" : new Intl.DateTimeFormat(language, {
@@ -386,12 +505,12 @@ export async function mountDecode(root, {
       byId(direction).textContent = text.directions[index];
     }
     steps.setAttribute("aria-label", text.stepList);
-    steps.replaceChildren(...text.shortSteps.map(label => {
+    steps.replaceChildren(...(cueCopy?.shortSteps ?? text.shortSteps).map(label => {
       const item = document.createElement("li");
       item.textContent = label;
       return item;
     }));
-    byId("legend").replaceChildren(...text.cues.map(([icon, label]) => {
+    byId("legend").replaceChildren(...(cueCopy?.cues ?? text.cues).map(([icon, label]) => {
       const item = document.createElement("li");
       const glyph = document.createElement("span");
       glyph.setAttribute("aria-hidden", "true");
@@ -399,7 +518,12 @@ export async function mountDecode(root, {
       item.append(glyph, label);
       return item;
     }));
-    byId("probe").textContent = text.probe;
+    byId("probe").textContent = cueCopy?.probe ?? text.probe;
+    if (cueCopy) {
+      byId("transcript-title").textContent = cueCopy.transcript;
+      byId("transcript-help").textContent = cueCopy.transcriptHelp;
+      transcript.open = true;
+    }
     progress.setAttribute("aria-label", text.playbackLabel);
     byId("evidence-title").textContent = text.evidenceTitle;
     byId("limits").textContent = text.limits;
@@ -422,6 +546,8 @@ export async function mountDecode(root, {
 
     const rendererSession = {
       dispatch(intent) {
+        // The text guide already explains the cues, so synthetic calibration audio has no purpose.
+        if (cueCopy && intent.type === "play" && intent.mode === "legend") return undefined;
         if (intent.type === "reset" || intent.type === "select-case") visual?.clearReveal?.();
         if (intent.type === "next" || intent.type === "submit") session.dispatch({ type: "pause" });
         return session.dispatch(intent);
@@ -483,14 +609,22 @@ export async function mountDecode(root, {
         probeReading.textContent = probeText;
         lastProbeText = probeText;
       }
+      if (cueCopy && phase === "decode" && snapshot.playMode === "cell" &&
+          snapshot.lastProbe?.row === row && snapshot.lastProbe.col === col &&
+          snapshot.planRevision !== lastProbeRevision) {
+        probeAnnouncement.textContent = probeText;
+        lastProbeRevision = snapshot.planRevision;
+      }
       if (previousPhase !== phase) {
         const focusedControl = [next, submit, restart].includes(document.activeElement);
         setPhase(snapshot);
         previousPhase = phase;
         if (focusedControl) heading.focus();
       }
-      const hasPlayback = ["legend", "listen", "decode"].includes(phase);
-      pause.hidden = replay.hidden = mute.hidden = !hasPlayback;
+      if (cueCopy) updateTranscript(snapshot);
+      const hasPlayback = (cueCopy ? ["listen", "decode"] : ["legend", "listen", "decode"]).includes(phase);
+      pause.hidden = replay.hidden = !hasPlayback;
+      mute.hidden = Boolean(cueCopy) || !hasPlayback;
       playbackPanel.hidden = !hasPlayback;
       const matchingPlan = (phase === "legend") === ((snapshot.playMode ?? playback.mode) === "legend");
       replay.disabled = !matchingPlan;
@@ -504,7 +638,7 @@ export async function mountDecode(root, {
       pause.disabled = !["playing", "starting"].includes(state.status);
       mute.setAttribute("aria-pressed", state.muted ? "true" : "false");
       const playbackMessage = hasPlayback
-        ? (snapshot.error === "plan-unavailable" ? text.planUnavailable : state.audioUnavailable ? text.unavailable : "")
+        ? (snapshot.error === "plan-unavailable" ? (cueCopy?.planUnavailable ?? text.planUnavailable) : state.audioUnavailable ? text.unavailable : "")
         : "";
       if (busy.textContent !== playbackMessage) busy.textContent = playbackMessage;
     });
@@ -543,6 +677,7 @@ export async function startDecode(root) {
   const params = new URL(document.URL).searchParams;
   const language = params.get("lang") === "ar" ? "ar" : "en";
   const level = params.get("level") === "advanced" ? "advanced" : "quick";
+  const textCues = params.get("condition") === "text";
   document.documentElement.lang = language;
   document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
   document.title = copy[language].title + " · EARTHPULSE";
@@ -553,6 +688,12 @@ export async function startDecode(root) {
   const guide = root.querySelector("#decode-guide");
   guide.href = "./dust.html?lang=" + language;
   guide.textContent = language === "ar" ? "استكشاف موجّه" : "Guided Discovery";
+  const cueMode = root.querySelector("#decode-cue-mode");
+  const modeParams = new URLSearchParams(params);
+  if (textCues) modeParams.delete("condition");
+  else modeParams.set("condition", "text");
+  cueMode.href = "?" + modeParams;
+  cueMode.textContent = textCueCopy[language][textCues ? "switchToSound" : "switchToText"];
   const switchLanguage = root.querySelector("#decode-language");
   const alternate = language === "ar" ? "en" : "ar";
   params.set("lang", alternate);
@@ -581,8 +722,9 @@ export async function startDecode(root) {
         throw new Error("Decode visual export does not conform to v2.");
       }
       await mountDecode(root, {
-        language, level, makePlan: sound.makeSpatialPlan, heardClass: sound.heardClass, mountVisual: visual?.mountDecodeVisual,
+        language, level, textCues, makePlan: sound.makeSpatialPlan, heardClass: sound.heardClass, mountVisual: visual?.mountDecodeVisual,
       });
+      cueMode.hidden = false;
       switchLanguage.hidden = false;
       guide.hidden = false;
     } catch (error) {

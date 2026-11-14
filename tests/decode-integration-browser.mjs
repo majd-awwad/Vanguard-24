@@ -314,6 +314,51 @@ try {
   assert.deepEqual(liveErrors, []);
   console.log("Decode production modules scheduled six calibration tones and five dust tones through Web Audio.");
   await live.close();
+
+  for (const [lang, width, level, count] of [["en", 1440, "quick", 12], ["ar", 375, "advanced", 48]]) {
+    const page = await browser.newPage({ viewport: { width, height: 840 }, reducedMotion: "reduce" });
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await page.addInitScript(() => {
+      window.audioAttempts = 0;
+      window.AudioContext = class {
+        constructor() { window.audioAttempts++; throw Error("Text mode must use the silent clock."); }
+      };
+    });
+    const url = new URL(base.href);
+    url.search = new URLSearchParams({ lang, level, condition: "text" });
+    await page.goto(url.href);
+    const next = page.locator("#decode-next");
+    await next.click();
+    await next.click();
+    await page.locator("#decode-play").click();
+    const transcript = page.locator("#decode-transcript-cues li");
+    await transcript.first().waitFor();
+    assert.doesNotMatch(await transcript.first().textContent(), /PM2\.5|0\.20|GEOS-FP/);
+    assert.equal(await page.locator("#decode-readings tr").count(), 0);
+    assert.equal(await page.locator("#decode-context-image").getAttribute("src"), null);
+    await next.click();
+    const grid = page.getByRole("grid");
+    assert.equal(await grid.getByRole("gridcell").count(), count);
+    await grid.getByRole("gridcell").first().focus();
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => Boolean(document.querySelector("#decode-cue-announcement")?.textContent.trim()));
+    assert.match(await page.locator("#decode-cue-announcement").textContent(),
+      lang === "ar" ? /الإشارة النصية|ما في نغمة/ : /Text cue:|No mapped tone/);
+    await page.keyboard.press("Space");
+    assert.equal(await grid.getByRole("gridcell").first().getAttribute("aria-selected"), "true");
+    await page.keyboard.press("s");
+    await page.locator("#decode-evidence").waitFor();
+    assert.equal(await page.locator("#decode-readings tr").count(), count);
+    assert.equal(await transcript.count(), 0);
+    assert.equal(await page.evaluate(() => window.audioAttempts), 0);
+    const languageLink = new URL(await page.locator("#decode-language").evaluate(link => link.href));
+    assert.equal(languageLink.searchParams.get("condition"), "text");
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    assert.deepEqual(errors, []);
+    await page.close();
+    console.log(`Decode text-cue journey without AudioContext: ${lang}, ${width}px, ${level} passed.`);
+  }
 } finally {
   await browser.close();
 }
