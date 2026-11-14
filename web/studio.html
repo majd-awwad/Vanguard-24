@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#05080d">
+  <meta name="description" content="Explore NASA nighttime-lights imagery through synchronized geographic interaction and deterministic sound.">
+  <title>EARTHPULSE · Earth Sound Studio</title>
+  <link rel="icon" href="./assets/atlas/pulse.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./visual/studio.css?v=1">
+</head>
+<body>
+  <a class="skip" href="#studio-map" data-i18n="skip">Skip to the map</a>
+  <div id="studio-loading" class="studio-loading" role="status">Loading NASA reference layers…</div>
+  <main id="studio-interface" hidden>
+    <header class="studio-header">
+      <a class="studio-brand" href="./" aria-label="EarthPulse home">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="14.4" stroke="currentColor" stroke-width="1.4"/><path d="M5 17h6l2.1-5 3.2 10 3.5-13 2.8 8H27" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>EARTH<em>PULSE</em></span>
+      </a>
+      <div class="studio-title">
+        <strong data-i18n="title">Earth Sound Studio</strong>
+        <span data-i18n="subtitle">Listen across a changing planet</span>
+      </div>
+      <div class="header-actions">
+        <button id="open-method" type="button" class="quiet" data-i18n="method">Science &amp; mapping</button>
+        <button id="studio-language" type="button" class="quiet" lang="ar">العربية</button>
+      </div>
+    </header>
+
+    <section class="studio-stage" aria-label="Earth Sound Studio">
+      <div id="studio-map" class="studio-map" tabindex="0" role="application" data-interaction="navigate">
+        <div class="map-topbar">
+          <div class="year-switch" role="group" aria-label="Visualization layer">
+            <button type="button" data-layer="2012" aria-pressed="false" data-i18n="mode2012">2012 radiance image</button>
+            <button type="button" data-layer="2023" aria-pressed="false" data-i18n="mode2023">2023 radiance image</button>
+            <button type="button" data-layer="change" aria-pressed="true" data-i18n="modeChange">2012 → 2023 change</button>
+          </div>
+          <div class="map-camera" role="group" aria-label="Map navigation">
+            <button id="map-world" type="button" title="World view" aria-label="World view">◎</button>
+            <button id="map-india" type="button" title="Focus India" aria-label="Focus India">IND</button>
+            <button id="map-minus" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+            <button id="map-plus" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+
+        <div class="data-status" role="note">
+          <span class="status-dot" aria-hidden="true"></span>
+          <div><strong data-i18n="reference">NASA reference-image mode</strong><span data-i18n="referenceDetail">Qualitative rendering · radiance import pending Earthdata access</span></div>
+        </div>
+
+        <div class="map-legend" aria-label="Nighttime lights change legend">
+          <span class="legend-increase"><i></i><b data-i18n="legendIncrease">More light</b></span>
+          <span class="legend-stable"><i></i><b data-i18n="legendStable">Little visual change</b></span>
+          <span class="legend-decrease"><i></i><b data-i18n="legendDecrease">Less light</b></span>
+          <span class="legend-empty"><i></i><b data-i18n="legendNoSignal">No classified signal</b></span>
+        </div>
+
+        <p class="map-keyboard" data-i18n="keyboard">Keyboard: arrows pan · +/− zoom · Enter probes center · S scans · D draws · Space plays/pauses</p>
+      </div>
+
+      <aside class="scientific-inspector" aria-labelledby="inspector-title">
+        <div class="panel-heading"><span>LIVE / 01</span><h1 id="inspector-title" data-i18n="inspector">Live scientific inspector</h1></div>
+        <p id="inspector-empty" data-i18n="noSelection">Move over the map or select a place.</p>
+        <div id="inspector-content" hidden>
+          <section>
+            <h2 data-i18n="location">Location</h2>
+            <dl class="two-column"><div><dt data-i18n="lon">Longitude</dt><dd id="inspect-lon" dir="ltr"></dd></div><div><dt data-i18n="lat">Latitude</dt><dd id="inspect-lat" dir="ltr"></dd></div></dl>
+          </section>
+          <section>
+            <h2 data-i18n="nasaData">NASA data</h2>
+            <dl>
+              <div><dt data-i18n="baseline">2012 radiance</dt><dd id="inspect-2012"></dd></div>
+              <div><dt data-i18n="comparison">2023 radiance</dt><dd id="inspect-2023"></dd></div>
+              <div><dt data-i18n="delta">Radiance change</dt><dd id="inspect-delta"></dd></div>
+              <div><dt data-i18n="renderedBrightness">Rendered pixel brightness</dt><dd id="inspect-brightness"></dd></div>
+              <div><dt data-i18n="visualStrength">Rendered color strength</dt><dd id="inspect-strength"></dd></div>
+            </dl>
+          </section>
+          <section>
+            <h2 data-i18n="interpretation">Interpretation</h2>
+            <p id="inspect-direction" class="inspector-callout"></p>
+            <p><b data-i18n="quality">Quality status</b><br><span id="inspect-quality"></span></p>
+          </section>
+          <details>
+            <summary data-i18n="audio">Audio explanation</summary>
+            <p id="inspect-audio" dir="ltr"></p>
+            <p data-i18n="mappingCaution">This sound interprets colors in an official NASA visualization. It is not recorded sound and does not yet encode calibrated radiance.</p>
+          </details>
+          <details>
+            <summary data-i18n="provenance">Data provenance</summary>
+            <p data-i18n="sourceProduct">NASA SVS 5276 · Suomi NPP VIIRS / Black Marble context</p>
+            <p id="inspect-pixel" dir="ltr"></p>
+            <a href="https://svs.gsfc.nasa.gov/5276/" target="_blank" rel="noreferrer" data-i18n="sourceLink">Open official visualization</a>
+          </details>
+        </div>
+      </aside>
+
+      <section class="comparison-panel" aria-labelledby="compare-title">
+        <div class="panel-heading"><span>A / B</span><h2 id="compare-title" data-i18n="compareTitle">A/B comparison</h2></div>
+        <p id="compare-status" data-i18n="chooseA">Select place A</p>
+        <div id="compare-table" class="compare-table" hidden>
+          <div><strong>A</strong><b id="compare-a-class"></b><span id="compare-a-coord" dir="ltr"></span><em id="compare-a-value"></em></div>
+          <div><strong>B</strong><b id="compare-b-class"></b><span id="compare-b-coord" dir="ltr"></span><em id="compare-b-value"></em></div>
+          <div class="compare-actions"><button id="hear-a" type="button" data-i18n="hearA">Hear A</button><button id="hear-b" type="button" data-i18n="hearB">Hear B</button><button id="hear-alternate" type="button" data-i18n="alternate">Alternate A/B</button></div>
+        </div>
+      </section>
+
+      <section class="studio-dock" aria-label="Sound and playback controls">
+        <div class="primary-tools">
+          <button id="enable-sound" type="button" class="sound-enable"><span aria-hidden="true">◉</span><span data-i18n="enableSound">Enable sound</span></button>
+          <button id="play-visible" type="button"><span aria-hidden="true">↝</span><span data-i18n="playVisible">Play visible area</span></button>
+          <button id="draw-path" type="button" aria-pressed="false"><span aria-hidden="true">⌁</span><span data-i18n="draw">Draw &amp; listen</span></button>
+          <button id="compare-mode" type="button" aria-pressed="false"><span aria-hidden="true">A:B</span><span data-i18n="compareMode">Compare places</span></button>
+        </div>
+        <div class="transport-row">
+          <div class="transport-buttons">
+            <button id="transport-play" type="button" disabled aria-label="Play">▶</button>
+            <button id="transport-pause" type="button" disabled aria-label="Pause">Ⅱ</button>
+            <button id="transport-restart" type="button" disabled aria-label="Restart">↺</button>
+            <button id="transport-stop" type="button" aria-label="Stop">■</button>
+          </div>
+          <div class="transport-progress"><span id="playback-status" role="status">Ready</span><input id="playback-progress" type="range" min="0" max="1000" value="0" disabled data-i18n-aria="progress" aria-label="Playback progress"></div>
+          <label><span data-i18n="speed">Speed</span><select id="playback-speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+          <label><span data-i18n="volume">Volume</span><input id="studio-volume" type="range" min="0" max="100" value="72"></label>
+          <label><span data-i18n="soundFilter">Sound direction</span><select id="sound-filter"><option value="both" data-i18n="both">Both</option><option value="increase" data-i18n="onlyIncrease">Increase only</option><option value="decrease" data-i18n="onlyDecrease">Decrease only</option></select></label>
+        </div>
+        <div class="profile-row">
+          <div class="profile-heading"><span data-i18n="pathProfile">Synchronized visual-signal profile</span><p id="path-empty" data-i18n="pathEmpty">Draw a route across the map to build its profile.</p></div>
+          <canvas id="path-profile" width="680" height="82" aria-hidden="true"></canvas>
+          <div id="path-tools" class="path-tools" hidden>
+            <button id="reverse-path" type="button" data-i18n="reverse">Reverse</button>
+            <label><input id="repeat-path" type="checkbox"><span data-i18n="repeat">Repeat</span></label>
+            <button id="save-path" type="button" data-i18n="save">Save trail</button>
+            <button id="clear-path" type="button" data-i18n="clear">Clear</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="method-dialog">
+    <div class="method-head"><div><span>METHOD / V1</span><h2 data-i18n="method">Science &amp; mapping</h2></div><button id="close-method" type="button" aria-label="Close" data-i18n="close">Close</button></div>
+    <div class="method-grid">
+      <section><h3>01 · <span data-i18n="provenance">Data provenance</span></h3><p data-i18n="sourceProduct">NASA SVS 5276 · Suomi NPP VIIRS / Black Marble context</p><p data-i18n="noRadiance">No radiance value is inferred from JPEG color.</p><a href="https://svs.gsfc.nasa.gov/5276/" target="_blank" rel="noreferrer" data-i18n="sourceLink">Open official visualization</a></section>
+      <section><h3>02 · <span data-i18n="audio">Audio explanation</span></h3><p data-i18n="mappingSummary">Purple uses a brighter rising voice; orange uses a darker falling voice. Rendered color strength controls pitch and gain. White is subdued; unclassified pixels are silent.</p><p data-i18n="mappingCaution">This sound interprets colors in an official NASA visualization. It is not recorded sound and does not yet encode calibrated radiance.</p></section>
+      <section><h3>03 · <span data-i18n="quantitativePending">Quantitative VNP46A4 integration pending</span></h3><p data-i18n="numericTarget">Numeric target: VNP46A4.002 · AllAngle_Composite_Snow_Free · h25v06</p><p data-i18n="authBlock">Authenticated annual HDF5 files are still required before numerical claims are enabled.</p></section>
+    </div>
+  </dialog>
+  <p id="studio-live" class="sr-only" aria-live="polite"></p>
+  <script type="module" src="./studio/app.js?v=1"></script>
+</body>
+</html>

@@ -1,5 +1,21 @@
 # Data intake for EarthPulse
 
+## Earth Sound Studio — required to unlock quantitative radiance
+
+Create a NASA Earthdata account and a temporary LAADS bearer token. Provide the
+token only through the local `EARTHDATA_TOKEN` environment variable; never paste
+it into source code, chat logs, JSON or frontend configuration. The bounded
+importer requests exactly these official Collection 2 granules:
+
+- 2012: <https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/5200/VNP46A4/2012/001/VNP46A4.A2012001.h25v06.002.2025086172430.h5>
+- 2023: <https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/5200/VNP46A4/2023/001/VNP46A4.A2023001.h25v06.002.2025162080718.h5>
+
+Run `python science/nightlights/extract_vnp46a4.py --download`. The script stores
+raw HDF5 files under ignored `science/nightlights/raw/`, validates product,
+metadata, fields, scale, fill and QA, and creates a compact processed bundle.
+The frontend deliberately remains in labeled reference-image mode until that
+output is reviewed and integrated.
+
 The packaged Atlas, Dust Observatory, Earth Detective and GEDI V001 case need no additional data, imagery, recordings or credentials to run. The records below are optional extensions of coverage or scientific validation. The browser always uses local processed assets, so Earthdata credentials stay in the provider's login flow.
 
 | Priority and result | Provider, exact request and expected format | Intake |

@@ -1,0 +1,65 @@
+{
+  "schema": "earthpulse-studio-reference-v1",
+  "status": "REFERENCE_IMAGE_ONLY",
+  "quantitative": false,
+  "title": "Change in Night Lights between 2012 and 2023",
+  "source": {
+    "publisher": "NASA Scientific Visualization Studio",
+    "page": "https://svs.gsfc.nasa.gov/5276/",
+    "doi": "10.5281/zenodo.17177652",
+    "credit": "NASA Earth Observatory images by Joshua Stevens, using Suomi NPP VIIRS data from Miguel Román, NASA GSFC"
+  },
+  "projection": {
+    "name": "equirectangular flat-map presentation",
+    "bounds": [-180, -90, 180, 90],
+    "frame_registration": "inferred_from_published_flat_map",
+    "pixel_level_geolocation_verified": false
+  },
+  "reference_sampler": {
+    "width": 1920,
+    "height": 1080,
+    "method": "browser bilinear 4:1 downsample followed by deterministic HSV classification",
+    "meaning": "rendered visual signal only"
+  },
+  "layers": {
+    "2012": {
+      "file": "nightlights-2012.jpg",
+      "sha256": "31deb9a5a5c2f06a4d661fb02dee59d07a04db331fec3566f228241c07daa03b",
+      "source_url": "https://svs.gsfc.nasa.gov/vis/a000000/a005200/a005276/nightlights_flat_series_stills_8k_compare.02012.jpg",
+      "width": 7680,
+      "height": 4320
+    },
+    "2023": {
+      "file": "nightlights-2023.jpg",
+      "sha256": "2f9b2e2a39a87e9b2627a04a77cb32d17fe235929ec0d45d582e7b638ba658b9",
+      "source_url": "https://svs.gsfc.nasa.gov/vis/a000000/a005200/a005276/nightlights_flat_series_stills_8k_compare.02023.jpg",
+      "width": 7680,
+      "height": 4320
+    },
+    "change": {
+      "file": "nightlights-change.jpg",
+      "sha256": "c46d9ae67c93f97bd1d376fc4d2246451576f3cdc78e2b7b4dcf41bc02ee9601",
+      "source_url": "https://svs.gsfc.nasa.gov/vis/a000000/a005200/a005276/nightlights_flat_change_still_8k.00700.jpg",
+      "width": 7680,
+      "height": 4320,
+      "legend": {
+        "increase": "purple",
+        "decrease": "orange",
+        "little_visual_change": "near-white"
+      }
+    }
+  },
+  "numeric_target": {
+    "product": "VNP46A4.002",
+    "doi": "10.5067/VIIRS/VNP46A4.002",
+    "field": "AllAngle_Composite_Snow_Free",
+    "quality_field": "AllAngle_Composite_Snow_Free_Quality",
+    "units": "nW cm-2 sr-1",
+    "tile": "h25v06",
+    "bounds": [70, 20, 80, 30],
+    "baseline_file": "VNP46A4.A2012001.h25v06.002.2025086172430.h5",
+    "comparison_file": "VNP46A4.A2023001.h25v06.002.2025162080718.h5",
+    "availability": "blocked_pending_earthdata_token"
+  },
+  "scientific_limit": "Packaged imagery supports qualitative exploration of the published rendering only. RGB values are not radiance, and the inferred frame coordinates are not a substitute for georeferenced VNP46A4 pixels."
+}

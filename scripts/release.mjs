@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdtemp, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join, posix, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { atlasChecksums, buildSite, gediSampleSha256, isSiteSource } from "./build.mjs";
+import { atlasChecksums, buildSite, gediSampleSha256, isSiteSource, studioAssetChecksums } from "./build.mjs";
 import { validateDecodeCase } from "../web/contracts/validate.js";
 import {
   validateDustCatalog, validateDustComparison, validateDustGrid, validateDustSnapshot,
@@ -12,6 +12,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const textExtensions = new Set([".html", ".js", ".css", ".json", ".ts", ".svg", ".txt", ".csv", ".md"]);
 const pinnedScience = {
   ...Object.fromEntries([...atlasChecksums].map(([name, hash]) => ["assets/atlas/" + name, hash])),
+  ...Object.fromEntries([...studioAssetChecksums].map(([name, hash]) => ["assets/studio/" + name, hash])),
   "assets/gedi/sample.json": gediSampleSha256,
   "assets/decode/data/dust-geos-fp-20250819-1930-north-africa-med.json": "7f71da5fe3b10af60e6e78f169d2a68578f67d5d33c4717b1bc047023b5ca582",
   "assets/decode/svs-5669-context.webp": "abece93664d0966265da5819b6844a7b9dd9aac17aded9c84a0076f80d72b30a",
@@ -22,7 +23,7 @@ const generated = [
   "assets/atlas/mur-sst-url.txt",
   ...[...atlasChecksums.keys()].map(name => "assets/atlas/" + name),
 ];
-const entrypoints = ["index.html", "dust.html", "decode.html", "decode-3d.html", "dust-observatory.html", "forest.html"];
+const entrypoints = ["index.html", "studio.html", "dust.html", "decode.html", "decode-3d.html", "dust-observatory.html", "forest.html"];
 // These are assembled by runtime imports and asset resolvers rather than
 // appearing as complete URL literals in markup.
 const dynamicDependencies = [

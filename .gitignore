@@ -2,3 +2,5 @@
 /release/
 /node_modules/
 __pycache__/
+/science/nightlights/.python/
+/science/nightlights/raw/

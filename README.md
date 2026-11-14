@@ -2,6 +2,14 @@
 
 Team Vanguard’s bilingual Earth-science listening platform. Start with cinematic Earth Detective or go directly to **The Invisible Forest**. The Atlas opens ocean temperature, rainfall and thermal detections in a common, geographically registered Sonic Lens. The Forest instrument explores a discrete GEDI track and return waveform. Playback uses only packaged assets and needs no credentials or internet access.
 
+**Earth Sound Studio** is available at `web/studio.html`. Its current checked-in
+mode explores three exact NASA SVS 5276 nighttime-lights frames through a smooth
+global map, hover listening, visible-area scanning, drawn geographic trails and
+A/B comparison. It is intentionally labeled `REFERENCE_IMAGE_ONLY`: image color
+drives qualitative sound, while radiance values remain unavailable until the
+two authenticated VNP46A4.002 h25v06 granules pass the bounded importer and
+review described in `science/nightlights/README.md`.
+
 ## Walkthrough
 
 1. From the home page, launch Earth Detective in 3D. Play the sound guide, Start Decoding, listen to a pass, select cells and reveal the modeled dust values. If WebGL is disabled, the same route switches to SVG. Separate 2D and text-cue links are also available.
