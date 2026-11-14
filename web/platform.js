@@ -118,6 +118,7 @@ function translate() {
     element.replaceChildren(...lines.flatMap((line, index) => index ? [document.createElement("br"), line] : [line]));
   }
   for (const element of document.querySelectorAll("[data-alt]")) element.alt = t(element.dataset.alt);
+  byId("dust-discovery").href = urlWithLanguage("./dust.html");
   byId("language").lang = language === "ar" ? "en" : "ar";
   text("language", language === "ar" ? "English" : "العربية");
   const selection = byId("signal").value || "ocean";

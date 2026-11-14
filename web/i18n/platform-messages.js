@@ -4,6 +4,7 @@ const copy = {
   eyebrow: ["An Earth observation jukebox", "مرصد الأرض المسموع"], title: ["One Earth.|Many signals.", "أرض واحدة.|إشارات كثيرة."],
   intro: ["What if you could hear what Earth is telling us? Explore the science behind the sounds of ocean heat, rainfall, active fires and forests.", "ماذا لو أمكنك سماع ما تخبرنا به الأرض؟ استكشف العلم وراء أصوات حرارة المحيط والأمطار والحرائق والغابات."],
   explore: ["Explore Earth", "استكشف الأرض"], worlds: ["Explore Earth", "استكشف الأرض"],
+  dustDiscovery: ["Explore dust with sound", "استكشف الغبار بالصوت"],
   preview: ["Listen", "استمع"], previewStop: ["Stop preview", "أوقف المعاينة"], previewChoice: ["Preview signal", "إشارة المعاينة"],
   oceanAlt: ["Global NASA visualization of sea-surface temperature", "تصوّر عالمي من ناسا لحرارة سطح البحر"],
   oceanVisual: ["Ocean surface temperature", "حرارة سطح المحيط"],

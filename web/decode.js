@@ -15,7 +15,7 @@ const copy = {
     title: "Decode the Dust",
     region: "North Africa · Mediterranean",
     question: "Where on the map was the modeled dust signal strong?",
-    method: "Find the cells where modeled dust aerosol optical depth reached {threshold} or more. Listen for a tone in each cell.",
+    method: "Find the cells whose modeled dust aerosol optical depth reaches {threshold} or more. This cutoff is a game rule. Optical depth describes how dust dims light through the full atmosphere.",
     instructions: {
       intro: "Listen to a map made from NASA model data, then mark the cells you think reached the challenge threshold.",
       legend: "Play three pairs of examples: left and right, low and high pitch, then quiet and loud.",
@@ -47,7 +47,7 @@ const copy = {
     title: "اسمع خريطة الغبار",
     region: "شمال أفريقيا · البحر المتوسط",
     question: "بأي مناطق كانت إشارة الغبار قوية؟",
-    method: "دَوّر على الخلايا اللي وصل فيها العمق البصري للغبار في النموذج لـ{threshold} أو أكثر. اسمع إذا في نغمة بكل خلية.",
+    method: "دَوّر على الخلايا اللي وصل فيها العمق البصري للغبار في النموذج لـ{threshold} أو أكثر. هاد الحدّ قاعدة للتحدّي. العمق البصري بيوصف كيف الغبار بخفّف الضوء عبر الغلاف الجوي كاملًا.",
     instructions: {
       intro: "اسمع خريطة مبنيّة على بيانات نموذج من ناسا، وبعدين اختار الخلايا اللي بتتوقع إنها وصلت لحدّ التحدّي.",
       legend: "شغّل ثلاثة أزواج من النغمات. اسمع اليسار ثم اليمين، والنغمة الواطية ثم العالية، والصوت الخافت ثم الأقوى.",
@@ -215,7 +215,7 @@ function evidenceRows(document, cells, text, t, format) {
 
 export async function mountDecode(root, {
   language = "en", makePlan, heardClass, mountVisual, transport = createTransport(),
-  loadCase = loadDecodeCase, caseId = dustCaseId, testPlayback = false,
+  loadCase = loadDecodeCase, caseId = dustCaseId, testPlayback = false, level = "quick",
 }) {
   const t = (key, params) => decodeMessage(language, key, params);
   const text = { ...systemCopy[language], ...copy[language] };
@@ -265,7 +265,7 @@ export async function mountDecode(root, {
   const playback = createDecodePlayback(transport);
   const session = createDecodeSession({
     cases: [caseId], makePlan, heardClass, transport: playback.transport,
-    level: "quick", mode: "discovery", condition: "sound",
+    level, mode: "discovery", condition: "sound",
     async loadCase(id) {
       caseData = await loadCase(id);
       return caseData;
@@ -377,7 +377,7 @@ export async function mountDecode(root, {
     byId("date").textContent = caseData.fixture ? "" : new Intl.DateTimeFormat(language, {
       dateStyle: "long", timeZone: "UTC",
     }).format(new Date(caseData.source.time.start));
-    byId("method").textContent = fill(text.method, { threshold: thresholdFormat(caseData.levels.quick.truth.threshold) });
+    byId("method").textContent = fill(text.method, { threshold: thresholdFormat(caseData.levels[level].truth.threshold) });
     map.dataset.live = "";
     mapTop.hidden = false;
     for (const [index, direction] of ["west", "north", "east", "south"].entries()) {
@@ -535,7 +535,9 @@ async function loadOptionalModule(path) {
 
 export async function startDecode(root) {
   const document = root.ownerDocument;
-  const language = new URL(document.URL).searchParams.get("lang") === "ar" ? "ar" : "en";
+  const params = new URL(document.URL).searchParams;
+  const language = params.get("lang") === "ar" ? "ar" : "en";
+  const level = params.get("level") === "advanced" ? "advanced" : "quick";
   document.documentElement.lang = language;
   document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
   document.title = copy[language].title + " · EARTHPULSE";
@@ -543,9 +545,13 @@ export async function startDecode(root) {
   const home = root.querySelector("#decode-home");
 
   home.href = language === "ar" ? "./?lang=ar" : "./";
+  const guide = root.querySelector("#decode-guide");
+  guide.href = "./dust.html?lang=" + language;
+  guide.textContent = language === "ar" ? "استكشاف موجّه" : "Guided Discovery";
   const switchLanguage = root.querySelector("#decode-language");
   const alternate = language === "ar" ? "en" : "ar";
-  switchLanguage.href = "?lang=" + alternate;
+  params.set("lang", alternate);
+  switchLanguage.href = "?" + params;
   switchLanguage.hreflang = switchLanguage.lang = alternate;
   switchLanguage.textContent = alternate === "ar" ? "العربية" : "English";
   const state = root.querySelector("#decode-state");
@@ -570,9 +576,10 @@ export async function startDecode(root) {
         throw new Error("Decode visual export does not conform to v2.");
       }
       await mountDecode(root, {
-        language, makePlan: sound.makeSpatialPlan, heardClass: sound.heardClass, mountVisual: visual?.mountDecodeVisual,
+        language, level, makePlan: sound.makeSpatialPlan, heardClass: sound.heardClass, mountVisual: visual?.mountDecodeVisual,
       });
       switchLanguage.hidden = false;
+      guide.hidden = false;
     } catch (error) {
       console.error(error);
       state.textContent = t("general.error");
