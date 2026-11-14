@@ -514,6 +514,51 @@ test("Test data: ordinary playback updates preserve a highlight until a new cell
   dispose();
 });
 
+test("the mounted playhead follows activeCell across playback and plan changes", () => {
+  const { highlight, update, dispose } = mountPlaybackFixture({ ...quickPlayback, activeCell: null });
+  const playing = { ...quickPlayback, activeCell: [0, 0] };
+  assert.equal(highlight.childElementCount, 0);
+  update(playing);
+  const [first] = highlight.children;
+  assert.equal(first.attributes.x, "0.08");
+  update({ ...playing, activeCell: [0, 0] });
+  assert.equal(highlight.children[0], first);
+  update({ ...playing, activeCell: [1, 2] });
+  assert.equal(highlight.children[0].attributes.y, "1.08");
+  assert.equal(highlight.children[0].attributes.x, "2.08");
+
+  update({ ...playing, activeCell: null });
+  assert.equal(highlight.childElementCount, 0);
+  update(playing);
+  assert.equal(highlight.children[0].attributes.x, "0.08");
+
+  // Reuse the transport event ID in a new revision. Only activeCell drives drawing.
+  const replacement = {
+    ...playing,
+    planRevision: 2,
+    transport: { ...playing.transport, planRevision: 2 },
+  };
+  update({ ...replacement, activeCell: null });
+  assert.equal(highlight.childElementCount, 0);
+  update({ ...replacement, activeCell: [2, 3] });
+  assert.equal(highlight.children[0].attributes.x, "3.08");
+
+  update({ ...advancedPlayback, activeCell: [5, 7] });
+  assert.equal(highlight.children[0].attributes.y, "5.08");
+  update({ ...playing, activeCell: [5, 7] });
+  assert.equal(highlight.childElementCount, 0);
+  update(playing);
+  update({ ...playing, caseId: "replacement-case", activeCell: null });
+  assert.equal(highlight.childElementCount, 0);
+
+  for (const activeCell of [undefined, null, [-1, 0], [0, 4], [0.5, 1], {}]) {
+    update(playing);
+    update({ ...playing, activeCell });
+    assert.equal(highlight.childElementCount, 0);
+  }
+  dispose();
+});
+
 test("Test data: a null or out-of-bounds playback cell clears the mounted highlight", () => {
   const { highlight, update, dispose } = mountPlaybackFixture(advancedPlayback);
   update(quickPlayback);

@@ -36,8 +36,8 @@
   pointer-events: none;
 }
 
-/* Reveal glyphs must paint over the opaque background of pressed cells. */
-#decode-visual:has(.decode-reveal-markers) {
+/* Cell markers must paint over the opaque background of pressed cells. */
+#decode-visual:has(.decode-reveal-markers, .decode-map-highlight rect) {
   z-index: 1;
 }
 

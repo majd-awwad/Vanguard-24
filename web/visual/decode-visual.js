@@ -48,7 +48,7 @@ function svgElement(document, name, attributes) {
 // Draw a resolved cell for the current plan in SVG grid coordinates.
 // The caller supplies the cell, or null when there is no active cell.
 export function drawPlaybackHighlight(layer, cell) {
-  const [row, col] = cell ?? [];
+  const [row, col] = Array.isArray(cell) ? cell : [];
   const bounds = highlightContexts.get(layer);
   if (!Number.isInteger(row) || !Number.isInteger(col) || row < 0 || col < 0 ||
       (bounds && (row >= bounds.rows || col >= bounds.cols))) {
@@ -91,6 +91,7 @@ export const mountDecodeVisual = (root, session, { t }) => {
   let phase;
   let pendingReveal;
   let mountedReveal;
+  let highlightedCell;
 
   function clearReveal() {
     pendingReveal = undefined;
@@ -124,7 +125,7 @@ export const mountDecodeVisual = (root, session, { t }) => {
     return apply;
   }
 
-  function render({ phase: nextPhase, caseId, level, planRevision, grid }) {
+  function render({ phase: nextPhase, caseId, level, planRevision, grid, activeCell }) {
     if (disposed) return;
     const { rows, cols } = grid;
     const previous = highlightContexts.get(highlightLayer);
@@ -133,9 +134,7 @@ export const mountDecodeVisual = (root, session, { t }) => {
       previous.rows !== rows || previous.cols !== cols);
     if (gridChanged || nextPhase !== "reveal") clearReveal();
     phase = nextPhase;
-    if (gridChanged || (previous && previous.planRevision !== planRevision)) {
-      drawPlaybackHighlight(highlightLayer, null);
-    }
+    const planChanged = gridChanged || (previous && previous.planRevision !== planRevision);
     highlightContexts.set(highlightLayer, { caseId, level, planRevision, rows, cols });
     svg.setAttribute("viewBox", `0 0 ${cols} ${rows}`);
     const cells = grid.cells.map(({ row, col }) => svgElement(document, "rect", {
@@ -147,6 +146,12 @@ export const mountDecodeVisual = (root, session, { t }) => {
       "vector-effect": "non-scaling-stroke",
     }));
     gridLayer.replaceChildren(...cells);
+
+    const [row, col] = Array.isArray(activeCell) ? activeCell : [];
+    if (planChanged || highlightedCell?.[0] !== row || highlightedCell?.[1] !== col) {
+      drawPlaybackHighlight(highlightLayer, activeCell);
+      highlightedCell = [row, col];
+    }
   }
 
   render(session.getState());
