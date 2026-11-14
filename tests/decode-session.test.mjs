@@ -290,6 +290,168 @@ test("playMode names the loaded plan and survives the end of playback", async ()
   assert.equal(slow.getState().playMode, null);
 });
 
+test("activeCell resolves the playhead for silent and sounding events, and only for the current plan", async () => {
+  // Legend events sit on synthetic calibration cells, like Andreh's, and must never resolve.
+  const makePlan = (data, options) => {
+    const plan = fakePlan(data, options);
+    if (options.mode === "legend") {
+      plan.events = [{ id: "ev-0", onsetS: 0, row: 1, col: 0, tone: {}, evidence: {} }, { id: "ev-1", onsetS: 1, row: 1, col: 3, tone: {}, evidence: {} }];
+    }
+    return plan;
+  };
+  const { session, transport } = await setup({ makePlan });
+  const playhead = (patch) => {
+    transport.emitRaw({ ...transport.snapshot(), status: "playing", ...patch });
+    return session.getState().activeCell;
+  };
+
+  assert.equal(session.getState().activeCell, null, "idle: no playhead");
+  assert.equal(session.getState().playMode, "legend");
+  assert.equal(playhead({ activeEventId: "ev-0" }), null, "legend events are calibration, not grid cells");
+  assert.equal(playhead({ activeEventId: "ev-1" }), null);
+
+  session.dispatch({ type: "play", mode: "sweep" });
+  const grid = fixtures[0].levels.quick;
+  const visited = [];
+  for (let index = 0; index < grid.cells.length; index++) {
+    const cell = playhead({ activeEventId: `ev-${index}` });
+    assert.deepEqual(cell, [grid.cells[index].row, grid.cells[index].col], `event ${index} resolves in sweep order`);
+    visited.push(cell);
+    assertRedacted(session.getState());
+  }
+  assert.equal(new Set(visited.map(([row, col]) => `${row},${col}`)).size, grid.cells.length, "every cell is visited once");
+  assert.ok(visited.some(([row, col]) => grid.cells[row * grid.cols + col].status === "missing"), "silent cells resolve too");
+
+  assert.equal(playhead({ activeEventId: "ev-999" }), null, "unknown id");
+  assert.equal(playhead({ activeEventId: null }), null);
+  assert.equal(playhead({ activeEventId: "ev-3", status: "idle" }), null, "idle");
+  const { planRevision } = transport.snapshot();
+  assert.equal(playhead({ activeEventId: "ev-3", planRevision: planRevision + 1 }), null, "stale revision: plan was replaced");
+  assert.equal(playhead({ activeEventId: "ev-3", planRevision }), null, "an older revision snapshot is dropped, not resurrected");
+  session.dispatch({ type: "play", mode: "row" });
+  assert.equal(session.getState().playMode, "row");
+  assert.deepEqual(playhead({ activeEventId: "ev-1" }), [0, 1], "a freshly loaded plan resolves again");
+
+  const state = session.getState();
+  state.activeCell[0] = 99;
+  assert.notEqual(session.getState().activeCell[0], 99, "snapshots do not expose internal state");
+  assert.ok(!JSON.stringify(state).includes("evidence"));
+});
+
+// Throws like Andreh's makeSpatialPlan when contrast is requested without exactly two cells.
+function strictPlan(data, options) {
+  if (options.mode === "contrast" && options.cells?.length !== 2) throw new RangeError("contrast requires 2 cell(s).");
+  return fakePlan(data, options);
+}
+
+test("contrast compares the focused cell with the last probed cell and is a no-op otherwise", async () => {
+  const requests = [];
+  const makePlan = (data, options) => { requests.push(options); return strictPlan(data, options); };
+  const { session, transport } = await setup({ makePlan });
+  for (let step = 0; step < 2; step++) session.dispatch({ type: "next" });
+
+  const before = { revision: session.getState().planRevision, mode: session.getState().playMode, calls: transport.calls.length };
+  session.dispatch({ type: "play", mode: "contrast" });
+  assert.equal(transport.calls.length, before.calls, "no lastProbe: nothing loads or plays");
+  assert.equal(session.getState().playMode, before.mode);
+  assert.equal(session.getState().error, null);
+
+  session.dispatch({ type: "probe", row: 0, col: 2 });
+  const afterProbe = { revision: session.getState().planRevision, calls: transport.calls.length };
+  session.dispatch({ type: "play", mode: "contrast" });
+  assert.equal(transport.calls.length, afterProbe.calls, "focus equals lastProbe: no-op");
+  assert.equal(session.getState().planRevision, afterProbe.revision);
+  assert.equal(session.getState().playMode, "cell");
+
+  session.dispatch({ type: "focus", row: 1, col: 1 });
+  session.dispatch({ type: "play", mode: "contrast" });
+  assert.deepEqual(requests.at(-1), { level: "quick", mode: "contrast", cells: [[1, 1], [0, 2]] });
+  assert.equal(session.getState().playMode, "contrast");
+  assert.equal(session.getState().error, null);
+  assert.deepEqual(transport.calls.at(-1), ["play", "audio"]);
+  assertRedacted(session.getState());
+});
+
+test("plan and transport errors never escape dispatch and are reported without data", async () => {
+  let failing = false;
+  const makePlan = (data, options) => {
+    if (failing) throw new RangeError("contrast requires 2 cell(s).");
+    return strictPlan(data, options);
+  };
+  const { session, transport, states } = await setup({ makePlan });
+  for (let step = 0; step < 2; step++) session.dispatch({ type: "next" });
+  const good = session.getState();
+  assert.equal(good.error, null);
+
+  failing = true;
+  const callsBefore = transport.calls.length;
+  assert.doesNotThrow(() => session.dispatch({ type: "play", mode: "sweep" }));
+  let state = session.getState();
+  assert.equal(state.error, "plan-unavailable");
+  assert.equal(state.playMode, good.playMode);
+  assert.equal(state.planRevision, good.planRevision);
+  assert.ok(!transport.calls.slice(callsBefore).some(([name]) => name === "play" || name === "load"));
+  assert.doesNotMatch(JSON.stringify(state.error), /contrast|cell|\d/);
+  assertRedacted(state);
+
+  assert.doesNotThrow(() => session.dispatch({ type: "probe", row: 0, col: 2 }));
+  state = session.getState();
+  assert.equal(state.lastProbe, null, "an unplayed probe must not relay a cue");
+  assert.deepEqual(state.focus, [0, 2]);
+  assert.equal(state.error, "plan-unavailable");
+
+  failing = false;
+  session.dispatch({ type: "play", mode: "sweep" });
+  state = session.getState();
+  assert.equal(state.error, null);
+  assert.equal(state.playMode, "sweep");
+  assert.ok(state.planRevision > good.planRevision);
+  assert.ok(states.every((entry) => entry.error === null || entry.error === "plan-unavailable"));
+
+  // A failed rebuild keeps the old plan but must not let play reuse it for the new level.
+  session.dispatch({ type: "reset" });
+  failing = true;
+  const keptMode = session.getState().playMode;
+  const keptRevision = session.getState().planRevision;
+  assert.doesNotThrow(() => session.dispatch({ type: "set-level", level: "advanced" }));
+  state = session.getState();
+  assert.equal(state.level, "advanced");
+  assert.equal(state.error, "plan-unavailable");
+  assert.equal(state.playMode, keptMode);
+  assert.equal(state.planRevision, keptRevision);
+  const playsBefore = transport.calls.filter(([name]) => name === "play").length;
+  session.dispatch({ type: "play", mode: "legend" });
+  assert.equal(transport.calls.filter(([name]) => name === "play").length, playsBefore);
+  failing = false;
+  session.dispatch({ type: "play", mode: "legend" });
+  assert.equal(session.getState().error, null);
+  assert.ok(session.getState().planRevision > keptRevision);
+});
+
+test("transport failures, sync or async, are caught and reported", async () => {
+  const { session, transport } = await setup();
+  transport.play = () => { throw new Error("audio exploded"); };
+  assert.doesNotThrow(() => session.dispatch({ type: "play", mode: "legend" }));
+  assert.equal(session.getState().error, "plan-unavailable");
+
+  const second = await setup();
+  second.transport.play = () => Promise.reject(new Error("audio refused"));
+  await assert.doesNotReject(async () => second.session.dispatch({ type: "play", mode: "sweep" }));
+  assert.equal(second.session.getState().error, "plan-unavailable");
+
+  const third = await setup();
+  third.transport.load = () => { throw new Error("load failed"); };
+  const before = third.session.getState();
+  assert.doesNotThrow(() => third.session.dispatch({ type: "play", mode: "sweep" }));
+  assert.equal(third.session.getState().error, "plan-unavailable");
+  assert.equal(third.session.getState().playMode, before.playMode);
+
+  const fourth = await setup();
+  fourth.transport.pause = () => { throw new Error("pause failed"); };
+  assert.doesNotThrow(() => fourth.session.dispatch({ type: "pause" }));
+  assert.doesNotThrow(() => fourth.session.dispatch({ type: "reset" }));
+});
+
 test("focus is a single clamped cell, guesses toggle, and invalid intents are ignored", async () => {
   const { session } = await setup();
   session.dispatch({ type: "focus", row: 99, col: -5 });
