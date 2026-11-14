@@ -13,3 +13,10 @@ Local delivery uses a fresh ZIP. Future work can begin with manual NVDA/VoiceOve
 - Baseline `bcc8a72` remains available. Work continued locally on `codex/earthpulse-exhibition`. The landing embeds the team's renderer with three marked destinations, image fallback, localized routing and bounded camera transitions. The six exhibit routes share a navigation footer.
 - The Atlas now exposes geographic cursor coordinates, nearest retained-cell search, evidence centering, evidence class and numeric date values. The Dust Observatory can isolate its model layer from geographic context. The guided and two-dimensional Dust routes use registered NASA terrain. The datasets and observation manifests remain byte-identical.
 - The Forest compares six corrected return profiles with shared scales and the active band. The numeric mapping and original shot evidence are unchanged. Atmospheric synthesis v2 adds dry air stereo, a lower spectral bed and distinct rain transients. An offline render using the production cases and the side-by-side captures are under `release/emergency/`. Direct perception of the audio, physical-device performance and manual screen-reader use require human checks.
+
+## Sound Studio integration
+
+- Merged `origin/feat/sound-studio` at `b932dc9` into `codex/earth-sound-studio`, preserving the complete shared page system and Yaman's NASA GEOS-FP dust Studio at `pages/studio.html`.
+- Preserved the independent NASA SVS 5276 night-lights experiment at `studio.html`. It remains explicitly reference-image-only until authenticated VNP46A4 radiance granules pass the included extraction gate.
+- Resolved the cinematic navigation conflict by retaining the flat/text fallbacks, atmospheric mix, and page-hide cleanup while adopting the shared seven-page navigation, settings, stored volume and playback speed.
+- Kept both Studio test suites under distinct names and added a browser journey for the merged dust Studio. The homepage now opens the real quantitative dust Studio first and exposes the night-lights experiment as a separate route.

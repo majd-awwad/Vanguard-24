@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Sound Lab · EARTHPULSE</title>
+  <link rel="icon" href="../assets/atlas/pulse.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../cinematic/site/site.css">
+  <link rel="stylesheet" href="../cinematic/site/sound.css">
+</head>
+<body>
+  <header id="site-nav"></header>
+  <main id="site-main" class="site-main">
+    <div id="sound-root"></div>
+    <noscript><p>This page needs JavaScript.</p></noscript>
+  </main>
+  <script type="module">
+    import { startSound } from "../cinematic/site/sound.js";
+    startSound();
+  </script>
+</body>
+</html>

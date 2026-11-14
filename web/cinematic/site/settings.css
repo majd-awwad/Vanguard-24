@@ -1,0 +1,22 @@
+/* Accessibility & Settings */
+.settings-intro { max-width: 50rem; margin-bottom: 1.5rem; }
+.settings-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+.setting h3 { margin: .8rem 0 .3rem; color: var(--teal); }
+.choice-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+.choice { background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: .5rem .9rem; font: 600 .9rem var(--sans); cursor: pointer; text-decoration: none; min-height: 2.75rem; min-width: 2.75rem; display: inline-flex; align-items: center; justify-content: center; }
+.choice[aria-pressed="true"], .choice[aria-current="true"] { border-color: var(--teal); background: rgb(104 224 208 / .16); color: var(--ink); }
+.choice[aria-pressed="true"]::after, .choice[aria-current="true"]::after { content: "✓"; margin-inline-start: .4rem; color: var(--teal); }
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: .7rem; }
+.switch { width: 3.2rem; height: 1.8rem; border-radius: 99px; border: 1px solid var(--line-strong); background: rgb(255 255 255 / .08); position: relative; cursor: pointer; padding: 0; flex: none; direction: ltr; }
+.switch .knob { position: absolute; top: .2rem; left: .25rem; width: 1.3rem; height: 1.3rem; border-radius: 50%; background: var(--muted); transition: transform .15s; }
+.switch[aria-checked="true"] { background: rgb(104 224 208 / .35); border-color: var(--teal); }
+.switch[aria-checked="true"] .knob { transform: translateX(1.4rem); background: var(--teal); }
+.volume { display: flex; align-items: center; gap: .8rem; margin: .6rem 0; color: var(--muted); font-size: .85rem; }
+.volume input { flex: 1; accent-color: var(--teal); min-height: 1.5rem; }
+.player-buttons { display: flex; flex-wrap: wrap; gap: .5rem; }
+.captions { background: rgb(0 0 0 / .5); border: 1px solid var(--line); border-radius: 8px; padding: .5rem .8rem; color: var(--ink) !important; margin-top: .7rem !important; }
+.instructions, .keys { margin: .4rem 0 0; padding-inline-start: 1.3rem; color: var(--muted); display: grid; gap: .4rem; font-size: .9rem; }
+.settings-foot { display: flex; align-items: center; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap; }
+.settings-live { color: var(--teal); margin: 0; }
+@media (max-width: 1100px) { .settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .settings-grid { grid-template-columns: 1fr; } }

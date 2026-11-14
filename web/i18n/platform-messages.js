@@ -3,6 +3,7 @@ const copy = {
   atlas: ["Sound Atlas", "أطلس الأصوات"], lens: ["Sonic Lens", "عدسة الاستماع"], about: ["Science & credits", "العلم والمصادر"],
   earthStudio: ["Earth Sound Studio", "استوديو صوت الأرض"],
   earthStudioEntry: ["Open Earth Sound Studio", "افتح استوديو صوت الأرض"],
+  nightLightsEntry: ["Explore the night-lights experiment", "استكشف تجربة الأضواء الليلية"],
   eyebrow: ["An Earth observation jukebox", "مرصد الأرض المسموع"], title: ["Hear the unseen.", "اسمع ما لا تراه."],
   intro: ["Three regions. One dust question. Listen to the signals, choose a region, then reveal what the NASA model shows.", "ثلاث مناطق وسؤال عن الغبار. اسمع الإشارات، اختَر منطقة، وبعدين اكشف شو بيّن نموذج ناسا."],
   worlds: ["Explore Earth", "استكشف الأرض"],

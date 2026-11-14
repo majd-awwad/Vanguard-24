@@ -23,7 +23,10 @@ const generated = [
   "assets/atlas/mur-sst-url.txt",
   ...[...atlasChecksums.keys()].map(name => "assets/atlas/" + name),
 ];
-const entrypoints = ["index.html", "studio.html", "dust.html", "decode.html", "decode-3d.html", "dust-observatory.html", "forest.html"];
+const entrypoints = [
+  "index.html", "studio.html", "dust.html", "decode.html", "decode-3d.html", "dust-observatory.html", "forest.html",
+  "pages/about.html", "pages/explore.html", "pages/science.html", "pages/settings.html", "pages/sound-lab.html", "pages/studio.html",
+];
 // These are assembled by runtime imports and asset resolvers rather than
 // appearing as complete URL literals in markup.
 const dynamicDependencies = [

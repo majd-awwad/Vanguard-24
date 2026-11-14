@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Explore Earth · EARTHPULSE</title>
+  <link rel="icon" href="../assets/atlas/pulse.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../cinematic/site/site.css">
+  <link rel="stylesheet" href="../cinematic/site/explore.css">
+</head>
+<body>
+  <header id="site-nav"></header>
+  <main id="site-main" class="site-main">
+    <div id="explore-root"></div>
+    <noscript><p>This page needs JavaScript.</p></noscript>
+  </main>
+  <script type="module">
+    import { startExplore } from "../cinematic/site/explore.js";
+    startExplore();
+  </script>
+</body>
+</html>

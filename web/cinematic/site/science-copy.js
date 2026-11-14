@@ -1,0 +1,160 @@
+// Words for web/pages/science.html. Every number in a sentence is a {token} filled from the loaded case file or from
+// facts in docs/decode-data.md; none is typed here. The only literals below that come from the docs rather than the
+// case JSON are NATIVE (native grid resolution) and RAW_SHA256, and tests/site-pages.test.mjs checks both against
+// docs/decode-data.md and science/decode/dust-extraction.json.
+
+export const NATIVE = Object.freeze({ lat: 0.25, lon: 0.3125 });
+export const RAW_SHA256 = "091ab5cdfdf8f68983283d1f3909014258d75738d499bf44a5e5d87e75cb87db";
+
+export const REFERENCES = Object.freeze([
+  { key: "svs", href: "https://svs.gsfc.nasa.gov/5669/" },
+  { key: "aod", href: "https://science.nasa.gov/earth/earth-observatory/global-maps/aerosol-optical-depth/" },
+  { key: "gmao", href: "https://gmao.gsfc.nasa.gov/gmao-products/geos-near-real-time-data-products/" },
+]);
+
+export const scienceCopy = {
+  en: {
+    title: "Science & Dataset",
+    eyebrow: "Science & Dataset",
+    titleLead: "The science behind the", titleAccent: "sound",
+    lede: "Real NASA GMAO GEOS-FP model data on atmospheric dust over {region}, turned into sound. This page states exactly what the data is, how it was processed, and what it is not.",
+    region: "North Africa and the Eastern Mediterranean",
+    loading: "Loading the dataset…", error: "The dataset could not be loaded.", retry: "Try again",
+    kinds: { label: "How to read this page", data: "Real data", related: "Related NASA visualization", decor: "Decorative",
+      dataText: "Values and facts from the case file and its documentation.",
+      relatedText: "Context only. Never drawn on the grid or the globe.",
+      decorText: "Artistic. Carries no data." },
+    facts: {
+      source: { label: "Data source", value: "NASA GMAO GEOS-FP" },
+      variable: { label: "Variable", value: "Dust optical depth", sub: "{variable} · {wavelength} nm · unitless" },
+      coverage: { label: "Geographic coverage", sub: "{south} to {north}, {west} to {east}" },
+      window: { label: "Observation window", sub: "{from}–{to}, a {hours}-hour mean centred on {centre}" },
+    },
+    dod: {
+      title: "What is dust optical depth?",
+      p1: "Optical depth measures how strongly a column of air, from the ground to space, dims sunlight. {variable} counts only the dust part, at a wavelength of {wavelength} nm.",
+      p2: "More dust in the column means more dimming, so a higher value means more dust. It is a ratio of light intensities, so it has no unit; the dataset records the unit as “{unit}”.",
+      scale: "Dust optical depth scale",
+      thresholdMark: "Challenge threshold ≥ {threshold}",
+      only: "This is the only marker. Our sources define no “low” or “moderate” bands, so none are drawn. Schematic, not to scale.",
+    },
+    threshold: {
+      title: "What the {threshold} threshold means",
+      p1: "In the challenge a cell counts as dust-present when its value is at or above {threshold} (rule: “{rule}”). The cutoff was fixed before the grids were computed, not tuned to a pattern.",
+      p2: "At {threshold}, dust alone would dim a vertical sunbeam by about {attenuation}%, so {transmission} of it gets through.",
+      strong: "Below the threshold does not mean dust-free.",
+      p3: "Those cells can still contain dust. The rule only marks where the modelled dimming is appreciable.",
+      p4: "NASA does not prescribe this cutoff, and it is not an air-quality or health threshold.",
+    },
+    method: {
+      title: "How the data became a grid",
+      s1: "NASA's GEOS-FP system is a global atmospheric model that assimilates observations. This field is a {hours}-hour time average, so it is model-derived data, not a direct satellite retrieval.",
+      s1fixture: "Warning: this case is marked as a test fixture, not production NASA data.",
+      s2: "Native grid: {nativeLat}° latitude × {nativeLon}° longitude. Each native value is treated as constant over its own footprint.",
+      s3: "Advanced level: {rows} rows × {cols} columns of {cellLat}° × {cellLon}° cells. Each is an area-weighted mean of the native cells it overlaps. If any contributor is missing, the whole cell is missing; nothing is replaced with zero.",
+      s4: "Quick level: {rows} rows × {cols} columns of {cellLat}° × {cellLon}° cells, each the mean of its 2×2 Advanced cells (“{aggregation}”).",
+      rule: "Both levels use the same rule: “{rule}” with threshold {threshold}.",
+    },
+    glance: {
+      title: "Dataset at a glance",
+      rows: { model: "Model", product: "Product", version: "Version", variable: "Variable", unit: "Unit", native: "Native resolution", window: "Time window", bounds: "Bounds", advanced: "Advanced grid", quick: "Quick grid", kind: "Kind" },
+      model: "NASA GMAO GEOS-FP", unitValue: "{unit} (dimensionless)", nativeValue: "{lat}° × {lon}° (latitude × longitude)",
+      windowValue: "{date}, {from}–{to}", boundsValue: "{south} to {north} · {west} to {east}", gridValue: "{rows} × {cols} cells of {lat}° × {lon}°",
+      kindValue: "Model-derived, not a direct observation",
+      mapTitle: "The grid on the map",
+      mapNote: "Base: NASA Blue Marble land and ocean colours (no dust). Grid lines: the case bounds. Letters count rows from the north (A is northernmost); numbers count columns from the west (1 is westernmost).",
+      mapLabel: "Map of the dataset region with its grid, without data values",
+      level: "Grid level", advanced: "Advanced", quick: "Quick",
+    },
+    provenance: {
+      title: "Provenance",
+      granule: "Source granule", file: "Original file SHA-256", id: "Case file", product: "Product",
+      download: "Direct file download (about 121 MB)", note: "The extraction script refuses a different file, variable, coordinates or time. Reproduction steps are in docs/decode-data.md.",
+    },
+    related: {
+      title: "Related NASA visualization",
+      relation: "Relation declared in the case file: {relation}",
+      note: "The numbers behind EARTHPULSE are standard GEOS-FP assimilation on a {nativeLat}° × {nativeLon}° grid, a {hours}-hour mean from {from} to {to}. SVS 5669 shows a separate, finer GEOS-FP 2 km Replay at 20:00 UTC. It is related scientific context, not the same dataset or an instantaneous field, and it is never drawn on our grid or globe.",
+      alt: "Thumbnail of NASA Scientific Visualization Studio item 5669, aerosols on 19 August 2025. Related context only.",
+      caption: "Thumbnail of SVS 5669. Related context, not the numerical data.",
+    },
+    references: {
+      title: "NASA references", svs: "SVS 5669: aerosols visualization (related context)", aod: "NASA Earth Observatory: aerosol optical depth", gmao: "NASA GMAO: GEOS near-real-time data products",
+      external: "opens on NASA's website",
+    },
+    decor: { globe: "Decorative Earth made from NASA Blue Marble colours. It shows no dust data.", label: "Decorative" },
+    credit: "Data: NASA GMAO GEOS-FP. Earth imagery: NASA Earth Observatory, Blue Marble. EARTHPULSE is a student project by Team Vanguard and is not endorsed by NASA.",
+  },
+  ar: {
+    title: "العلوم والبيانات",
+    eyebrow: "العلوم والبيانات",
+    titleLead: "العلم وراء", titleAccent: "الصوت",
+    lede: "بيانات نموذج GEOS-FP الحقيقية من مكتب النمذجة والتمثيل الرصدي التابع لناسا (GMAO) عن الغبار الجوي فوق {region}، محوَّلة إلى صوت. تبيّن هذه الصفحة بدقة ما هي البيانات وكيف عولجت وما الذي لا تدل عليه.",
+    region: "شمال أفريقيا وشرق البحر المتوسط",
+    loading: "جارٍ تحميل البيانات…", error: "تعذّر تحميل البيانات.", retry: "حاول مرة أخرى",
+    kinds: { label: "كيف تقرأ هذه الصفحة", data: "بيانات حقيقية", related: "تصوير مرئي ذو صلة من ناسا", decor: "زخرفي",
+      dataText: "قيم وحقائق من ملف الحالة وتوثيقه.",
+      relatedText: "للسياق فقط. لا يُرسم أبدًا على الشبكة أو الكرة الأرضية.",
+      decorText: "فني، ولا يحمل أي بيانات." },
+    facts: {
+      source: { label: "مصدر البيانات", value: "NASA GMAO GEOS-FP" },
+      variable: { label: "المتغيّر", value: "العمق البصري للغبار", sub: "{variable} · {wavelength} نانومتر · بلا وحدة" },
+      coverage: { label: "التغطية الجغرافية", sub: "من {south} إلى {north}، ومن {west} إلى {east}" },
+      window: { label: "نافذة الرصد", sub: "من {from} إلى {to}، متوسط {hours} ساعات تتوسطه {centre}" },
+    },
+    dod: {
+      title: "ما العمق البصري للغبار؟",
+      p1: "يقيس العمق البصري مقدار ما يخفّت به عمود الهواء، من الأرض إلى الفضاء، ضوء الشمس. ويحسب المتغيّر {variable} حصة الغبار وحدها عند طول موجة {wavelength} نانومتر.",
+      p2: "كلما زاد الغبار في العمود زاد التخفيت، فالقيمة الأعلى تعني غبارًا أكثر. وهو نسبة بين شدتين ضوئيتين، فلا وحدة له؛ ويسجّل ملف البيانات وحدته «{unit}».",
+      scale: "مقياس العمق البصري للغبار",
+      thresholdMark: "عتبة التحدي ≥ {threshold}",
+      only: "هذه هي العلامة الوحيدة. مصادرنا لا تعرّف نطاقات «منخفض» أو «معتدل»، لذلك لا نرسمها. رسم تخطيطي وليس بمقياس.",
+    },
+    threshold: {
+      title: "ماذا تعني العتبة {threshold}؟",
+      p1: "في التحدي تُعدّ الخلية حاوية للغبار إذا كانت قيمتها {threshold} أو أكثر (القاعدة: «{rule}»). حُدّدت العتبة قبل حساب الشبكات، ولم تُضبط لتناسب نمطًا معيّنًا.",
+      p2: "عند {threshold} يخفّت الغبار وحده شعاعًا شمسيًا عموديًا بنحو {attenuation}٪، فيمرّ منه {transmission}.",
+      strong: "ما دون العتبة لا يعني خلوّ الجو من الغبار.",
+      p3: "قد تحتوي تلك الخلايا على غبار. القاعدة تحدد فقط المواضع التي يكون فيها التخفيت المحسوب ملحوظًا.",
+      p4: "ناسا لا تحدد هذه العتبة، وهي ليست عتبة لجودة الهواء أو للصحة.",
+    },
+    method: {
+      title: "كيف صارت البيانات شبكة",
+      s1: "نظام GEOS-FP التابع لناسا نموذج جوي عالمي يدمج الرصدات. وهذا الحقل متوسط زمني مدته {hours} ساعات، فهو بيانات مشتقة من نموذج وليس قياسًا مباشرًا من قمر صناعي.",
+      s1fixture: "تنبيه: هذه الحالة معلَّمة كحالة اختبار وليست بيانات ناسا الإنتاجية.",
+      s2: "الشبكة الأصلية: {nativeLat}° عرضًا × {nativeLon}° طولًا. تُعامل كل قيمة أصلية كقيمة ثابتة على مساحتها.",
+      s3: "المستوى المتقدم: {rows} صفوف × {cols} أعمدة من خلايا {cellLat}° × {cellLon}°. كل خلية متوسط مرجَّح بالمساحة للخلايا الأصلية التي تتقاطع معها. وإذا فُقد أحد المساهمين فُقدت الخلية كلها، ولا يُستبدل شيء بالصفر.",
+      s4: "المستوى السريع: {rows} صفوف × {cols} أعمدة من خلايا {cellLat}° × {cellLon}°، وكل خلية متوسط خلاياها المتقدمة الأربع (2×2) («{aggregation}»).",
+      rule: "يستخدم المستويان القاعدة نفسها: «{rule}» والعتبة {threshold}.",
+    },
+    glance: {
+      title: "نظرة سريعة على البيانات",
+      rows: { model: "النموذج", product: "المنتج", version: "الإصدار", variable: "المتغيّر", unit: "الوحدة", native: "الدقة الأصلية", window: "النافذة الزمنية", bounds: "الحدود", advanced: "الشبكة المتقدمة", quick: "الشبكة السريعة", kind: "النوع" },
+      model: "NASA GMAO GEOS-FP", unitValue: "{unit} (بلا أبعاد)", nativeValue: "{lat}° × {lon}° (عرض × طول)",
+      windowValue: "{date}، من {from} إلى {to}", boundsValue: "من {south} إلى {north} · من {west} إلى {east}", gridValue: "{rows} × {cols} خلية بحجم {lat}° × {lon}°",
+      kindValue: "مشتق من نموذج، وليس رصدًا مباشرًا",
+      mapTitle: "الشبكة على الخريطة",
+      mapNote: "الخلفية: ألوان اليابسة والمحيط من Blue Marble التابعة لناسا (بلا غبار). خطوط الشبكة: حدود الحالة. تعدّ الحروف الصفوف من الشمال (A هو الأقصى شمالًا)، وتعدّ الأرقام الأعمدة من الغرب (1 هو الأقصى غربًا).",
+      mapLabel: "خريطة منطقة البيانات مع شبكتها، بلا قيم",
+      level: "مستوى الشبكة", advanced: "متقدم", quick: "سريع",
+    },
+    provenance: {
+      title: "المصدر والتوثيق",
+      granule: "ملف المصدر", file: "SHA-256 للملف الأصلي", id: "ملف الحالة", product: "المنتج",
+      download: "تنزيل الملف مباشرة (نحو 121 ميغابايت)", note: "يرفض سكربت الاستخراج أي ملف أو متغيّر أو إحداثيات أو وقت مختلف. خطوات إعادة الإنتاج في docs/decode-data.md.",
+    },
+    related: {
+      title: "تصوير مرئي ذو صلة من ناسا",
+      relation: "العلاقة المصرَّح بها في ملف الحالة: {relation}",
+      note: "الأرقام التي يقوم عليها EARTHPULSE هي تحليل GEOS-FP القياسي على شبكة {nativeLat}° × {nativeLon}°، متوسط {hours} ساعات من {from} إلى {to}. أما SVS 5669 فيعرض تشغيل Replay منفصلًا وأدق بدقة 2 كم عند 20:00 بالتوقيت العالمي. إنه سياق علمي ذو صلة، وليس مجموعة البيانات نفسها ولا حقلًا لحظيًا، ولا يُرسم أبدًا على شبكتنا أو كرتنا الأرضية.",
+      alt: "صورة مصغّرة للعنصر 5669 من استوديو التصوير العلمي (SVS) التابع لناسا، الهباء الجوي في 19 أغسطس 2025. للسياق فقط.",
+      caption: "صورة مصغّرة من SVS 5669. سياق ذو صلة وليست البيانات العددية.",
+    },
+    references: {
+      title: "مراجع ناسا", svs: "SVS 5669: تصوير الهباء الجوي (سياق ذو صلة)", aod: "مرصد الأرض التابع لناسا: العمق البصري للهباء الجوي", gmao: "GMAO التابع لناسا: منتجات GEOS شبه الآنية",
+      external: "يُفتح في موقع ناسا",
+    },
+    decor: { globe: "كرة أرضية زخرفية بألوان Blue Marble التابعة لناسا. لا تعرض أي بيانات غبار.", label: "زخرفي" },
+    credit: "البيانات: NASA GMAO GEOS-FP. صور الأرض: مرصد الأرض التابع لناسا، Blue Marble. EARTHPULSE مشروع طلابي من فريق Vanguard ولا تتبنّاه ناسا.",
+  },
+};

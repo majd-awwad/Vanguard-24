@@ -8,6 +8,9 @@ import { copy } from "./copy.js";
 import { createGlobeMount } from "./globe.js";
 import { createHero } from "./hero.js";
 import { createScene } from "./scene.js";
+import { NAV_ITEMS, SETTINGS_PATH, hrefFor, navText } from "./site/nav.js";
+import { markDecodeCompleted } from "./site/progress.js";
+import { applySettings, loadSettings, resolveLanguage, saveSettings } from "./site/settings.js";
 
 // Mirrors startDecode() in web/decode.js (read-only): the same session, transport, spatial plan and accessible
 // grid run underneath, with a cinematic scene, hero and dock around them. The only interactive grid is still the
@@ -15,28 +18,40 @@ import { createScene } from "./scene.js";
 
 export async function startCinematic(root) {
   const document = root.ownerDocument;
-  const language = new URL(document.URL).searchParams.get("lang") === "ar" ? "ar" : "en";
+  // Shared settings (language, contrast, text size, volume, speed) are read here, the same way as on every site page.
+  const settings = loadSettings();
+  const language = resolveLanguage(document.URL, settings);
+  if (new URL(document.URL).searchParams.has("lang") && language !== settings.language) saveSettings({ language });
   const text = copy[language];
   const body = document.body;
-  document.documentElement.lang = language;
-  document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+  applySettings(document, settings, language);
   document.title = text.pageTitle + " · EARTHPULSE";
   body.classList.add("cine");
   body.dataset.view = "hero";
 
-  // Navigation and language switch.
-  const links = { "#cine-nav-decode": text.nav.decode, "#cine-nav-about": text.nav.about, "#cine-nav-science": text.nav.science, "#cine-nav-dataset": text.nav.dataset };
-  for (const [selector, label] of Object.entries(links)) document.querySelector(selector).textContent = label;
-  document.querySelector(".cine-links").setAttribute("aria-label", text.nav.label);
-  const paths = {
-    "#decode-home": "./index.html",
-    "#cine-nav-about": "./index.html#about",
-    "#cine-nav-science": "./index.html#lens",
-    "#cine-nav-dataset": "./index.html#atlas",
+  // Navigation: the same six pages and settings link as every site page.
+  const nav = navText[language];
+  const navHost = document.querySelector(".cine-links");
+  navHost.setAttribute("aria-label", nav.label);
+  navHost.replaceChildren(...NAV_ITEMS.map((item) => {
+    const link = document.createElement("a");
+    link.href = hrefFor(item.path, "root");
+    link.textContent = nav[item.id];
+    if (item.id === "decode") link.setAttribute("aria-current", "page");
+    return link;
+  }));
+  const gear = document.createElement("a");
+  gear.className = "cine-icon-button";
+  gear.href = hrefFor(SETTINGS_PATH, "root");
+  gear.setAttribute("aria-label", nav.settings);
+  gear.title = nav.settings;
+  gear.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="2.2" fill="currentColor"/><path d="M5 9.5h14M12 9.5V14m0 0-3.5 6M12 14l3.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  document.querySelector(".cine-tools").prepend(gear);
+  document.querySelector("#decode-home").href = language === "ar" ? "./?lang=ar" : "./";
+  for (const [selector, relative] of Object.entries({
     "#cine-flat": "./decode.html",
     "#cine-text": "./decode.html?condition=text",
-  };
-  for (const [selector, relative] of Object.entries(paths)) {
+  })) {
     const target = new URL(relative, document.URL);
     if (language === "ar") target.searchParams.set("lang", language);
     document.querySelector(selector).href = target.href;
@@ -71,6 +86,8 @@ export async function startCinematic(root) {
 
   const tap = createAudioTap();
   const transport = createTransport({ createContext: () => tap.createContext() });
+  transport.setVolume(settings.volume);
+  transport.setSpeed(settings.speed);
   for (const [index, id] of ["cine-mix-title", "cine-mix-label", "cine-mix-help"].entries()) root.querySelector("#" + id).textContent = text.mix[index];
   root.querySelector("#cine-instrument-type").textContent = text.instrumentType;
   root.querySelector("#cine-mix").addEventListener("input", (event) => transport.setAtmosphereVolume(Number(event.target.value) / 100));
@@ -118,6 +135,8 @@ export async function startCinematic(root) {
         language, makePlan: sound.makeSpatialPlan, heardClass: sound.heardClass, mountVisual, transport, loadCase,
       });
       hero.bind(mounted.session);
+      // Remember that Decode was finished once, so Explore Earth and Sound Lab may show the answers.
+      mounted.session.subscribe((snapshot) => { if (snapshot.phase === "reveal" && snapshot.mode === "discovery") markDecodeCompleted(); });
       // Test and inspection hook, off unless the URL asks for it.
       if (new URL(document.URL).searchParams.has("cine-debug")) window.__cineDebug = { session: mounted.session, transport, scene };
       state.textContent = "";

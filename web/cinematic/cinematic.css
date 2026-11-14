@@ -364,3 +364,9 @@ body.cine #decode-svs-card figure { max-inline-size: 15rem; }
   body.cine .cine-hero, body.cine[data-view="decode"] .cine-hero { transition: none; }
   body.cine[data-renderer="webgl"] #decode-stage { transition: none; }
 }
+
+/* Shared site settings (see web/cinematic/site/settings.js): text size and high contrast apply here too. */
+:root[data-text-size="sm"] { font-size: 92%; }
+:root[data-text-size="lg"] { font-size: 114%; }
+:root[data-text-size="xl"] { font-size: 130%; }
+:root[data-contrast="high"] { --cine-bg: #000; --cine-ink: #fff; --cine-muted: #e4ecf4; --cine-glass: rgb(0 0 0 / .92); --cine-glass-line: rgb(255 255 255 / .6); }
