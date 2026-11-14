@@ -13,9 +13,13 @@ const dust = JSON.parse(await readFile(dustUrl, "utf8"));
 test("real dust frames follow model values without affecting cue or evidence timing", () => {
   const plan = makeSpatialPlan(dust);
   assert.ok(plan.texture.frames.some(frame => frame.intensity > 0));
-  assert.deepEqual(plan.texture.frames, plan.events.map(({ onsetS, evidence }) => ({
-    onsetS, intensity: evidence.status === "measured" ? Math.min(1, evidence.value / 2.5) : 0,
-  })));
+  assert.deepEqual(plan.texture.frames.map(({ onsetS, intensity }) => ({ onsetS, intensity })),
+    plan.events.map(({ onsetS, evidence }) => ({
+      onsetS, intensity: evidence.status === "measured" ? Math.min(1, evidence.value / 2.5) : 0,
+    })));
+  assert.ok(plan.texture.frames.some(({ pan }) => pan < 0));
+  assert.ok(plan.texture.frames.some(({ pan }) => pan > 0));
+  assert.ok(plan.texture.frames.every(({ pan = 0 }) => Math.abs(pan) <= 0.72));
   assert.equal(makeSpatialPlan(dust, { mode: "legend" }).texture, undefined);
   assert.equal(makeSpatialPlan({ ...dust, fixture: true }).texture, undefined);
   const { bands } = compareDustBands(dust);
@@ -50,7 +54,7 @@ test("dust synthesis is smooth and repeatable, with a softer spectrum than rain"
   const dustSamples = noiseLoop("dust", 12000);
   const rainSamples = noiseLoop("rain", 12000);
   assert.deepEqual(dustSamples, noiseLoop("dust", 12000));
-  assert.equal(dustSamples.length, 48000);
+  assert.equal(dustSamples.length, 96000);
   for (const samples of [dustSamples, rainSamples]) {
     assert.ok(samples[0] === 0 && samples.at(-1) === 0);
   }

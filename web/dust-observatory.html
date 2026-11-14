@@ -8,6 +8,7 @@
   <link rel="icon" href="./assets/atlas/pulse.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./visual/platform.css">
   <link rel="stylesheet" href="./visual/dust-observatory.css">
+  <link rel="stylesheet" href="./visual/field-navigation.css">
 </head>
 <body class="observatory-page">
   <a class="skip" href="#observatory-main" data-observatory="skip">Skip to the map</a>
@@ -50,6 +51,7 @@
         <div class="observatory-map-head">
           <h2 id="observatory-map-heading"></h2>
           <p id="observatory-extent" dir="ltr">20° W – 50° E · 15° N – 45° N</p>
+          <label class="check"><input type="checkbox" id="observatory-terrain" checked><span data-observatory="terrain">Show NASA terrain</span></label>
         </div>
         <div class="observatory-map-area" dir="ltr" tabindex="0" role="group"
           aria-labelledby="observatory-map-heading" aria-describedby="observatory-keyboard">
@@ -60,7 +62,7 @@
                 <path d="M0 .8L.8 0M.2 1L1 .2" stroke="#8b9191" stroke-width=".08"></path>
               </pattern>
             </defs>
-            <image href="./assets/map/dust.jpg" width="1" height="1" preserveAspectRatio="none"></image>
+            <image id="observatory-terrain-image" href="./assets/map/dust.jpg" width="1" height="1" preserveAspectRatio="none"></image>
             <g id="observatory-values"></g>
             <g id="observatory-coast"></g>
             <rect id="observatory-cursor" aria-hidden="true"></rect>
@@ -150,5 +152,6 @@
     </div>
   </main>
   <script type="module" src="dust-observatory.js"></script>
+  <script type="module" src="./field-navigation.js"></script>
 </body>
 </html>

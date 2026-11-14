@@ -1,11 +1,13 @@
 const profiles = {
   dust: {
+    loudnessExponent: 0.35,
     bands: [
-      { type: "lowpass", baseHz: 440, sweepHz: 1000, gain: [0.11, 0.30] },
-      { type: "bandpass", baseHz: 990, sweepHz: 1500, gain: [0.035, 0.20] },
+      { type: "lowpass", baseHz: 265, sweepHz: 620, gain: [0.22, 0.48] },
+      { type: "bandpass", baseHz: 750, sweepHz: 1020, gain: [0.06, 0.24] },
     ],
   },
   rain: {
+    loudnessExponent: 0.5,
     bands: [
       { type: "highpass", baseHz: 1600, sweepHz: 1100, gain: [0.045, 0.20] },
       { type: "bandpass", baseHz: 2300, sweepHz: 1000, gain: [0.050, 0.23] },
@@ -13,9 +15,9 @@ const profiles = {
   },
 };
 
-export const atmosphereVersion = "earthpulse-atmosphere-v1";
+export const atmosphereVersion = "earthpulse-atmosphere-v2";
 const clamp = value => Math.max(0, Math.min(1, value));
-const cycleS = 4;
+const cycleS = 8;
 const tau = 2 * Math.PI;
 const maxNoiseSample = 0.65;
 
@@ -32,6 +34,11 @@ export function atmosphereFor(kind, events, slotSeconds, quality = () => true) {
     intensity: quality(evidence) && Number.isFinite(evidence.value) && evidence.value > 0
       ? clamp(evidence.value / cap) : 0,
   }));
+  if (kind === "dust") {
+    for (const [index, event] of events.entries()) {
+      if (Number.isFinite(event.tone?.pan)) frames[index].pan = Math.max(-0.72, Math.min(0.72, event.tone.pan * 0.72));
+    }
+  }
   return { kind, mappingVersion: atmosphereVersion, slotSeconds, frames };
 }
 
@@ -50,10 +57,12 @@ export function noiseLoop(kind, sampleRate) {
   const fine = Math.exp(-tau * (dust ? 850 : 4300) / sampleRate);
   const coarse = Math.exp(-tau * (dust ? 470 : 2300) / sampleRate);
   const impactDecay = 0.987 ** (48000 / sampleRate);
+  const pressureRate = 1 - Math.exp(-tau * 106 / sampleRate);
   const fadeSamples = 0.035 * sampleRate;
   let smooth = 0;
   let slow = 0;
   let impact = 0;
+  let pressure = 0;
   for (let index = 0; index < samples.length; index++) {
     const time = index / sampleRate;
     const noise = random();
@@ -62,15 +71,18 @@ export function noiseLoop(kind, sampleRate) {
     const edge = Math.min(1, index / fadeSamples, (samples.length - 1 - index) / fadeSamples);
     let value;
     if (dust) {
-      const gust = 0.72 + 0.15 * Math.sin(tau * time / 2 + 0.4) + 0.11 * Math.sin(tau * time * 0.75);
-      const eddy = 0.64 + 0.20 * Math.sin(tau * time * 1.25 + 1.3);
-      value = gust * (1.75 * slow + 1.2 * eddy * (smooth - slow) + 0.18 * (noise - smooth));
+      // A continuously evolving low air bed and a quieter, dry upper edge.
+      // Their modulation is artistic; no gust direction or speed is inferred.
+      pressure += pressureRate * (noise - pressure);
+      const gust = 0.71 + 0.22 * Math.sin(tau * time * 3 / cycleS + .4) + .13 * Math.sin(tau * time * 5 / cycleS);
+      const eddy = 0.48 + .29 * Math.sin(tau * time * 9 / cycleS + 1.3);
+      value = gust * (3.65 * pressure + 1.05 * (slow - pressure) + 1.05 * eddy * (smooth - slow));
     } else {
       // Overlapping, damped grains give rain a distinct wet texture. Their
       // spacing is synthesis, independent of estimated precipitation timing.
       impact *= impactDecay;
-      if (noise > 1 - 210 / sampleRate) impact = Math.min(0.7, impact + 0.27);
-      value = 1.65 * (0.16 + impact) * (noise - slow);
+      if (noise > 1 - 410 / sampleRate) impact = Math.min(0.8, impact + 0.35);
+      value = 1.65 * (0.08 + impact) * (noise - slow);
     }
     samples[index] = Math.max(-maxNoiseSample, Math.min(maxNoiseSample, value)) * edge;
   }
@@ -128,7 +140,20 @@ export function createAtmosphere(context, destination) {
       const output = context.createGain();
       const nodes = [source, output];
       output.gain.value = 1;
-      output.connect(layer);
+      if (texture.kind === "dust" && frames.some(frame => Number.isFinite(frame.pan)) && typeof context.createStereoPanner === "function") {
+        const spatial = context.createStereoPanner();
+        output.connect(spatial);
+        spatial.connect(layer);
+        nodes.push(spatial);
+        let previous = 0;
+        for (const { onsetS, intensity, pan = 0 } of frames) {
+          if (intensity === 0) continue;
+          const start = origin + (Math.max(position, onsetS) - position) / speed;
+          const end = origin + (Math.min(limit, onsetS + texture.slotSeconds) - position) / speed;
+          ramp(spatial.pan, previous, pan, start, start + Math.min(0.17, (end - start) * 0.33));
+          previous = pan;
+        }
+      } else output.connect(layer);
       for (const { type, baseHz, sweepHz, gain } of profile.bands) {
         const filter = context.createBiquadFilter();
         const envelope = context.createGain();
@@ -149,8 +174,8 @@ export function createAtmosphere(context, destination) {
           const endS = Math.min(limit, onsetS + texture.slotSeconds);
           const start = origin + (startS - position) / speed;
           const end = origin + (endS - position) / speed;
-          const crossfade = Math.min(0.12, (end - start) * 0.33);
-          const targetGain = Math.sqrt(intensity) * (gain[0] + (gain[1] - gain[0]) * intensity);
+          const crossfade = Math.min(0.17, (end - start) * 0.33);
+          const targetGain = intensity ** profile.loudnessExponent * (gain[0] + (gain[1] - gain[0]) * intensity);
           const targetFrequency = baseHz + intensity * sweepHz;
           ramp(envelope.gain, lastGain, targetGain, start, start + crossfade);
           ramp(filter.frequency, lastFrequency, targetFrequency, start, start + crossfade);

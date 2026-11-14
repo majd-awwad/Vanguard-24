@@ -13,6 +13,31 @@ export function cameraFor({ scale = 1, x = 0, y = 0 } = {}) {
   };
 }
 
+export function coordinatesAt(bounds, camera, x, y) {
+  if (x < viewport.x || x > viewport.x + viewport.width || y < viewport.y || y > viewport.y + viewport.height) return null;
+  const u = (x - viewport.x - camera.x) / (viewport.width * camera.scale);
+  const v = (y - viewport.y - camera.y) / (viewport.height * camera.scale);
+  return { lat: bounds.north - (bounds.north - bounds.south) * v, lon: bounds.west + (bounds.east - bounds.west) * u };
+}
+
+// Rank exact sample centers by great-circle distance. Never estimate a value
+// at the supplied coordinates or extrapolate outside the packaged region.
+export function nearestSample(bounds, sites, lat, lon) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < bounds.south || lat > bounds.north ||
+      lon < bounds.west || lon > bounds.east) return null;
+  const radians = Math.PI / 180;
+  let closest = null;
+  let distance = Infinity;
+  for (const site of sites) {
+    const deltaLat = (lat - site.lat) * radians;
+    const deltaLon = (lon - site.lon) * radians;
+    const arc = Math.sin(deltaLat / 2) ** 2 + Math.cos(lat * radians) * Math.cos(site.lat * radians) * Math.sin(deltaLon / 2) ** 2;
+    if (arc >= distance) continue;
+    distance = arc;
+    closest = site;
+  }
+  return closest;
+}
 export function svg(name, attrs, text) {
   const node = document.createElementNS(namespace, name);
   for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
@@ -20,7 +45,7 @@ export function svg(name, attrs, text) {
   return node;
 }
 
-export function createAtlasMap(host, { onSelect, onZoom }) {
+export function createAtlasMap(host, { onSelect, onZoom, onCoordinates }) {
   const v = viewport;
   const middle = [v.width / 2, v.height / 2];
   const map = svg("svg", { viewBox: "0 0 706 342", "aria-hidden": "true", focusable: "false" });
@@ -38,6 +63,8 @@ export function createAtlasMap(host, { onSelect, onZoom }) {
   host.replaceChildren(map);
   let camera = cameraFor();
   let previousCase;
+  let bounds;
+  let focusPoint;
   let drag;
   let ignoreClick = false;
 
@@ -49,6 +76,7 @@ export function createAtlasMap(host, { onSelect, onZoom }) {
     host.dataset.panX = String(camera.x);
     host.dataset.panY = String(camera.y);
     onZoom?.(camera.scale);
+    onCoordinates?.(null);
   }
 
   function zoom(ratio, atX = middle[0], atY = middle[1]) {
@@ -76,8 +104,11 @@ export function createAtlasMap(host, { onSelect, onZoom }) {
     drag = { start: point(event), camera, pointer: event.pointerId };
   });
   map.addEventListener("pointermove", (event) => {
-    if (drag?.pointer !== event.pointerId) return;
     const { x, y } = point(event);
+    if (drag?.pointer !== event.pointerId) {
+      if (bounds) onCoordinates?.(coordinatesAt(bounds, camera, x, y));
+      return;
+    }
     const dx = x - drag.start.x;
     const dy = y - drag.start.y;
     if (Math.hypot(dx, dy) < 3 && !ignoreClick) return;
@@ -87,6 +118,7 @@ export function createAtlasMap(host, { onSelect, onZoom }) {
   });
   for (const type of ["pointercancel", "pointerup", "lostpointercapture", "pointerleave"]) {
     map.addEventListener(type, (event) => {
+      if (type === "pointerleave") onCoordinates?.(null);
       if (type === "pointerleave" && map.hasPointerCapture(event.pointerId)) return;
       if (drag?.pointer === event.pointerId) drag = null;
     });
@@ -98,6 +130,7 @@ export function createAtlasMap(host, { onSelect, onZoom }) {
   });
 
   function render({ data, event, sites, comparisonId, label, color, detections }) {
+    bounds = data.bounds;
     const { west, east, north, south } = data.bounds;
     const x = (lon) => v.x + (lon - west) / (east - west) * v.width;
     const y = (lat) => v.y + (north - lat) / (north - south) * v.height;
@@ -128,6 +161,8 @@ export function createAtlasMap(host, { onSelect, onZoom }) {
     const nodes = [];
     const { index, evidence } = event;
     if (isFire) {
+      const area = evidence.site.bounds;
+      focusPoint = evidence.peak ?? { lon: (area.west + area.east) / 2, lat: (area.south + area.north) / 2 };
       for (const site of sites) {
         const bounds = site.bounds;
         nodes.push(svg("rect", { x: x(bounds.west), y: y(bounds.north),
@@ -140,14 +175,17 @@ export function createAtlasMap(host, { onSelect, onZoom }) {
       }
       if (evidence.peak) nodes.push(svg("circle", { cx: x(evidence.peak.lon), cy: y(evidence.peak.lat), r: 11, class: "fire-peak", "pointer-events": "none" }));
     } else {
+      focusPoint = evidence.site;
       for (const site of sites) {
         const reading = site.samples[index]?.value ?? null;
         const primary = site.id === evidence.site.id;
         const mark = svg("g", { class: `map-site${primary ? " active" : comparisonId === site.id ? " comparison" : ""}` });
         const cx = x(site.lon), cy = y(site.lat);
         if (primary || comparisonId === site.id) mark.append(svg("circle", { cx, cy, r: 12, class: "site-ring" }));
-        mark.append(svg("circle", { cx, cy, r: 6, fill: color(reading), class: "sample-dot" }),
-          svg("circle", { cx, cy, r: 12, class: "site-hit", "data-site": site.id }));
+        if (primary) mark.append(svg("path", { d: `M${cx-19},${cy}h4m30,0h4 M${cx},${cy-19}v4m0,30v4`, class: "map-anchor" }));
+        if (reading === null) mark.append(svg("path", { d: `M${cx-3},${cy-3}l6,6m0,-6l-6,6`, class: "map-missing" }));
+        else mark.append(svg("circle", { cx, cy, r: 5, fill: color(reading), class: "sample-dot" }));
+        mark.append(svg("circle", { cx, cy, r: 12, class: "site-hit", "data-site": site.id }));
         nodes.push(mark);
       }
     }
@@ -158,6 +196,13 @@ export function createAtlasMap(host, { onSelect, onZoom }) {
   update({});
   return {
     render, zoom,
+    center() {
+      if (!focusPoint || !bounds) return;
+      const scale = Math.max(2, camera.scale);
+      const x = (focusPoint.lon - bounds.west) / (bounds.east - bounds.west) * v.width;
+      const y = (bounds.north - focusPoint.lat) / (bounds.north - bounds.south) * v.height;
+      update({ scale, x: middle[0] - x * scale, y: middle[1] - y * scale });
+    },
     move(x, y) { update({ ...camera, x: camera.x + x, y: camera.y + y }); },
     reset() { update({}); },
     showLayer(show) { dataLayer.style.display = show ? "" : "none"; },

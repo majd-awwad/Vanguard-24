@@ -97,6 +97,8 @@ svg#observatory-map { display: block; width: 100%; height: 100%; position: absol
 #observatory-values { shape-rendering: crispEdges; }
 #observatory-coast .dust-basemap-land { fill: transparent; stroke: #e9f1d1; stroke-width: 1; opacity: .85; pointer-events: none; }
 #observatory-values { opacity: .78; }
+.observation-only #observatory-terrain-image { visibility: hidden; }
+.observation-only #observatory-values { opacity: 1; }
 #observatory-cursor {
   fill: #fff2ba30;
   stroke: #fff2ba;

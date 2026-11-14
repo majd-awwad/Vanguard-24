@@ -12,7 +12,7 @@ const atlasY = lat => 27 + (54 - lat) / (54 - 38) * 288;
  * Append land in a normalized [0, 1] viewBox. Parent SVG clips to its viewport.
  * An embedded group can scale to other viewBox units without resizing the stroke.
  */
-export function drawDustMapBase(svg, bounds) {
+export function drawDustMapBase(svg, bounds, { imagery = false } = {}) {
   const { west, east, north, south } = bounds ?? {};
   if (![west, east, north, south].every(Number.isFinite) ||
     west < -180 || east > 180 || south < -90 || north > 90 || west >= east || south >= north) {
@@ -32,6 +32,22 @@ export function drawDustMapBase(svg, bounds) {
   path.setAttribute("transform", `matrix(${scaleX} 0 0 ${scaleY} ${-left * scaleX} ${-top * scaleY})`);
   path.setAttribute("vector-effect", "non-scaling-stroke");
   path.setAttribute("pointer-events", "none");
+  // The packaged EPSG:4326 raster covers 20°W–50°E, 15°N–45°N.
+  // It remains a separate orientation image beneath the science overlay.
+  if (imagery && west >= -20 && east <= 50 && south >= 15 && north <= 45) {
+    const image = svg.ownerDocument.createElementNS(svgNamespace, "image");
+    image.setAttribute("class", "dust-reference-image");
+    image.setAttribute("href", new URL("../assets/map/dust.jpg", import.meta.url).href);
+    image.setAttribute("x", (-20 - west) / (east - west));
+    image.setAttribute("y", (north - 45) / (north - south));
+    image.setAttribute("width", 70 / (east - west));
+    image.setAttribute("height", 30 / (north - south));
+    image.setAttribute("preserveAspectRatio", "none");
+    image.setAttribute("pointer-events", "none");
+    image.setAttribute("opacity", ".76");
+    svg.append(image);
+    path.setAttribute("style", "fill: none");
+  }
   svg.append(path);
   return path;
 }

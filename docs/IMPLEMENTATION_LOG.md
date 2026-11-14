@@ -7,3 +7,9 @@
 5. Validated with the native test suite, Python GEDI checks, and Chromium journeys at desktop and narrow widths in both directions. Recorded results and gaps in the [quality report](QUALITY_REPORT.md). Build verification includes image integrity and source routes.
 
 Local delivery uses a fresh ZIP. Future work can begin with manual NVDA/VoiceOver, physical-device audio and GPU performance review, then publishing with the event owner. Selective credentialed GEDI V002 intake and official frame-level matching are separate science follow-ups, documented in the [data request](../DATA_REQUEST.md).
+
+## Exhibition rebuild
+
+- Baseline `bcc8a72` remains available. Work continued locally on `codex/earthpulse-exhibition`. The landing embeds the team's renderer with three marked destinations, image fallback, localized routing and bounded camera transitions. The six exhibit routes share a navigation footer.
+- The Atlas now exposes geographic cursor coordinates, nearest retained-cell search, evidence centering, evidence class and numeric date values. The Dust Observatory can isolate its model layer from geographic context. The guided and two-dimensional Dust routes use registered NASA terrain. The datasets and observation manifests remain byte-identical.
+- The Forest compares six corrected return profiles with shared scales and the active band. The numeric mapping and original shot evidence are unchanged. Atmospheric synthesis v2 adds dry air stereo, a lower spectral bed and distinct rain transients. An offline render using the production cases and the side-by-side captures are under `release/emergency/`. Direct perception of the audio, physical-device performance and manual screen-reader use require human checks.

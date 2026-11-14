@@ -136,6 +136,19 @@ html[dir="rtl"] .plot svg text { font-family: var(--sans); }
 .site-button { position: absolute; transform: translate(-50%, -50%); min-width: 42px; min-height: 42px; padding: 0 5px; color: #f4f7e9; background: transparent; border: 0; border-radius: 50%; font: 13px var(--mono); pointer-events: auto; text-shadow: 0 1px 4px #000, 0 1px 2px #000; }
 .site-button[aria-pressed="true"], .site-button:hover { color: var(--acid); background: #17201876; }
 .plot-key { padding: 8px 0; font-size: 13px; color: var(--muted); }
+.profiles { padding-block: .85rem 1.1rem; border-block-end: 1px solid var(--line); }
+.profile-note { margin-block: .25rem .7rem; color: var(--muted); font-size: .82rem; }
+.profile-strip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .45rem; direction: ltr; }
+.profile-panel { min-width: 0; text-align: center; color: var(--muted); background: #101c1a; border-block-end: 2px solid transparent; font: .78rem var(--mono); padding-block-end: .3rem; }
+.profile-panel svg { display: block; inline-size: 100%; max-block-size: 134px; }
+.profile-panel.current { color: var(--acid); border-color: var(--acid); background: #202d25; }
+.profile-band { fill: #ccec792b; }
+.profile-ground { stroke: #a8bca16b; stroke-dasharray: 3 2; }
+.profile-return { fill: #d5eea9; }
+@media (max-width: 550px) {
+  .profile-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .profile-panel svg { max-block-size: 92px; }
+}
 .readout { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 7px 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .reading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
 .current-value { color: var(--acid); font: clamp(31px, 3.2vw, 45px)/.95 var(--serif); }

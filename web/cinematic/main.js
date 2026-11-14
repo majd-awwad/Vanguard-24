@@ -71,6 +71,10 @@ export async function startCinematic(root) {
 
   const tap = createAudioTap();
   const transport = createTransport({ createContext: () => tap.createContext() });
+  for (const [index, id] of ["cine-mix-title", "cine-mix-label", "cine-mix-help"].entries()) root.querySelector("#" + id).textContent = text.mix[index];
+  root.querySelector("#cine-instrument-type").textContent = text.instrumentType;
+  root.querySelector("#cine-mix").addEventListener("input", (event) => transport.setAtmosphereVolume(Number(event.target.value) / 100));
+  document.defaultView.addEventListener("pagehide", () => transport.pause());
   const hero = createHero({ root, language, scene, transport, analyser: () => tap.analyser });
   let caseInfo = null;
 

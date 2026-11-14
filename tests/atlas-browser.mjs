@@ -73,6 +73,17 @@ try {
   await page.locator("#open-evidence").click();
   assert.match(await page.locator("#evidence-body").textContent(), /23\.05°.*-90\.95°/);
   await page.keyboard.press("Escape");
+  await page.locator("#map-search summary").click();
+  await page.locator("#map-latitude").fill("25.05");
+  await page.locator("#map-longitude").fill("-88.95");
+  await page.locator('#coordinate-search button[type="submit"]').click();
+  assert.equal(await page.locator("#site").inputValue(), "cell:25.05,-88.95");
+  assert.match(await page.locator("#coordinate-status").textContent(), /25\.05° N · 88\.95° W/);
+  assert.equal(await map.getAttribute("data-zoom"), "2");
+  await page.locator("#map-latitude").fill("10");
+  await page.locator('#coordinate-search button[type="submit"]').click();
+  assert.match(await page.locator("#coordinate-status").textContent(), /outside this dataset/);
+  assert.equal(await page.locator("#site").inputValue(), "cell:25.05,-88.95");
 
   await page.locator("#signal").selectOption("fires");
   await page.waitForFunction(() => document.querySelector("#lens").dataset.signal === "fires");

@@ -224,7 +224,7 @@ npm test
 
 ## Optional atmosphere mix
 
-The `earthpulse-atmosphere-v1` layer adds procedural sound beside the numeric
+The `earthpulse-atmosphere-v2` layer adds procedural sound beside the numeric
 tones. It uses the same transport clock and source evidence, with a separate
 0–100% mix control and the shared master volume and mute. A value of 0 removes
 the texture while leaving the numeric tones available. The original GEDI
@@ -236,16 +236,20 @@ mapping and Decode's oscillator timing and evidence are preserved.
 | Guided Dust and Observatory | Verified GEOS-FP optical-depth band means and individual GEOS snapshot cells | Same 0–2.5 texture scale for positive values | Same dust palette. The practice ranks and signed time differences use only their respective numeric tones |
 | Atlas rain | IMERG mean rate represented as daily depth equivalent (mm/day) | Clamp value / 60 to [0, 1], for valid nonzero values | High-pass damped grains, a brighter band-pass layer and the original numeric pulse count |
 
-For normalized intensity `a`, each band's gain target is `sqrt(a) × lerp(low,
-high, a)` and its filter frequency moves linearly with `a`. Dust layers sweep
-440–1,440 Hz (low pass) and 990–2,490 Hz (band pass), with maximum layer
-gains 0.30 and 0.20. Rain layers sweep 1,600–2,700 Hz (high pass) and
+For normalized intensity `a`, each band's gain target is `a^p × lerp(low,
+high, a)`, with `p=0.35` for dust and `p=0.5` for rain. Filter frequencies
+move linearly with `a`. Dust layers sweep
+265–885 Hz (low pass) and 750–1,770 Hz (band pass), with maximum layer
+gains 0.48 and 0.24. Rain layers sweep 1,600–2,700 Hz (high pass) and
 2,300–3,300 Hz (band pass), with maximum layer gains 0.20 and 0.23.
 The default texture mix is 32% of those gains. Samples are deterministic,
-bounded, four-second mono buffers with smoothed loop edges.
+bounded, eight-second mono source buffers with smoothed loop edges. A
+low air component around 106 Hz shapes the dust texture. When the
+scientific plan specifies stereo, the dry air follows 72% of the cue pan.
+Rain and non-spatial comparisons remain centered.
 
 Adjacent active slots crossfade their filter and gain targets over at most
-120 ms. For an absent, zero or threshold-suppressed slot, the texture fades
+170 ms. For an absent, zero or threshold-suppressed slot, the texture fades
 inside the preceding active slot and stays silent during the absent slot.
 Interpolation of audio controls has no role in calculating a reading.
 The textures illustrate the source variables. Gust and droplet timing are

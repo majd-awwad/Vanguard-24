@@ -9,6 +9,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='14' fill='%23233224'/%3E%3Cpath d='M4 15h5l2-4 3 8 3-11 2 7h5' fill='none' stroke='%23d9edaa' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="preload" href="./assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./visual/exhibit.css">
+  <link rel="stylesheet" href="./visual/field-navigation.css">
 </head>
 <body>
   <a class="skip" href="#lens" data-copy="skip">Skip to exploration</a>
@@ -32,7 +33,7 @@
     <section class="hero" aria-labelledby="title">
       <div class="layout hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow hero-label"><span></span><span data-copy="heroLabel">NASA GEDI FIELD RECORDING</span></p>
+          <p class="eyebrow hero-label"><span></span><span data-copy="heroLabel">NASA GEDI · REFLECTED LASER LIGHT</span></p>
           <h1 id="title"><span data-copy="titleLine">The Invisible</span><br><em data-copy="titleAccent">Forest.</em></h1>
           <p class="hero-description" data-copy="intro">The canopy hides a world of layers. Follow a NASA laser pulse into Brazil’s Cerrado and hear what the reflected light reveals.</p>
           <div class="hero-actions">
@@ -86,6 +87,11 @@
             <span id="instruction" class="plot-instruction"></span>
           </div>
           <div id="plot" class="plot"></div>
+          <div id="profiles" class="profiles" hidden>
+            <p class="eyebrow" data-copy="profileHeading">Six return profiles</p>
+            <p class="profile-note" data-copy="profileNote">All six use the same scale. Height runs up and width shows return share per metre. The highlight marks the active band.</p>
+            <div id="profile-strip" class="profile-strip" aria-hidden="true"></div>
+          </div>
           <p class="plot-key" id="plot-key"></p>
           <div class="readout">
             <div class="reading">
@@ -177,5 +183,6 @@
   <footer class="footer layout"><span>EARTHPULSE</span><span data-copy="footer">The Invisible Forest · Team Vanguard</span></footer>
   <noscript><p class="layout">JavaScript is required to explore this GEDI exhibition.</p></noscript>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="./field-navigation.js"></script>
 </body>
 </html>

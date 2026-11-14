@@ -152,7 +152,7 @@ export const mountDecodeVisual = (root, session, { geography }) => {
     const matchesGeography = geography?.projection === "plate-carree" && geography.caseId === caseId;
     if (coastlineVisible !== matchesGeography) {
       geographyLayer.replaceChildren();
-      if (matchesGeography) drawDustMapBase(geographyLayer, geography.bounds);
+      if (matchesGeography) drawDustMapBase(geographyLayer, geography.bounds, { imagery: true });
       coastlineVisible = matchesGeography;
     }
     if (coastlineVisible && (!previous || gridChanged)) {

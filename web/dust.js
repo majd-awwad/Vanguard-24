@@ -36,7 +36,7 @@ const messages = {
   mapReady: ["The map highlights each band as it plays", "الخريطة بتضيء كل نطاق وقت تشغيله"],
   practiceSignal: ["Practice example", "مثال تدريبي"],
   playingBand: ["Now playing: {band}", "التشغيل الآن: {band}"],
-  mapCredit: ["Coastlines: Natural Earth. The bands run west to east.", "السواحل من Natural Earth. تمتد النطاقات من الغرب إلى الشرق."],
+  mapCredit: ["Terrain: NASA GIBS · Coastlines: Natural Earth. The bands run west to east.", "التضاريس من NASA GIBS والسواحل من Natural Earth. تمتد النطاقات من الغرب إلى الشرق."],
   listen: ["Listen and compare", "استمع وقارن"],
   mapping: ["Count the notes in each band. More notes means a higher rank among the three. Every note uses the same pitch and loudness, and the count only tells you the order.",
     "عُدّ النغمات بكل نطاق. نغمات أكثر يعني مرتبة أعلى بين النطاقات الثلاثة. كل النغمات إلها نفس الحدّة والشدّة، وعددها بيدلّ على الترتيب بس."],
@@ -125,7 +125,7 @@ function renderCoast(bounds) {
   const coast = byId("coast");
   coast.setAttribute("viewBox", "0 0 1 1");
   coast.setAttribute("preserveAspectRatio", "none");
-  drawDustMapBase(coast, bounds);
+  drawDustMapBase(coast, bounds, { imagery: true });
   for (const [name, lon, lat] of [["atlantic", -13, 29], ["mediterranean", 22, 37], ["sahara", 15, 23]]) {
     const place = document.createElement("span");
     place.textContent = t(name);

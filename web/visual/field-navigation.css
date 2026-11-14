@@ -1,0 +1,18 @@
+.field-navigation {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .15rem 1.3rem;
+  padding: 1.25rem max(1rem, 4vw);
+  color: #c0d4d7;
+  border-block-start: 1px solid #394e5a;
+  background: #0a141d;
+}
+.field-navigation a { display: inline-grid; align-items: center; min-block-size: 38px; color: inherit; font-size: .84rem; text-underline-offset: .3em; }
+.field-navigation a:is(:hover, [aria-current]) { color: #afeedf; }
+.field-navigation a:focus-visible { outline: 2px solid #ffdb9b; outline-offset: 3px; }
+.observatory-page { background: radial-gradient(ellipse at top, #19343d, #0a141d 66rem); }
+body:has(.guided-main) { background: radial-gradient(ellipse at 15% 0, #1c373d, #0a141d 55rem); }
+.guided-main .guided-mission, .guided-main .guided-map, .guided-main .guided-controls { background: #13232c; border-color: #435e65; }
+.observatory-controls, .observatory-page .observatory-controls select { background: #13232c; }

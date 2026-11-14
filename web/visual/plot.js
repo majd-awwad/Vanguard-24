@@ -199,13 +199,19 @@ export function mountVisual(root, session, translate) {
     } else {
       const [lower, upper] = event.evidence.band;
       const y = geometry.y((lower + upper) / 2);
+      // Below the estimated ground, show the signal only on the instrument
+      // axes. An illustrative laser marker there would imply penetration.
+      const aboveGround = upper > 0;
       for (const rect of [highlight, detail]) {
         rect.setAttribute("y", geometry.y(upper));
         rect.setAttribute("height", geometry.y(lower) - geometry.y(upper));
       }
+      cursor.setAttribute("x1", aboveGround ? beam.getAttribute("cx") : geometry.split);
       cursor.setAttribute("y1", y);
       cursor.setAttribute("y2", y);
+      beam.setAttribute("visibility", aboveGround ? "visible" : "hidden");
       beam.setAttribute("cy", y);
+      echo.setAttribute("visibility", aboveGround ? "visible" : "hidden");
       echo.setAttribute("cy", y);
       echo.setAttribute("r", 8 + response * 23);
     }

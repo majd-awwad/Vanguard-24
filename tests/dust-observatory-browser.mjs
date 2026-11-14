@@ -32,6 +32,10 @@ async function journey(lang, width) {
     assert.equal(await page.locator("html").getAttribute("lang"), lang);
     assert.equal(await page.locator("html").getAttribute("dir"), lang === "ar" ? "rtl" : "ltr");
     assert.equal(await page.locator(".observatory-map-area").getAttribute("dir"), "ltr");
+    await page.locator("#observatory-terrain").uncheck();
+    assert.equal(await page.locator("#observatory-terrain-image").isVisible(), false);
+    assert.equal(await page.locator("#observatory-values rect").count(), 1000);
+    await page.locator("#observatory-terrain").check();
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
     assert.equal(await page.locator("#observatory-first option").count(), catalog.snapshots.length);
     assert.equal(await page.locator("#observatory-first").inputValue(), reference.id);

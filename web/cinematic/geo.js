@@ -85,6 +85,11 @@ export const HERO_SHIFT = 0.42;
 const HERO_LON = 8;
 const HERO_LAT = 18;
 
+/** Interpolate a move on the short side of the antimeridian. */
+export function longitudeBetween(from, to, fraction) {
+  return from + (((to - from + 540) % 360) - 180) * clamp01(fraction);
+}
+
 /** Longitude spin (degrees) left on the sphere at fly-to progress p: it unwinds to 0 before the unroll. */
 export function flightSpin(spinStart, p) {
   const x = clamp01(ease(p) / 0.6);
@@ -118,7 +123,7 @@ export function fitFrustum(frame, rect = null, canvas = { width: 1, height: 1 })
 export function cameraMatrices(frame, p, aspect, { rect = null, canvas = null, hero = null } = {}) {
   const e = ease(p);
   const overview = hero
-    ? spherePoint(HERO_LON, HERO_LAT)
+    ? spherePoint(hero.lon ?? HERO_LON, hero.lat ?? HERO_LAT)
     : spherePoint(frame.lon0 - 55, Math.min(60, frame.lat0 * 0.5 + 12));
   const direction = overview.clone().applyQuaternion(
     new Quaternion().slerp(new Quaternion().setFromUnitVectors(overview, frame.normal), e));

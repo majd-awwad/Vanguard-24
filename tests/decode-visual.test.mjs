@@ -621,7 +621,12 @@ test("the Decode coastline matches its verified case and keeps its footprint bet
   }, { t: key => key, geography: { caseId: dustCaseId, bounds: dustBounds, projection: "plate-carree" } });
   const [svg] = root.children;
   const [geography, grid] = svg.children;
-  const [path] = geography.children;
+  const [image, path] = geography.children;
+  assert.equal(image.name, "image");
+  assert.equal(image.attributes.x, "0");
+  assert.equal(image.attributes.y, "0");
+  assert.equal(image.attributes.width, "1");
+  assert.equal(image.attributes.height, "1");
   assert.equal(path.attributes.class, "dust-basemap-land");
   assert.equal(geography.attributes.transform, "scale(4 3)");
   const [firstCell] = grid.children;
@@ -629,14 +634,14 @@ test("the Decode coastline matches its verified case and keeps its footprint bet
   assert.equal(grid.children[0], firstCell);
 
   update({ ...guardedDiscovery(6, 8), caseId: dustCaseId, level: "advanced" });
-  assert.equal(geography.children[0], path);
+  assert.equal(geography.children[1], path);
   assert.equal(geography.attributes.transform, "scale(8 6)");
   assert.equal(grid.childElementCount, 48);
 
   update({ ...quick, caseId: "unrelated-fixture" });
   assert.equal(geography.childElementCount, 0);
   update(quick);
-  assert.equal(geography.childElementCount, 1);
+  assert.equal(geography.childElementCount, 2);
   assert.equal(geography.attributes.transform, "scale(4 3)");
   mount.dispose();
   assert.equal(root.childElementCount, 0);

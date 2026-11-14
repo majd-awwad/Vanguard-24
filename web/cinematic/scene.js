@@ -4,7 +4,7 @@ import {
   SRGBColorSpace, TextureLoader, Vector2, Vector3, Vector4, WebGLRenderer,
 } from "../vendor/three/three.module.min.js";
 import {
-  DEG, HERO_DISTANCE, HERO_SHIFT, bracketTriangles, cameraMatrices, cellRect, createFrame, fillTriangles,
+  DEG, HERO_DISTANCE, HERO_SHIFT, bracketTriangles, cameraMatrices, cellRect, createFrame, fillTriangles, longitudeBetween,
   flightSpin, gridLines, ringTriangles, unroll,
 } from "./geo.js";
 import { guideState, meridianStrip, parallelStrip } from "./guide.js";
@@ -256,7 +256,7 @@ function textureUrls(window) {
  * the revealed snapshot after Reveal.
  */
 export function createScene({
-  document, createRenderer = defaultRenderer, reducedMotion, textures = textureUrls, now = () => performance.now(),
+  document, surface, createRenderer = defaultRenderer, reducedMotion, textures = textureUrls, now = () => performance.now(),
 }) {
   const window = document.defaultView;
   const isReduced = reducedMotion ?? (() => window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true);
@@ -264,7 +264,7 @@ export function createScene({
   const canvas = renderer.domElement;
   canvas.className = "cine-canvas";
   canvas.setAttribute("aria-hidden", "true");
-  renderer.setClearColor(0x050b12, 1);
+  renderer.setClearColor(0x050b12, surface ? 0 : 1);
 
   const scene = new Scene();
   const camera = new PerspectiveCamera();
@@ -390,6 +390,11 @@ export function createScene({
   let spinStartDeg = 0;
   let heroZoom = 1;
   let heroZoomTarget = 1;
+  let heroLongitude = 0;
+  let heroLatitude = 18;
+  let viewFrom = null;
+  let viewTo = null;
+  let viewTime = 0;
   let rtl = false;
   let overlaysDirty = true;
   let lastBuild = { t: -1, spin: NaN, guide: "" };
@@ -414,8 +419,8 @@ export function createScene({
   const mobileLayout = () => width / Math.max(1, height) < 0.9;
 
   function setSize() {
-    const w = Math.max(1, Math.round(window.innerWidth));
-    const h = Math.max(1, Math.round(window.innerHeight));
+    const w = Math.max(1, Math.round(surface?.clientWidth ?? window.innerWidth));
+    const h = Math.max(1, Math.round(surface?.clientHeight ?? window.innerHeight));
     maxPixelRatio = Math.min(window.devicePixelRatio || 1, 2);
     pixelRatio = Math.min(pixelRatio || maxPixelRatio, maxPixelRatio);
     if (w === width && h === height && renderer.getPixelRatio() === pixelRatio) return;
@@ -423,7 +428,7 @@ export function createScene({
     height = h;
     renderer.setPixelRatio(pixelRatio);
     renderer.setSize(width, height, false);
-    canvas.style.cssText = "position:fixed;inset:0;width:100%;height:100%;display:block";
+    canvas.style.cssText = `position:${surface ? "absolute" : "fixed"};inset:0;width:100%;height:100%;display:block`;
     starUniforms.uPixels.value = pixelRatio;
     dustUniforms.uScale.value = (height * pixelRatio) / 2;
     invalidate();
@@ -533,7 +538,7 @@ export function createScene({
   // ---- loop ----
   const heroActive = () => target === 0 && progress === 0;
   const continuous = () => !document.hidden && width > 0 && (
-    heroActive() || progress !== target || Boolean(guide) || rippleStart >= 0 && now() - rippleStart < RIPPLE_SECONDS * 1000 ||
+    (heroActive() && (viewTo !== null || (!surface && !isReduced()))) || progress !== target || Boolean(guide) || rippleStart >= 0 && now() - rippleStart < RIPPLE_SECONDS * 1000 ||
     (dust !== null && dustUniforms.uReveal.value < 1) || model.active !== null || dust !== null);
 
   function draw() {
@@ -556,7 +561,14 @@ export function createScene({
       const done = Math.min(1, (time - flightStart) / 1000 / FLY_SECONDS);
       progress = isReduced() || done >= 1 ? target : flightFrom + (target - flightFrom) * done;
       if (progress === 0 && target === 0) spin = spinStartDeg * DEG;
-    } else if (heroActive() && !isReduced()) {
+    } else if (heroActive() && viewTo) {
+      const amount = isReduced() ? 1 : Math.min(1, (time - viewTime) / 850);
+      const eased = 1 - (1 - amount) ** 3;
+      heroLongitude = longitudeBetween(viewFrom.lon, viewTo.lon, eased);
+      heroLatitude = viewFrom.lat + (viewTo.lat - viewFrom.lat) * eased;
+      spin = 0;
+      if (amount === 1) viewTo = null;
+    } else if (heroActive() && !isReduced() && !surface) {
       spin += SPIN_RAD_PER_SECOND * dt;
     }
     heroZoom += (heroZoomTarget - heroZoom) * Math.min(1, dt * 7 || 1);
@@ -566,10 +578,11 @@ export function createScene({
     const spinDeg = progress > 0 ? flightSpin(spinStartDeg, progress) : (spin / DEG);
     const rect = progress > 0 ? stageRect() : null;
     const aspect = width / height;
-    const heroDistance = (aspect > 1.3 ? HERO_DISTANCE : aspect > 0.9 ? HERO_DISTANCE + 0.6 : HERO_DISTANCE + 1.5) / heroZoom;
-    const heroShift = mobileLayout() ? 0 : (rtl ? -HERO_SHIFT : HERO_SHIFT);
+    const heroDistance = (surface ? 3.75 : aspect > 1.3 ? HERO_DISTANCE : aspect > 0.9 ? HERO_DISTANCE + 0.6 : HERO_DISTANCE + 1.5) / heroZoom;
+    const heroShift = surface || mobileLayout() ? 0 : (rtl ? -HERO_SHIFT : HERO_SHIFT);
     const { view, world, projection } = cameraMatrices(f, progress, aspect, {
-      rect, canvas: { width, height }, hero: { distance: heroDistance, shift: heroShift },
+      rect, canvas: { width, height }, hero: { distance: heroDistance, shift: heroShift,
+        ...(surface ? { lon: heroLongitude, lat: heroLatitude } : {}) },
     });
     camera.matrixWorld.copy(world);
     camera.matrixWorldInverse.copy(view);
@@ -611,6 +624,7 @@ export function createScene({
   window.addEventListener("scroll", onResize, { passive: true });
   canvas.addEventListener("webglcontextlost", (event) => { event.preventDefault(); lostHandler?.(); });
   const observer = typeof window.ResizeObserver === "function" ? new window.ResizeObserver(onResize) : null;
+  if (surface) observer?.observe(surface);
 
   const controller = {
     canvas,
@@ -620,6 +634,12 @@ export function createScene({
     onLost(handler) { lostHandler = handler; },
     onFrame(handler) { onFrame = handler; },
     setDirection(isRtl) { if (rtl !== isRtl) { rtl = isRtl; invalidate(); } },
+    orient(lon, lat) {
+      viewFrom = { lon: heroLongitude, lat: heroLatitude };
+      viewTo = { lon, lat };
+      viewTime = now();
+      invalidate();
+    },
     zoom(factor) { heroZoomTarget = Math.min(1.6, Math.max(0.7, heroZoomTarget * factor)); invalidate(); },
     resetView() { heroZoomTarget = 1; invalidate(); },
     setStage(element) {

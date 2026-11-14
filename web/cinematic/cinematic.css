@@ -254,7 +254,7 @@ body.cine[data-renderer="webgl"][data-view="decode"]:not([data-flight="done"]) #
 body.cine[data-renderer="webgl"] #decode-stage { transition: opacity .5s ease .1s; }
 
 /* ---- dock ---- */
-.cine-dock { padding: 1.1rem 1.15rem 1.2rem; border-radius: 1.1rem; }
+.cine-dock { padding: 1.25rem 1.25rem 1.35rem; border-radius: .25rem; border-block-start: 2px solid #8eecdb; }
 .cine-dock .decode-brief { display: grid; gap: .35rem; }
 .cine-dock #decode-question { font: 600 1.02rem/1.3 var(--sans); max-inline-size: none; }
 .cine-dock #decode-method { font-size: .8rem; color: var(--cine-muted); margin: 0; }
@@ -263,7 +263,7 @@ body.cine[data-renderer="webgl"] #decode-stage { transition: opacity .5s ease .1
 .cine-dock #decode-steps li[aria-current="step"] { color: var(--cine-gold); border-color: var(--cine-gold); }
 .cine-dock #decode-steps .decode-progress-complete { border-color: var(--cine-teal); }
 .cine-dock .decode-instrument { padding-block: .6rem 0; }
-.cine-dock #decode-phase { font: 400 1.7rem/1.1 var(--serif); }
+.cine-dock #decode-phase { font: 400 clamp(2.05rem, 3.5vw, 3.1rem)/1.03 var(--serif); color: var(--cine-teal); }
 .cine-dock #decode-description { font-size: .85rem; line-height: 1.5; color: #c6d6e2; }
 .cine-dock #decode-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin-block-start: .9rem; }
 .cine-dock .decode-legend { grid-template-columns: 1fr; }
@@ -281,12 +281,19 @@ body.cine .cine-dock button {
 body.cine .cine-dock button:hover:not(:disabled) { border-color: var(--cine-teal); }
 body.cine .cine-dock button[data-primary] { color: #04201c; background: var(--cine-teal); border-color: var(--cine-teal); }
 .cine-dock .decode-transport progress { inline-size: 100%; }
+.cine-mix { margin-block-start: 1.05rem; border-block-start: 1px solid #42606a; padding-block-start: .75rem; color: var(--cine-muted); font-size: .82rem; }
+.cine-mix summary { color: var(--cine-teal); }
+.cine-mix .field { margin-block-start: .6rem; }
+.cine-mix input { inline-size: 100%; }
+.cine-mix p { margin-block-start: .4rem; }
+.cine-instrument-caption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .3rem 1rem; padding-block: .65rem; border-block-start: 1px solid #4c6a72; color: #cbe0e3; font: .74rem/1.4 var(--sans); }
+.cine-instrument-caption bdi { color: var(--cine-teal); font-family: var(--mono); }
 
 /* ---- map stage: neutral glass over the globe ---- */
 #decode-stage[data-renderer="webgl"] { background: transparent; }
 #decode-map[data-live] #decode-stage[data-renderer="webgl"] {
   border: 1px solid rgb(255 255 255 / .22);
-  border-radius: .9rem;
+  border-radius: .25rem;
   box-shadow: 0 1.5rem 4rem rgb(0 0 0 / .5), inset 0 0 0 1px rgb(94 234 212 / .08);
 }
 #decode-map[data-live]:has(#decode-stage:not([hidden])) { background: transparent; border: 0; padding: 0; }
@@ -309,6 +316,8 @@ body.cine .cine-dock button[data-primary] { color: #04201c; background: var(--ci
 }
 #decode-map[data-live] #decode-stage[data-renderer="webgl"] .dg-cell[data-playing]::after { content: none; }
 #decode-map[data-live] #decode-stage[data-renderer="webgl"] .dg-cell:hover { box-shadow: inset 0 0 0 1px rgb(255 255 255 / .35); }
+#decode-map[data-live] #decode-stage[data-renderer="webgl"] .dg-cell[data-playing] { box-shadow: inset 0 0 0 2px #8eecdb; }
+#decode-map[data-live] #decode-stage[data-renderer="webgl"] .dg-cell[aria-pressed="true"] { box-shadow: inset 0 0 0 2px #f8dba0; }
 #decode-map[data-live] #decode-stage[data-renderer="webgl"] .dg-cell {
   color: rgb(244 248 251 / .85);
   font-size: .72rem;

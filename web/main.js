@@ -2,11 +2,12 @@ import { loadForest } from "./sources/forest.js";
 import { createTransport } from "./audio/transport.js";
 import { createSession } from "./experiences/invisible-forest/session.js";
 import { mountVisual } from "./visual/plot.js";
+import { mountProfiles } from "./visual/forest-profiles.js";
 import { mountAccessible } from "./accessibility/controls.js";
 import { localizePage, messages } from "./i18n/messages.js";
 
 let language = new URLSearchParams(location.search).get("lang") === "ar" ? "ar" : "en";
-let controls, plot;
+let controls, plot, profiles;
 const text = (key) => messages(language)(key);
 const errorMessage = document.querySelector("#load-error");
 const loading = document.querySelector("#loading");
@@ -24,6 +25,7 @@ function applyLanguage() {
   updateAtlasLinks();
   controls?.refresh();
   plot?.refresh();
+  profiles?.refresh();
   if (!errorMessage.hidden) errorMessage.textContent = text("error");
 }
 
@@ -52,6 +54,7 @@ async function initialize() {
     const session = createSession(gedi, transport);
     controls = mountAccessible(session, () => language, text);
     plot = mountVisual(document.querySelector("#plot"), session, text);
+    profiles = mountProfiles(document.querySelector("#profiles"), session);
     experience.dataset.sourceStatus = science.source.status;
     experience.hidden = false;
     for (const button of entryButtons) button.disabled = false;

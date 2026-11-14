@@ -1,0 +1,130 @@
+:root {
+  --ex-space: #080f16;
+  --ex-panel: #101e27;
+  --ex-line: #344b56;
+  --ex-ink: #eef6f4;
+  --ex-muted: #b4c7cb;
+  --ex-trace: #8eecdb;
+  --ex-gold: #f8dba0;
+}
+
+.exhibition {
+  --bg: var(--ex-space);
+  --panel: var(--ex-panel);
+  --line: var(--ex-line);
+  --ink: var(--ex-ink);
+  --sub: var(--ex-muted);
+  --accent: var(--ex-trace);
+  background: radial-gradient(ellipse 58% 420px at 70% 10%, #132c34 0, transparent 100%), var(--bg);
+}
+.exhibition .shell { position: relative; z-index: 2; }
+.exhibition .solid, .exhibition .outline { min-block-size: 44px; border-radius: 2px; }
+.exhibition .outline, .exhibition select { background: #13222b; border-color: #52707a; }
+.exhibition .outline:hover:not(:disabled) { background: #203641; }
+.exhibit-arrival {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: clamp(1rem, 3.5vw, 3.75rem);
+  min-block-size: min(750px, 86svh);
+  padding-block: clamp(24px, 5vw, 72px);
+}
+.exhibit-arrival .arrival-copy { position: relative; z-index: 1; }
+.reception-eyebrow { display: flex; align-items: center; gap: .8rem; }
+.reception-eyebrow::before { content: ""; inline-size: 24px; border-block-start: 1px solid var(--accent); }
+.exhibit-arrival h1 { font-size: clamp(76px, 10.2vw, 151px); letter-spacing: -.06em; line-height: .82; }
+.exhibit-arrival h1 span, .exhibit-arrival h1 em { display: block; }
+.exhibit-arrival h1 em { font-weight: 400; color: var(--accent); }
+[dir="rtl"] .exhibit-arrival h1 { font-weight: 700; font-size: clamp(53px, 7vw, 108px); line-height: 1.12; letter-spacing: 0; }
+[dir="rtl"] .exhibit-arrival h1 em { font-style: normal; font-weight: inherit; }
+.exhibit-arrival .arrival-copy > p:not(.eyebrow) { max-inline-size: 42ch; font-size: clamp(1rem, 1.4vw, 1.18rem); }
+.exhibit-arrival .actions { margin-block-start: 1.7rem; }
+.exhibit-arrival .actions a { padding-inline: .95rem; }
+.route-arrow { margin-inline-start: .65rem; }
+.exhibition #dust-text-entry { margin-block: 0; font-size: inherit; }
+.exhibition .arrival-access { color: var(--sub); font-size: .84rem; }
+
+.reception-stage { position: relative; isolation: isolate; min-inline-size: 0; aspect-ratio: 1.05; overflow: hidden; }
+.reception-earth { position: absolute; inset: 0 0 14%; pointer-events: none; }
+.reception-reticle { display: none; position: absolute; inset-block-start: 43%; inset-inline-start: 50%; inline-size: 17px; block-size: 17px; border: 1px solid #a4ffeb; border-radius: 50%; margin: -8.5px; box-shadow: 0 0 15px #75ffddaf; pointer-events: none; }
+[data-renderer="webgl"] .reception-reticle { display: block; }
+.reception-earth::before {
+  content: ""; position: absolute; inset: 3% 0; margin: auto; block-size: 91%; max-inline-size: 98%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(ellipse at 29% 26%, #98e4e633, transparent 58%), url("../assets/earth/blue-marble-2048.jpg") 52% 44% / 230% auto;
+  box-shadow: inset -1.4rem -1.8rem 4rem #03070e, 0 0 2.4rem #4dcde03b;
+}
+[data-reception="forest"] .reception-earth::before { background-position: center, 31% 63%; }
+[data-reception="rain"] .reception-earth::before { background-position: center, 15% 41%; }
+[data-renderer="webgl"] .reception-earth::before { visibility: hidden; }
+.reception-orbit {
+  pointer-events: none; position: absolute; inset: 7% 5% 26%; border: 1px solid #82e1d646;
+  border-inline-color: transparent; border-radius: 50%; transform: rotate(-21deg) scaleX(1.12);
+}
+.reception-site { position: absolute; inset-inline-start: 5%; inset-block-end: 24%; padding: .45rem .65rem; border-inline-start: 1px solid var(--accent); background: #080f16dc; }
+.reception-site bdi { color: var(--accent); font: .72rem var(--mono); letter-spacing: .05em; }
+.reception-site p { font-size: .91rem; }
+.reception-controls { position: absolute; inset-inline: 5%; inset-block-end: 10%; display: flex; gap: .35rem; flex-wrap: wrap; }
+.reception-controls button { min-height: 40px; padding: .38rem .65rem; color: var(--ink); background: #101f29; border: 1px solid #526a75; }
+.reception-controls button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: #19343a; }
+#reception-open, .reception-credit { position: absolute; inset-block-end: 2%; font-size: .75rem; }
+#reception-open { inset-inline-start: 5%; color: var(--accent); }
+.reception-credit { inset-inline-end: 5%; color: var(--sub); }
+.exhibition .dust-path { grid-template-columns: minmax(245px, .68fr) minmax(0, 1.32fr); gap: 2.5rem; }
+.exhibition .dust-path-links { grid-template-columns: 1fr; gap: 0; }
+.exhibition .dust-path-links a { background: transparent; border: 0; border-block-end: 1px solid var(--line); padding: .55rem 0 .7rem; grid-template-columns: minmax(150px, .8fr) 1fr; align-items: baseline; }
+.exhibition .dust-path-links a:last-child { border-block-end: 0; }
+.exhibition .dust-path-links a:hover strong { text-decoration: underline; }
+.exhibition .atlas-preview { background: #0c171f; border-color: var(--line); }
+.exhibition .dust-hero-frame { max-inline-size: 42rem; margin-block-start: 1.35rem; }
+.exhibition .world { background: #0d1922; }
+
+.exhibition .observatory { grid-template-columns: minmax(0, 1.55fr) minmax(260px, .62fr); border-color: var(--ex-line); background: #0c1720; }
+.exhibition .scientific-stage { background: #0a1420; border-color: var(--ex-line); }
+.exhibition .stage-top { padding-block: .9rem; border-color: var(--ex-line); }
+.exhibition .scientific-stage .map-toolbar .outline { min-block-size: 38px; }
+.exhibition .reading-summary, .exhibition .reading-controls { border-color: var(--ex-line); }
+.exhibition .reading-summary { align-content: center; min-block-size: 9rem; }
+.exhibition #reading-geo { justify-self: start; color: var(--sub); font: .78rem var(--mono); white-space: normal; }
+.exhibition .reading-class { justify-self: start; color: var(--ex-gold); font-size: .84rem; }
+.exhibition .listening-dock { background: #10202b; border-color: var(--ex-line); }
+.dock-title { margin-block-end: .65rem; }
+.exhibition .date-labels { display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; gap: .3rem; }
+.exhibition .date-labels button { display: grid; min-block-size: 44px; align-content: space-around; gap: .26rem; border-block-start: 1px solid #52717c; text-decoration: none; }
+.exhibition .date-labels button[aria-current] { border-color: var(--accent); color: var(--accent); background: #1d3039; }
+.exhibition .timeline-value { color: var(--ink); font-size: .69rem; overflow-wrap: anywhere; }
+@media (max-width: 510px) {
+  .exhibition .date-labels .timeline-value { display: none; }
+}
+.exhibition .map-coordinates { padding-inline: 14px; min-block-size: 1.3rem; color: var(--sub); font: .73rem var(--mono); text-align: start; }
+.exhibition .map-anchor { fill: none; stroke: var(--ex-gold); vector-effect: non-scaling-stroke; stroke-width: 1.5; pointer-events: none; }
+.exhibition .map-land, .exhibition .map-coast { stroke-opacity: .62; }
+.exhibition .sample-dot { vector-effect: non-scaling-stroke; stroke: #0b1722; stroke-width: 1; }
+.exhibition .map-missing { fill: none; stroke: #c5ced0; stroke-width: 1.3; vector-effect: non-scaling-stroke; }
+.exhibition .map-legend [data-missing]::before { content: "×"; display: grid; place-content: center; background: transparent; color: var(--sub); }
+.map-search { padding-block: .4rem; border-block-end: 1px solid var(--line); font-size: .82rem; color: var(--sub); }
+.map-search summary { color: var(--accent); }
+#coordinate-search { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) auto; align-items: end; gap: .35rem; margin-block: .35rem; }
+#coordinate-search input { inline-size: 100%; min-block-size: 39px; border: 1px solid #52707a; background: #13222b; color: var(--ink); padding-inline: .3rem; }
+#coordinate-search .outline { min-block-size: 39px; padding-inline: .45rem; }
+
+@media (max-width: 790px) {
+  .exhibit-arrival { grid-template-columns: 1fr; min-block-size: 0; gap: .65rem; }
+  .reception-stage { max-block-size: 590px; aspect-ratio: 1.15; }
+  .exhibition .dust-path { grid-template-columns: 1fr; gap: .7rem; }
+  .exhibition .observatory { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
+  .exhibition .scientific-stage, .exhibition .reading-controls { grid-row: auto; }
+  .exhibition .reading-summary, .exhibition .reading-controls { grid-column: 1; border-inline-start: 0; border-block-start: 1px solid var(--ex-line); }
+  .exhibition .reading-summary { min-block-size: 0; }
+}
+@media (max-width: 460px) {
+  .exhibit-arrival h1 { font-size: clamp(65px, 18vw, 83px); }
+  .exhibit-arrival .actions { margin-block-start: 1rem; }
+  .reception-stage { aspect-ratio: .93; }
+  .reception-site { inset-inline-start: 3%; inset-block-end: 26%; }
+  .reception-controls { inset-inline: 3%; inset-block-end: 9%; }
+  #reception-open { inset-inline-start: 3%; }
+  .reception-credit { inset-inline-end: 3%; }
+  .exhibition .dust-path-links a { grid-template-columns: 1fr; gap: .2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:has(body.exhibition) { scroll-behavior: auto; }
+}

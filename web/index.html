@@ -8,8 +8,10 @@
   <title>EARTHPULSE · The Sound Atlas</title>
   <link rel="icon" href="./assets/atlas/pulse.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./visual/platform.css">
+  <link rel="stylesheet" href="./visual/exhibition.css">
+  <link rel="stylesheet" href="./visual/field-navigation.css">
 </head>
-<body>
+<body class="exhibition">
   <a class="skip" href="#main" data-copy="skip">Skip to main content</a>
   <header class="shell wrap">
     <a class="brand" href="./" aria-label="EARTHPULSE"><svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="14.4" stroke="currentColor" stroke-width="1.4"/><path d="M5 17h6l2.1-5 3.2 10 3.5-13 2.8 8H27" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>EARTH<span>PULSE</span></a>
@@ -17,13 +19,13 @@
     <button id="language" lang="ar" class="outline">العربية</button>
   </header>
   <main id="main">
-    <section class="arrival wrap" aria-labelledby="hero-title">
+    <section class="arrival exhibit-arrival wrap" aria-labelledby="hero-title">
       <div class="arrival-copy">
-        <p class="eyebrow" data-copy="eyebrow">An Earth observation jukebox</p>
-        <h1 id="hero-title" data-copy="title">Hear the unseen.</h1>
-        <p data-copy="intro">Three regions. One dust question. Listen to the signals, choose a region, then reveal what the NASA model shows.</p>
+        <p class="eyebrow reception-eyebrow" data-copy="eyebrow">An Earth observation jukebox</p>
+        <h1 id="hero-title"><span data-copy="heroLead">Hear the</span> <em data-copy="heroAccent">unseen.</em></h1>
+        <p data-copy="exhibitionIntro">Follow Saharan dust across continents, or listen inside a Brazilian forest. Start with a NASA signal and uncover the evidence yourself.</p>
         <div class="actions">
-          <a class="solid" id="cinematic-entry" href="./decode-3d.html" data-copy="cinematicEntry">Launch Earth Detective in 3D</a>
+          <a class="solid" id="cinematic-entry" href="./decode-3d.html"><span data-copy="cinematicEntry">Launch Earth Detective in 3D</span><span class="route-arrow" aria-hidden="true">↗</span></a>
           <a class="outline" id="forest-entry" href="./forest.html" data-copy="forestEntry">The Invisible Forest</a>
         </div>
         <div class="arrival-access">
@@ -31,10 +33,22 @@
           <a id="dust-text-entry" href="./decode.html?condition=text" data-copy="dustTextEntry">Play Earth Detective without sound</a>
         </div>
       </div>
-      <figure class="earth-frame dust-hero-frame">
-        <img src="./assets/decode/svs-5669-context.webp" width="1920" height="1080" fetchpriority="high" data-alt="dustHeroAlt" alt="NASA simulation of atmospheric aerosols, with dust in pink and magenta">
-        <figcaption><span data-copy="dustHeroCaption">NASA’s global aerosol visualization · separate model run</span><a href="https://svs.gsfc.nasa.gov/5669/" data-copy="dustHeroSource">NASA SVS 5669 ↗</a></figcaption>
-      </figure>
+      <div class="reception-stage" id="reception-globe" data-reception="dust">
+        <div class="reception-earth" aria-hidden="true"></div>
+        <div class="reception-orbit" aria-hidden="true"></div>
+        <div class="reception-reticle" aria-hidden="true"></div>
+        <div class="reception-site">
+          <bdi id="reception-coordinates">30° N · 15° E</bdi>
+          <p id="reception-region" data-copy="globeDust">North Africa &amp; the Mediterranean</p>
+        </div>
+        <div class="reception-controls" role="group" data-label="globeRegions" aria-label="Orient the Earth">
+          <button type="button" data-region="dust" aria-pressed="true" data-copy="globeDustShort">Sahara</button>
+          <button type="button" data-region="forest" aria-pressed="false" data-copy="globeForestShort">Cerrado</button>
+          <button type="button" data-region="rain" aria-pressed="false" data-copy="globeRainShort">Gulf Coast</button>
+        </div>
+        <a id="reception-open" href="./decode-3d.html"><span data-copy="globeOpen">Open this experience</span><span aria-hidden="true"> ↗</span></a>
+        <a class="reception-credit" href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/">NASA · Blue Marble</a>
+      </div>
     </section>
     <section class="dust-path wrap" aria-labelledby="dust-path-title">
       <div>
@@ -91,6 +105,7 @@
                 <button id="map-minus" type="button" class="outline" data-copy="mapMinus">Zoom out</button>
                 <button id="map-plus" type="button" class="outline" data-copy="mapPlus">Zoom in</button>
                 <button id="map-reset" type="button" class="outline" data-copy="mapReset">Reset view</button>
+                <button id="map-center" type="button" class="outline" data-copy="mapCenter">Center on evidence</button>
               </div>
               <label class="check"><input id="map-layer" type="checkbox" checked><span data-copy="mapLayer">Show data layer</span></label>
             </div>
@@ -101,6 +116,7 @@
               <button type="button" class="outline" data-x="-80" data-y="0" data-map-label="mapEast">→</button>
             </div>
             <div id="data-map" class="data-map"></div>
+            <p id="map-coordinates" class="map-coordinates" dir="ltr" aria-hidden="true"></p>
             <div id="map-legend" class="map-legend"></div>
             <p id="map-note" class="map-note"></p>
             <p class="map-attribution"><a href="https://www.earthdata.nasa.gov/data/tools/gibs" data-copy="mapCredit">Basemap · NASA EOSDIS GIBS</a></p>
@@ -110,8 +126,11 @@
             <p id="reading-value"></p>
             <p id="reading-location"></p>
             <p id="reading-detail"></p>
+            <p id="reading-class" class="reading-class"></p>
+            <p id="reading-geo" class="reading-geo" dir="ltr"></p>
           </aside>
           <div class="listening-dock">
+            <p class="eyebrow dock-title" data-copy="observationTimeline">Observation timeline</p>
             <div class="dock-row">
               <div class="actions">
                 <button id="play" class="solid" type="button" data-copy="play">Play</button>
@@ -128,6 +147,15 @@
           </div>
           <div class="reading-controls">
             <label class="field"><span data-copy="location">Location</span><select id="site"></select></label>
+            <details class="map-search" id="map-search">
+              <summary data-copy="mapSearch">Find a sampled location</summary>
+              <form id="coordinate-search" dir="ltr">
+                <label class="field"><span data-copy="mapLatitude">Latitude °</span><input id="map-latitude" type="number" step="any" min="-90" max="90" required></label>
+                <label class="field"><span data-copy="mapLongitude">Longitude °</span><input id="map-longitude" type="number" step="any" min="-180" max="180" required></label>
+                <button type="submit" class="outline" data-copy="mapLocate">Find</button>
+              </form>
+              <p id="coordinate-status" role="status"></p>
+            </details>
             <label class="field"><span data-copy="compare">Compare with</span><select id="compare-site"></select></label>
             <p id="compare-reading"></p>
             <button id="hear-comparison" class="outline" type="button" data-copy="hearCompare" hidden>Hear both locations</button>
@@ -166,6 +194,10 @@
       <p data-copy="aboutBody">Listen to derived signals from traceable NASA science. Each experience identifies its source, scientific time, units and sound mapping. Map legends and structured evidence also support silent exploration.</p>
       <p data-copy="credits">Visual context: NASA Scientific Visualization Studio. Forest landscape: AI-generated illustration. Implementation assisted by Codex.</p>
       <a href="https://svs.gsfc.nasa.gov/gallery/daily-visualizations/" data-copy="gallery">NASA Earth Information Center gallery ↗</a>
+      <figure class="earth-frame dust-hero-frame">
+        <img src="./assets/decode/svs-5669-context.webp" width="1920" height="1080" loading="lazy" data-alt="dustHeroAlt" alt="NASA simulation of atmospheric aerosols, with dust in pink and magenta">
+        <figcaption><span data-copy="dustHeroCaption">NASA’s global aerosol visualization · separate model run</span><a href="https://svs.gsfc.nasa.gov/5669/" data-copy="dustHeroSource">NASA SVS 5669 ↗</a></figcaption>
+      </figure>
     </section>
   </main>
   <dialog id="evidence" aria-labelledby="evidence-title">
@@ -174,5 +206,7 @@
   </dialog>
   <noscript>JavaScript is required to explore the scientific data.</noscript>
   <script type="module" src="./platform.js"></script>
+  <script type="module" src="./cinematic/reception.js"></script>
+  <script type="module" src="./field-navigation.js"></script>
 </body>
 </html>

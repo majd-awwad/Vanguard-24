@@ -6,6 +6,7 @@ import { parseRain } from "../web/sources/rain.js";
 import { parseFires, regionDetections } from "../web/sources/fires.js";
 import { makeTemporalPlan } from "../web/audio/temporal-plan.js";
 import { sources } from "../web/sources/catalog.js";
+import { cameraFor, coordinatesAt, nearestSample } from "../web/visual/atlas-map.js";
 
 const sample = (file) => readFile(new URL(`../science/atlas/${file}`, import.meta.url), "utf8");
 const oceanCsv = await sample("mur-sst.csv");
@@ -15,6 +16,17 @@ const fireCsv = await sample("firms-noaa21-europe.csv");
 const ocean = parseOcean(oceanCsv, oceanUrl);
 const rain = parseRain(rainCsv);
 const fires = parseFires(fireCsv);
+
+test("Atlas locates and ranks authentic cell centers without extrapolating map space", () => {
+  const camera = cameraFor({ scale: 2, x: -306, y: -144 });
+  const center = coordinatesAt(rain.bounds, camera, 354, 171);
+  assert.ok(Math.abs(center.lat - 30.05) < 1e-9);
+  assert.ok(Math.abs(center.lon - (-83.95)) < 1e-9);
+  assert.equal(coordinatesAt(rain.bounds, camera, 20, 171), null);
+  const chosen = nearestSample(rain.bounds, rain.cells, 25.12, -88.78);
+  assert.deepEqual([chosen.lat, chosen.lon], [25.05, -88.95]);
+  assert.equal(nearestSample(rain.bounds, rain.cells, 10, -88.78), null);
+});
 
 function changeFirstRecord(csv, index, value, skip = 1) {
   const lines = csv.split(/\r?\n/);

@@ -5,7 +5,7 @@ import { loadFires, regionDetections } from "./sources/fires.js";
 import { createTransport } from "./audio/transport.js";
 import { makeTemporalPlan, slotSeconds } from "./audio/temporal-plan.js";
 import { message } from "./i18n/platform-messages.js";
-import { createAtlasMap, svg } from "./visual/atlas-map.js";
+import { createAtlasMap, nearestSample, svg } from "./visual/atlas-map.js";
 import { atmosphereFor } from "./audio/atmosphere.js";
 
 const byId = (id) => document.getElementById(id);
@@ -33,6 +33,8 @@ const scienceCopy = (suffix) => t(data.id + suffix);
 const mode = () => byId("visual-only").checked ? "silent" : "audio";
 const siteLabel = (site) => site.id.startsWith("cell:")
   ? `${number(site.lat)}°, ${number(site.lon)}°` : t(site.id);
+const coords = ({ lat, lon }) => `${Math.abs(lat).toFixed(2)}° ${lat >= 0 ? "N" : "S"} · ${Math.abs(lon).toFixed(2)}° ${lon >= 0 ? "E" : "W"}`;
+const classification = (event) => event.value === null ? t("classMissing") : t({ ocean: "classOcean", rain: "classRain", fires: "classFires" }[data.id]);
 const map = createAtlasMap(byId("data-map"), {
   onSelect(id) {
     if (byId("site").value === id) return;
@@ -46,6 +48,7 @@ const map = createAtlasMap(byId("data-map"), {
     byId("map-pan").hidden = scale <= 1;
     byId("data-map").classList.toggle("is-zoomed", scale > 1);
   },
+  onCoordinates(point) { text("map-coordinates", point ? coords(point) : ""); },
 });
 
 function mapSites(source) {
@@ -146,6 +149,7 @@ function translate() {
     element.replaceChildren(...lines.flatMap((line, index) => index ? [document.createElement("br"), line] : [line]));
   }
   for (const element of document.querySelectorAll("[data-alt]")) element.alt = t(element.dataset.alt);
+  for (const element of document.querySelectorAll("[data-label]")) element.setAttribute("aria-label", t(element.dataset.label));
   byId("map-camera").setAttribute("aria-label", t("mapNavigation"));
   byId("map-pan").setAttribute("aria-label", t("mapPan"));
   for (const button of byId("map-pan").children) button.setAttribute("aria-label", t(button.dataset.mapLabel));
@@ -199,6 +203,8 @@ function renderLabels() {
   text("mapping", scienceCopy("Mapping"));
   byId("atlas-atmosphere").hidden = data.id !== "rain";
   byId("atlas-atmosphere-note").hidden = data.id !== "rain";
+  byId("map-search").hidden = data.kind === "windowed-events";
+  text("coordinate-status", "");
   const context = byId("context-link");
   context.href = svsUrl(data.source);
   context.textContent = `NASA SVS ${data.source.svs} ↗`;
@@ -207,7 +213,11 @@ function renderLabels() {
   const dates = data.times.map((time, index) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = dateLabel(time);
+    const date = document.createElement("span");
+    date.textContent = dateLabel(time);
+    const value = document.createElement("bdi");
+    value.className = "timeline-value";
+    button.append(date, value);
     button.dataset.index = index;
     button.addEventListener("click", () => seek(index, true));
     return button;
@@ -221,6 +231,12 @@ function renderLabels() {
     item.textContent = `${limit}${number(value)} ${t(data.unit)}`;
     return item;
   }));
+  if (data.kind !== "windowed-events") {
+    const missing = document.createElement("span");
+    missing.dataset.missing = "";
+    missing.textContent = t("missing");
+    byId("map-legend").append(missing);
+  }
   siteOptions();
 }
 
@@ -291,7 +307,7 @@ function sampleColor(value) {
   const rain = data.id === "rain";
   const normalized = Math.max(0, Math.min(1, rain ? value / 60 : (value - 12) / 20));
   return rain
-    ? `hsl(${223 + normalized * 40} 78% ${30 + normalized * 47}%)`
+    ? `hsl(${203 + normalized * 38} 82% ${63 + normalized * 24}%)`
     : `hsl(${197 - normalized * 168} 82% ${48 + normalized * 10}%)`;
 }
 
@@ -342,11 +358,18 @@ function render(state) {
   byId("reading-value").dataset.event = active.id;
   text("reading-location", siteLabel(evidence.site));
   text("reading-detail", evidence.count === undefined ? "" : `${number(evidence.count, 0)} · ${t("detections")}`);
+  text("reading-class", classification(evidence));
+  const point = evidence.site.bounds ? evidence.peak : evidence.site;
+  text("reading-geo", point ? coords(point) : "");
   text("map-date", `${dateLabel(evidence.time)} · ${evidence.time.start.slice(0, 4)} UTC`);
   byId("date-scrub").value = index;
   byId("date-scrub").setAttribute("aria-valuetext", dateLabel(evidence.time));
   for (const button of byId("date-labels").children) {
-    if (Number(button.dataset.index) === index) button.setAttribute("aria-current", "date");
+    const dateIndex = Number(button.dataset.index);
+    const point = planFor(evidence.site).events[dateIndex].evidence;
+    const value = button.lastElementChild;
+    value.textContent = display(point.value);
+    if (dateIndex === index) button.setAttribute("aria-current", "date");
     else button.removeAttribute("aria-current");
   }
   const compare = comparisonOf();
@@ -379,6 +402,7 @@ function renderEvidence() {
   const fires = data.id === "fires";
   const entries = [
     ["measurement", display(evidence.value, 5)],
+    ["evidenceClass", classification(evidence)],
     ["scientificTime", evidence.time.start === evidence.time.end ? evidence.time.start : `${evidence.time.start} → ${evidence.time.end}`],
     ["product", `${data.source.product} ${data.source.version}`],
     ["mappingVersion", evidence.mappingVersion],
@@ -468,6 +492,20 @@ byId("site").addEventListener("change", chooseSite);
 byId("map-plus").addEventListener("click", () => map.zoom(1.5));
 byId("map-minus").addEventListener("click", () => map.zoom(1 / 1.5));
 byId("map-reset").addEventListener("click", () => map.reset());
+byId("map-center").addEventListener("click", () => map.center());
+byId("coordinate-search").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!data || data.kind === "windowed-events") return;
+  const result = nearestSample(data.bounds, sites, byId("map-latitude").valueAsNumber, byId("map-longitude").valueAsNumber);
+  if (!result) {
+    text("coordinate-status", t("mapOutside"));
+    return;
+  }
+  byId("site").value = result.id;
+  chooseSite();
+  map.center();
+  text("coordinate-status", `${t("mapNearest")} · ${coords(result)}`);
+});
 byId("map-layer").addEventListener("change", (event) => map.showLayer(event.target.checked));
 for (const button of byId("map-pan").children) {
   button.addEventListener("click", () => map.move(+button.dataset.x, +button.dataset.y));

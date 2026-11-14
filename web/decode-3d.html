@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="./visual/decode.css">
   <link rel="stylesheet" href="./decode-page.css">
   <link rel="stylesheet" href="./cinematic/cinematic.css">
+  <link rel="stylesheet" href="./visual/field-navigation.css">
 </head>
 <body class="cine" data-view="hero">
   <a id="cine-skip" class="skip" href="#cine-start">Skip to the decoding controls</a>
@@ -137,10 +138,16 @@
           <p id="decode-transcript-help"></p>
           <ol id="decode-transcript-cues"></ol>
         </details>
+        <details class="cine-mix">
+          <summary id="cine-mix-title">Sound Studio</summary>
+          <label class="field"><span id="cine-mix-label">Dry air texture</span><input id="cine-mix" type="range" min="0" max="100" value="32" aria-describedby="cine-mix-help"></label>
+          <p id="cine-mix-help">The texture follows modeled dust intensity. Core pitch, stereo and evidence stay fixed.</p>
+        </details>
       </section>
     </div>
 
     <div id="decode-map">
+      <div class="cine-instrument-caption"><p id="cine-instrument-type"></p><p><bdi>15–45° N · 20° W–50° E</bdi></p></div>
       <div class="decode-map-top" hidden>
         <span id="decode-west"></span>
         <span id="decode-north"></span>
@@ -203,5 +210,6 @@
     import { startCinematic } from "./cinematic/main.js";
     startCinematic(document.querySelector("#decode-page"));
   </script>
+  <script type="module" src="./field-navigation.js"></script>
 </body>
 </html>

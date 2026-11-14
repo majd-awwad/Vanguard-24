@@ -26,6 +26,7 @@ const copy = {
   missing: ["Missing data", "بيانات مفقودة"],
   levelScale: ["Fixed square-root color scale gives more contrast to smaller values. Values beyond the scale use its end color.", "مقياس لوني ثابت بالجذر التربيعي يُظهر الفروق بين القيم الصغيرة بوضوح أكبر. تأخذ القيم خارج المقياس لون طرفه."],
   changeScale: ["Blue: decrease. Orange: increase. Gray: near zero. The square-root scale emphasizes smaller changes. End colors include larger changes.", "الأزرق: انخفاض. البرتقالي: ارتفاع. الرمادي: قريب من الصفر. مقياس الجذر التربيعي يبرز التغيّرات الصغيرة، وتضم ألوان الطرفين التغيّرات الأكبر."],
+  terrain: ["Show NASA terrain", "أظهر تضاريس ناسا"],
   coast: ["Natural Earth coastlines. North is up and west is left.", "السواحل من Natural Earth. الشمال للأعلى والغرب لليسار."],
   inspect: ["Inspect a cell", "افحص خلية"],
   keyboard: ["Choose a cell on the map, or focus it and use the arrow keys. Home and End move to the row edges.", "اختَر خلية على الخريطة، أو ركّز عليها واستخدم الأسهم. مفتاحا Home وEnd ينقلان التركيز إلى طرفَي الصف."],
@@ -465,6 +466,9 @@ for (const input of [mode, first]) input.addEventListener("change", () => {
   readSelection();
 });
 second.addEventListener("change", readSelection);
+byId("terrain").addEventListener("change", (event) => {
+  map.classList.toggle("observation-only", !event.target.checked);
+});
 byId("share").addEventListener("click", async event => {
   const button = event.currentTarget;
   const attempt = ++shareAttempt;
