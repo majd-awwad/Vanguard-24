@@ -74,18 +74,20 @@
         <p id="decode-south"></p>
         <p id="decode-map-key"></p>
         <p id="decode-selections"></p>
+        <p id="decode-grid-keys" hidden></p>
         <div class="decode-cell-actions" hidden>
           <button type="button" id="decode-probe"></button>
           <p id="decode-probe-reading"></p>
           <p id="decode-cue-announcement" class="sr-only" role="status" aria-atomic="true"></p>
         </div>
+        <button type="button" id="decode-review-evidence" hidden></button>
       </div>
     </div>
     <p id="decode-status" role="status" aria-live="polite"></p>
 
     <section id="decode-evidence" aria-labelledby="decode-evidence-title" hidden>
       <div class="decode-evidence-card">
-        <h2 id="decode-evidence-title"></h2>
+        <h2 id="decode-evidence-title" tabindex="-1"></h2>
         <p id="decode-finding"></p>
         <p id="decode-score"></p>
         <p id="decode-limits"></p>

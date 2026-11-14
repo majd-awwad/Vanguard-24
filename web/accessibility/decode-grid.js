@@ -34,7 +34,9 @@ export function mountDecodeGrid(root, session, { t }) {
   let revealAnnouncement;
 
   const announce = (key, params) => {
-    if (status) status.textContent = t(key, params);
+    if (!status) return;
+    const message = t(key, params);
+    if (message) status.textContent = message;
   };
 
   function coordinates(button) {
@@ -165,7 +167,8 @@ export function mountDecodeGrid(root, session, { t }) {
     if (!status) return;
     if (previous?.transport?.status === "playing" && snapshot.transport?.status === "ended") {
       const key = playbackCompletionKeys.get(snapshot.playMode);
-      if (key) messages.push(t(key));
+      const message = key && t(key);
+      if (message) messages.push(message);
     }
     const results = revealMessages(snapshot, previous);
     if (messages.length || results.length) {

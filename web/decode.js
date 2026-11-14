@@ -136,6 +136,8 @@ const textCueCopy = {
     cues: [["↔", "Columns run west to east"], ["↕", "Rows run north to south"], ["◖", "Quiet, moderate or strong describes the mapped tone"]],
     scan: "Start text scan",
     scanFinished: "Text scan complete. Read the transcript or choose your cells.",
+    resume: "Resume text scan",
+    gridKeys: "Arrow keys move. Enter reads the current cell. Space selects. S reveals the results.",
     scanHeading: "Read the scan",
     probe: "Read focused cell",
     transcript: "Scan transcript",
@@ -161,6 +163,8 @@ const textCueCopy = {
     cues: [["↔", "الأعمدة من الغرب للشرق"], ["↕", "الصفوف من الشمال للجنوب"], ["◖", "الإشارة خافتة أو متوسطة أو قوية حسب النغمة"]],
     scan: "ابدأ المسح النصي",
     scanFinished: "اكتمل المسح النصي. اقرأ السجل أو اختار الخلايا.",
+    resume: "تابع المسح النصي",
+    gridKeys: "تنقّل بالأسهم. اضغط Enter لقراءة الخلية الحالية، ومفتاح المسافة للتحديد، وS لكشف النتيجة.",
     scanHeading: "اقرأ المسح",
     probe: "اقرأ الخلية الحالية",
     transcript: "سجل المسح",
@@ -295,7 +299,9 @@ export async function mountDecode(root, {
       if (key === "listen.completed") return cueCopy.scanFinished;
       if (key === "stage.legend") return cueCopy.guide;
       if (key === "stage.listen") return cueCopy.scanHeading;
-      if (key === "grid.probeRequested") return cueCopy.probe;
+      // The localized probe result has its own live region. Avoid speaking two
+      // generic sound notifications around its single meaningful readout.
+      if (key === "grid.probeRequested" || key === "grid.probeCompleted") return "";
       if (key === "discovery.cellReadout" && params?.lastProbe?.row === params.row &&
         params.lastProbe.col === params.col && (params.lastProbe.heard === "silent" ||
           Object.hasOwn(cueCopy.weights, params.lastProbe.heard))) {
@@ -314,6 +320,7 @@ export async function mountDecode(root, {
   const heading = byId("phase");
   const description = byId("description");
   const stage = byId("stage");
+  const gridKeys = byId("grid-keys");
   const next = byId("next");
   const play = byId("play");
   const pause = byId("pause");
@@ -322,6 +329,8 @@ export async function mountDecode(root, {
   const submit = byId("submit");
   const restart = byId("restart");
   const evidence = byId("evidence");
+  const evidenceTitle = byId("evidence-title");
+  const reviewEvidence = byId("review-evidence");
   const outcomeLabels = byId("outcome-labels");
   const playbackPanel = byId("playback");
   const source = byId("source");
@@ -400,6 +409,10 @@ export async function mountDecode(root, {
     heading.textContent = t("stage." + stages[phase]);
     description.textContent = cueCopy?.instructions[phase] ?? text.instructions[phase];
     stage.hidden = !["listen", "decode", "reveal"].includes(phase);
+    gridKeys.hidden = !cueCopy || phase !== "decode";
+    const gridRoot = byId("grid");
+    if (!gridKeys.hidden) gridRoot.setAttribute("aria-describedby", gridKeys.id);
+    else gridRoot.removeAttribute("aria-describedby");
     cellActions.hidden = phase !== "decode";
     byId("legend").hidden = phase !== "legend";
     play.hidden = !(cueCopy ? ["listen", "decode"] : ["legend", "listen", "decode"]).includes(phase);
@@ -414,6 +427,7 @@ export async function mountDecode(root, {
     submit.hidden = phase !== "decode";
     restart.hidden = phase !== "reveal";
     evidence.hidden = phase !== "reveal";
+    reviewEvidence.hidden = phase !== "reveal";
 
     byId("map-key").textContent = phase === "reveal" ? text.mapKey : "";
     details.open = false;
@@ -522,10 +536,12 @@ export async function mountDecode(root, {
     if (cueCopy) {
       byId("transcript-title").textContent = cueCopy.transcript;
       byId("transcript-help").textContent = cueCopy.transcriptHelp;
+      gridKeys.textContent = cueCopy.gridKeys;
       transcript.open = true;
     }
     progress.setAttribute("aria-label", text.playbackLabel);
-    byId("evidence-title").textContent = text.evidenceTitle;
+    evidenceTitle.textContent = text.evidenceTitle;
+    reviewEvidence.textContent = language === "ar" ? "اقرأ دليل النتيجة" : "Read the result evidence";
     byId("limits").textContent = text.limits;
     byId("details-title").textContent = text.details;
     byId("context-title").textContent = text.contextTitle;
@@ -635,7 +651,17 @@ export async function mountDecode(root, {
         playbackLabel.textContent = text.playbackStatus[status];
         lastTransportLabel = status;
       }
-      pause.disabled = !["playing", "starting"].includes(state.status);
+      const running = ["playing", "starting"].includes(state.status);
+      const canResumeScan = cueCopy && matchingPlan && snapshot.playMode === "sweep" &&
+        state.status === "paused" && state.positionS > 0;
+      if (cueCopy) {
+        const pauseText = canResumeScan ? cueCopy.resume : t("listen.pause");
+        if (pause.textContent !== pauseText) pause.textContent = pauseText;
+        const disabled = String(!running && !canResumeScan);
+        if (pause.getAttribute("aria-disabled") !== disabled) pause.setAttribute("aria-disabled", disabled);
+      } else {
+        pause.disabled = !running;
+      }
       mute.setAttribute("aria-pressed", state.muted ? "true" : "false");
       const playbackMessage = hasPlayback
         ? (snapshot.error === "plan-unavailable" ? (cueCopy?.planUnavailable ?? text.planUnavailable) : state.audioUnavailable ? text.unavailable : "")
@@ -646,9 +672,19 @@ export async function mountDecode(root, {
     onClick(play, () => rendererSession.dispatch({
       type: "play", mode: rendererSession.getState().phase === "legend" ? "legend" : "sweep",
     }));
-    for (const [button, type] of [[next, "next"], [pause, "pause"], [replay, "replay"], [submit, "submit"], [restart, "reset"]]) {
+    for (const [button, type] of [[next, "next"], [replay, "replay"], [submit, "submit"], [restart, "reset"]]) {
       onClick(button, () => rendererSession.dispatch({ type }));
     }
+    onClick(pause, () => {
+      if (pause.getAttribute("aria-disabled") === "true") return;
+      const { playMode, transport: state } = rendererSession.getState();
+      if (cueCopy && playMode === "sweep" && state.status === "paused") {
+        rendererSession.dispatch({ type: "play", mode: "sweep" });
+      } else {
+        rendererSession.dispatch({ type: "pause" });
+      }
+    });
+    onClick(reviewEvidence, () => evidenceTitle.focus());
     onClick(mute, () => transport.setMuted(!transport.snapshot().muted));
     onClick(byId("probe"), () => {
       const [row, col] = rendererSession.getState().focus;
