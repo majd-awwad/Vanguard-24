@@ -85,3 +85,7 @@ const alternate = await loadDecodeCase(data.id, { baseUrl: new URL("https://exam
 The loader fetches `<id>.json` from `web/assets/decode/data/` relative to its module. `baseUrl` can be a directory URL or string (a missing trailing slash is added); relative strings resolve against the loader module. IDs must contain only letters, digits, underscores or hyphens, beginning with a letter or digit. HTTP errors, invalid JSON, invalid v2 data and requested/returned ID mismatches reject the promise. Validation always uses `web/contracts/validate.js` without modifying it. The loader does not cache mutable objects or perform UI wiring.
 
 The existing build copies the entire `web/` tree, so the asset and module require no build-script changes. Production JSON, extractor, evidence and tests can enter git; the 121 MB raw input and local environments remain ignored. No shared contracts, package manifest, HTML, application/session/audio/visual files, or other contributors' files are changed by this module.
+
+## Dust V2 visualization archive
+
+The separate [Dust V2 data layer](dust-v2-data.md) adds sampled seasonal/monthly NASA granules and a shared 25×40 visualization grid under `web/assets/decode/dust-v2/`. Its schema, loader and temporal catalog are independent of this original DecodeCase; no game dimensions, values, threshold or source interval are changed. Actual availability is recorded in `science/decode/manifests/dust-sources.json` and `science/decode/dust-inventory.md`.

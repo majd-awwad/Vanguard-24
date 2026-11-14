@@ -1,0 +1,19 @@
+{
+  "schema": "earthpulse.dust-sampling-plan/1",
+  "description": "One selected three-hour snapshot per month, not daily/monthly/seasonal averages. Northern Hemisphere meteorological seasons.",
+  "requests": [
+    {"date":"2024-12-15","center":"19:30","phase":"monthly"},
+    {"date":"2025-01-15","center":"19:30","phase":"pilot"},
+    {"date":"2025-02-15","center":"19:30","phase":"monthly"},
+    {"date":"2025-03-15","center":"19:30","phase":"monthly"},
+    {"date":"2025-04-15","center":"19:30","phase":"pilot"},
+    {"date":"2025-05-15","center":"19:30","phase":"monthly"},
+    {"date":"2025-06-15","center":"19:30","phase":"monthly"},
+    {"date":"2025-07-15","center":"19:30","phase":"pilot"},
+    {"date":"2025-08-15","center":"19:30","phase":"monthly"},
+    {"date":"2025-09-15","center":"19:30","phase":"monthly"},
+    {"date":"2025-10-15","center":"19:30","phase":"pilot"},
+    {"date":"2025-11-15","center":"19:30","phase":"monthly"},
+    {"date":"2025-08-19","center":"19:30","phase":"reference"}
+  ]
+}

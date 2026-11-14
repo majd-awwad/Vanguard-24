@@ -1,0 +1,1231 @@
+{
+  "schema": "earthpulse.dust-sources/1",
+  "sources": [
+    {
+      "id": "geos-fp-dust-20241215-1930",
+      "date": "2024-12-15",
+      "center": "19:30",
+      "phase": "monthly",
+      "season": {
+        "key": "winter-2024-2025",
+        "name": "winter",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20241215_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2024/M12/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20241215_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2024/12/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20241215_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121022875,
+      "sha256": "9779d089d1bc77c48a74bfe7bd239ab1f31dcd5b18b73f5c275f216ad95e1d77",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2024-12-15T19:30:00Z",
+        "start_utc": "2024-12-15T18:00:00Z",
+        "end_utc": "2024-12-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.0015786532312631607,
+          "max": 0.7960102558135986
+        },
+        "compatible": true,
+        "compatibility_warnings": [
+          "Literal Source build label lacks the SLES15 suffix present in the August reference. Same declared 5.29.5-p6 release, but numerical build equivalence is unverified; cross-build comparisons/averages are disabled."
+        ]
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20241215-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [
+        "Literal Source build label lacks the SLES15 suffix present in the August reference. Same declared 5.29.5-p6 release, but numerical build equivalence is unverified; cross-build comparisons/averages are disabled."
+      ],
+      "remote": {
+        "size_bytes": 121022875,
+        "etag": "\"675f8f8b-736a99b\"",
+        "last_modified": "Mon, 16 Dec 2024 02:25:15 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2024/M12/D15/",
+        "index_sha256": "1b08e38bd45df45b113b442943675635d21baf98b33bfde6c07edc0fc9cad60c",
+        "checked_at": "2026-11-14T18:59:50Z"
+      },
+      "verified_at": "2026-11-14T19:03:22Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20241215-1930.json",
+        "sha256_lf": "abb3f0111187dd8a47d9ca122afd413824afb5c017c0a4d4fb794cfde4f6bbb8",
+        "bytes": 22426
+      },
+      "processed_sha256_lf": "4f2979d8cf278b00380aeaeb05c9722c30d9a631cd7ff4dcfc2b244605e20b49"
+    },
+    {
+      "id": "geos-fp-dust-20250115-1930",
+      "date": "2025-01-15",
+      "center": "19:30",
+      "phase": "pilot",
+      "season": {
+        "key": "winter-2024-2025",
+        "name": "winter",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250115_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M01/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250115_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/01/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250115_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121001899,
+      "sha256": "cc5149b426ba26befa81bc25bcb3041afd5cddbb0417a65a82041996c49edb4f",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-01-15T19:30:00Z",
+        "start_utc": "2025-01-15T18:00:00Z",
+        "end_utc": "2025-01-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.0019020282197743654,
+          "max": 0.4261734187602997
+        },
+        "compatible": true,
+        "compatibility_warnings": [
+          "Literal Source build label lacks the SLES15 suffix present in the August reference. Same declared 5.29.5-p6 release, but numerical build equivalence is unverified; cross-build comparisons/averages are disabled."
+        ]
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250115-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [
+        "Literal Source build label lacks the SLES15 suffix present in the August reference. Same declared 5.29.5-p6 release, but numerical build equivalence is unverified; cross-build comparisons/averages are disabled."
+      ],
+      "remote": {
+        "size_bytes": 121001899,
+        "etag": "\"678870ee-73657ab\"",
+        "last_modified": "Thu, 16 Jan 2025 02:37:34 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M01/D15/",
+        "index_sha256": "d2eaa0e91aae29a2c390048b8bdf3fefd6426043cba93493ae0b2030898726ab",
+        "checked_at": "2026-11-14T18:53:34Z"
+      },
+      "verified_at": "2026-11-14T18:55:20Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250115-1930.json",
+        "sha256_lf": "c229aca0cbe8a6ce15c149aa345a8e8efee3e32f168405bb44b702b245da8f01",
+        "bytes": 22471
+      },
+      "processed_sha256_lf": "7ac398becb5550114b09c6b91e25c578eea3835ce8004c2440400619663da41e"
+    },
+    {
+      "id": "geos-fp-dust-20250215-1930",
+      "date": "2025-02-15",
+      "center": "19:30",
+      "phase": "monthly",
+      "season": {
+        "key": "winter-2024-2025",
+        "name": "winter",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250215_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M02/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250215_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/02/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250215_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121087510,
+      "sha256": "96a2b3b8cbabe3824bfceb686f17ba2597d869af23874669948cebb05a2904f9",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-02-15T19:30:00Z",
+        "start_utc": "2025-02-15T18:00:00Z",
+        "end_utc": "2025-02-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.0012794241774827242,
+          "max": 0.6008538007736206
+        },
+        "compatible": true,
+        "compatibility_warnings": [
+          "Literal Source build label lacks the SLES15 suffix present in the August reference. Same declared 5.29.5-p6 release, but numerical build equivalence is unverified; cross-build comparisons/averages are disabled."
+        ]
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250215-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [
+        "Literal Source build label lacks the SLES15 suffix present in the August reference. Same declared 5.29.5-p6 release, but numerical build equivalence is unverified; cross-build comparisons/averages are disabled."
+      ],
+      "remote": {
+        "size_bytes": 121087510,
+        "etag": "\"67b14fbe-737a616\"",
+        "last_modified": "Sun, 16 Feb 2025 02:38:54 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M02/D15/",
+        "index_sha256": "115a4b5c063c1e68a8ca43e8dd7134a28910a413213367d1c1eaee70fe881fd3",
+        "checked_at": "2026-11-14T18:59:52Z"
+      },
+      "verified_at": "2026-11-14T19:07:44Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250215-1930.json",
+        "sha256_lf": "dd734d0ee1f4c8d196c8c68c8b922265589551fa714f4077850909b9be910879",
+        "bytes": 22205
+      },
+      "processed_sha256_lf": "91ae898d63d414bf8116be7c1e6bec0fe52ad1de31941f9a456c6f86623301af"
+    },
+    {
+      "id": "geos-fp-dust-20250315-1930",
+      "date": "2025-03-15",
+      "center": "19:30",
+      "phase": "monthly",
+      "season": {
+        "key": "spring-2025",
+        "name": "spring",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250315_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M03/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250315_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/03/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250315_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 120442933,
+      "sha256": "5340cbb07ae72ba73f7e24baad2b5cff0c125410398de2fe1f15a381556f6838",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-03-15T19:30:00Z",
+        "start_utc": "2025-03-15T18:00:00Z",
+        "end_utc": "2025-03-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.0016171005554497242,
+          "max": 1.1100434064865112
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250315-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 120442933,
+        "etag": "\"67d64724-72dd035\"",
+        "last_modified": "Sun, 16 Mar 2025 03:36:04 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M03/D15/",
+        "index_sha256": "fc5bbfcd2ed5f3ebc4ca6541806a51670457ad9e57fe8a743135fe118627418b",
+        "checked_at": "2026-11-14T18:59:55Z"
+      },
+      "verified_at": "2026-11-14T19:08:39Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250315-1930.json",
+        "sha256_lf": "24ff07287a902b57f45a00259cc1af57d0e5ad12488cb89c488a51a6ff75bfe1",
+        "bytes": 21821
+      },
+      "processed_sha256_lf": "89f9650e3ab29b1d42e5737f261eb9b504b96d6657dcf95d19849b7ffa94328b"
+    },
+    {
+      "id": "geos-fp-dust-20250415-1930",
+      "date": "2025-04-15",
+      "center": "19:30",
+      "phase": "pilot",
+      "season": {
+        "key": "spring-2025",
+        "name": "spring",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250415_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M04/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250415_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/04/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250415_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 120993875,
+      "sha256": "cb7bc5fe07154bda62df7ba9d9b9b4164665b850e79b965e932ecd01e50814cd",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-04-15T19:30:00Z",
+        "start_utc": "2025-04-15T18:00:00Z",
+        "end_utc": "2025-04-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.006629986222833395,
+          "max": 2.779689311981201
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250415-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 120993875,
+        "etag": "\"67ff18b0-7363853\"",
+        "last_modified": "Wed, 16 Apr 2025 02:40:48 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M04/D15/",
+        "index_sha256": "e9dcb77e750b6a5c815681ee4e35e342501de5d02c233c9e014efa930b20c6d9",
+        "checked_at": "2026-11-14T18:53:36Z"
+      },
+      "verified_at": "2026-11-14T18:56:05Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250415-1930.json",
+        "sha256_lf": "71df0dfd5b5053d57808dc5e855b9f97db7384baa8e565a129a1e77b69208252",
+        "bytes": 21601
+      },
+      "processed_sha256_lf": "81205da5b6f21ba9b7484f2f1e488daf8d69d7ec2d5174ddca3a5a258d54e7a7"
+    },
+    {
+      "id": "geos-fp-dust-20250515-1930",
+      "date": "2025-05-15",
+      "center": "19:30",
+      "phase": "monthly",
+      "season": {
+        "key": "spring-2025",
+        "name": "spring",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250515_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M05/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250515_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/05/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250515_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 120684083,
+      "sha256": "d3e50083e52fb66e7e0213a4175621eb6fdff221e26ea363185e4a8491b9d77d",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-05-15T19:30:00Z",
+        "start_utc": "2025-05-15T18:00:00Z",
+        "end_utc": "2025-05-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.007241783197969198,
+          "max": 2.9454240798950195
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250515-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 120684083,
+        "etag": "\"6826ab0f-7317e33\"",
+        "last_modified": "Fri, 16 May 2025 03:03:43 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M05/D15/",
+        "index_sha256": "a1af73a4e6b977a304d67784b37139906d447259f750308e66ebb998414a9b1c",
+        "checked_at": "2026-11-14T18:59:57Z"
+      },
+      "verified_at": "2026-11-14T19:11:13Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250515-1930.json",
+        "sha256_lf": "f38231c5bce58553aae59aa8ea2246f33c4f411874d2c0a3502ce9e29747b19a",
+        "bytes": 21455
+      },
+      "processed_sha256_lf": "119ac33f12429d22734fa2ce6d693b208750d5d3d89424e53a428120b5b634bf"
+    },
+    {
+      "id": "geos-fp-dust-20250615-1930",
+      "date": "2025-06-15",
+      "center": "19:30",
+      "phase": "monthly",
+      "season": {
+        "key": "summer-2025",
+        "name": "summer",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250615_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M06/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250615_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/06/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250615_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121460313,
+      "sha256": "ca3f3317197ab6cc43fbf1b8f36b82a5a03777d1accac4c8481b9bd730518681",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-06-15T19:30:00Z",
+        "start_utc": "2025-06-15T18:00:00Z",
+        "end_utc": "2025-06-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.007658855058252811,
+          "max": 2.1813437938690186
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250615-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 121460313,
+        "etag": "\"684f89ec-73d5659\"",
+        "last_modified": "Mon, 16 Jun 2025 03:05:16 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M06/D15/",
+        "index_sha256": "07fbdf3413d35b83c609a22b4c123989132a44f387713b93ea2493c1311e3fae",
+        "checked_at": "2026-11-14T18:59:59Z"
+      },
+      "verified_at": "2026-11-14T19:12:16Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250615-1930.json",
+        "sha256_lf": "f48b666a322b826d837bba07379b22dfa92d445981d7ec5bb2e41d4886a978fe",
+        "bytes": 21754
+      },
+      "processed_sha256_lf": "df9c130d25136a6ae216a811b0c919c6aee6c6f7f6c9646f0b321b0a40ee5779"
+    },
+    {
+      "id": "geos-fp-dust-20250715-1930",
+      "date": "2025-07-15",
+      "center": "19:30",
+      "phase": "pilot",
+      "season": {
+        "key": "summer-2025",
+        "name": "summer",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250715_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M07/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250715_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/07/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250715_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121379980,
+      "sha256": "d63db8d0d59d8814d992bad6b69f82b7c3dc1b17ba0d62a092b020528281a5f9",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-07-15T19:30:00Z",
+        "start_utc": "2025-07-15T18:00:00Z",
+        "end_utc": "2025-07-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.002749386243522167,
+          "max": 1.847053050994873
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250715-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 121379980,
+        "etag": "\"68771691-73c1c8c\"",
+        "last_modified": "Wed, 16 Jul 2025 03:03:45 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M07/D15/",
+        "index_sha256": "1e58e21d0bbd79b9431e4d062afe32f1ad08bf798ae0c93ad881a5aa9d063ecf",
+        "checked_at": "2026-11-14T18:53:38Z"
+      },
+      "verified_at": "2026-11-14T18:56:48Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250715-1930.json",
+        "sha256_lf": "fa77c71d5643d5d17fdac981b56e1c4da37924a194a25efd65e3961c4e6441cf",
+        "bytes": 21593
+      },
+      "processed_sha256_lf": "7b17379a666f675aa29458048894bd69e02d93ec10ae80f409fbb0c81b0370fd"
+    },
+    {
+      "id": "geos-fp-dust-20250815-1930",
+      "date": "2025-08-15",
+      "center": "19:30",
+      "phase": "monthly",
+      "season": {
+        "key": "summer-2025",
+        "name": "summer",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250815_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M08/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250815_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/08/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250815_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121857054,
+      "sha256": "3ea602c2a9b5beec27a3d3e33e76c585c13c3bb5553496e71b51941445f930b3",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-08-15T19:30:00Z",
+        "start_utc": "2025-08-15T18:00:00Z",
+        "end_utc": "2025-08-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.0033490185160189867,
+          "max": 1.2788739204406738
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250815-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 121857054,
+        "etag": "\"689feb06-743641e\"",
+        "last_modified": "Sat, 16 Aug 2025 02:20:54 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M08/D15/",
+        "index_sha256": "cb710db0e0217919b677ba0b851067d6bdc9994a71fbc05e9331221d503e0a7f",
+        "checked_at": "2026-11-14T19:00:01Z"
+      },
+      "verified_at": "2026-11-14T19:13:03Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250815-1930.json",
+        "sha256_lf": "b5b3834d19d91ffd313bdfe1c619fdd0334bc45e630fa787e85521ba53142824",
+        "bytes": 21601
+      },
+      "processed_sha256_lf": "87e7936105beccdde45014e170e1041635e7e1cf43d7cae46c1553c015152182"
+    },
+    {
+      "id": "geos-fp-dust-20250819-1930",
+      "date": "2025-08-19",
+      "center": "19:30",
+      "phase": "reference",
+      "season": {
+        "key": "summer-2025",
+        "name": "summer",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M08/D19/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/08/19/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121678028,
+      "sha256": "091ab5cdfdf8f68983283d1f3909014258d75738d499bf44a5e5d87e75cb87db",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-08-19T19:30:00Z",
+        "start_utc": "2025-08-19T18:00:00Z",
+        "end_utc": "2025-08-19T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.0020747664384543896,
+          "max": 2.195476531982422
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250819-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "legacy_path": "science/decode/raw/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+      "archive_import": "hardlink",
+      "verified_at": "2026-11-14T18:53:31Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250819-1930.json",
+        "sha256_lf": "77bc9aba35819f4aac1b3aab61e035a56ee415455be0610ef6ee583340aa56c1",
+        "bytes": 22068
+      },
+      "processed_sha256_lf": "8e7ec384b5e63e5648e33ad35f3c196974544b43e322f9b87acec23a0d6362d8"
+    },
+    {
+      "id": "geos-fp-dust-20250915-1930",
+      "date": "2025-09-15",
+      "center": "19:30",
+      "phase": "monthly",
+      "season": {
+        "key": "autumn-2025",
+        "name": "autumn",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250915_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M09/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250915_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/09/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20250915_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121806397,
+      "sha256": "0d75e8dd7510c6963228f26116baa2e35755081ea4866a9c6e779d811281c249",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-09-15T19:30:00Z",
+        "start_utc": "2025-09-15T18:00:00Z",
+        "end_utc": "2025-09-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.0023759864270687103,
+          "max": 2.670884609222412
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20250915-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 121806397,
+        "etag": "\"68c8c8e3-7429e3d\"",
+        "last_modified": "Tue, 16 Sep 2025 02:18:11 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M09/D15/",
+        "index_sha256": "fe02e2f33c2f34eea29b42948bc4a390a53792396eafd60efe4ad4ce4f15ce5e",
+        "checked_at": "2026-11-14T19:00:03Z"
+      },
+      "verified_at": "2026-11-14T19:13:52Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20250915-1930.json",
+        "sha256_lf": "649cdb51c4df1bf7901a919cce43d663b699e74832e1035e4c351abd8d01857f",
+        "bytes": 21876
+      },
+      "processed_sha256_lf": "744383370e95d81e42f1cbbe3e4442d063628e443c1cd4fad0dc53a715cd6d2b"
+    },
+    {
+      "id": "geos-fp-dust-20251015-1930",
+      "date": "2025-10-15",
+      "center": "19:30",
+      "phase": "pilot",
+      "season": {
+        "key": "autumn-2025",
+        "name": "autumn",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20251015_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M10/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20251015_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/10/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20251015_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 121350179,
+      "sha256": "12c98bddfadcf52c4fcb9e07ec46b8afac845a83ffb1cf599e6675966884c971",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-10-15T19:30:00Z",
+        "start_utc": "2025-10-15T18:00:00Z",
+        "end_utc": "2025-10-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.004308970179408789,
+          "max": 1.0436447858810425
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20251015-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 121350179,
+        "etag": "\"68f05661-73ba823\"",
+        "last_modified": "Thu, 16 Oct 2025 02:20:17 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M10/D15/",
+        "index_sha256": "e1102264c2e02e0a19e7236ad269b680b14d3ef21e0fa9b0ce968b9d81908980",
+        "checked_at": "2026-11-14T18:53:41Z"
+      },
+      "verified_at": "2026-11-14T18:57:35Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20251015-1930.json",
+        "sha256_lf": "ac4bc0f3309c6e09eb5c4042a2be004966db3a62aa1c731fe4b63fb26e22db39",
+        "bytes": 21885
+      },
+      "processed_sha256_lf": "b7bab896e0de3a7b8280280d5998bc9da0a21473cfdfd22861beb956951c475a"
+    },
+    {
+      "id": "geos-fp-dust-20251115-1930",
+      "date": "2025-11-15",
+      "center": "19:30",
+      "phase": "monthly",
+      "season": {
+        "key": "autumn-2025",
+        "name": "autumn",
+        "seasonYear": 2025
+      },
+      "original_filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20251115_1930.V01.nc4",
+      "download_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M11/D15/GEOS.fp.asm.tavg3_2d_aer_Nx.20251115_1930.V01.nc4",
+      "local_path": "science/decode/raw/geos_fp/2025/11/15/GEOS.fp.asm.tavg3_2d_aer_Nx.20251115_1930.V01.nc4",
+      "download_status": "verified",
+      "size_bytes": 120681620,
+      "sha256": "24bd38de6f423d9e1087adc483d1812e5006955d53a88c4673bce7ce4cd419d4",
+      "metadata": {
+        "product": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+        "short_name": "DFPT3NXAER",
+        "version": "5.29.5",
+        "model_source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+        "variable": "DUEXTTAU",
+        "units": "1",
+        "variable_attributes": {
+          "_FillValue": 999999986991104.0,
+          "add_offset": 0.0,
+          "fmissing_value": 999999986991104.0,
+          "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "missing_value": 999999986991104.0,
+          "scale_factor": 1.0,
+          "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+          "units": "1",
+          "vmax": 999999986991104.0,
+          "vmin": -999999986991104.0,
+          "valid_range": [
+            -999999986991104.0,
+            999999986991104.0
+          ]
+        },
+        "timestamp_utc": "2025-11-15T19:30:00Z",
+        "start_utc": "2025-11-15T18:00:00Z",
+        "end_utc": "2025-11-15T21:00:00Z",
+        "time_semantics": "three-hour mean",
+        "dimensions": {
+          "time": 1,
+          "lat": 721,
+          "lon": 1152
+        },
+        "native_coverage": {
+          "north": 90,
+          "south": -90,
+          "east": 179.6875,
+          "west": -180
+        },
+        "native_resolution_degrees": {
+          "lat": 0.25,
+          "lon": 0.3125
+        },
+        "regional_center_coverage": {
+          "north": 45,
+          "south": 15,
+          "east": 50,
+          "west": -20
+        },
+        "regional_statistics": {
+          "valid": 27225,
+          "missing_or_invalid": 0,
+          "min": 0.001196518074721098,
+          "max": 0.5639628767967224
+        },
+        "compatible": true,
+        "compatibility_warnings": []
+      },
+      "processed_path": "science/decode/processed/dust/geos-fp-dust-20251115-1930.json",
+      "extraction_status": "verified",
+      "compatibility_warnings": [],
+      "remote": {
+        "size_bytes": 120681620,
+        "etag": "\"691934b1-7317494\"",
+        "last_modified": "Sun, 16 Nov 2025 02:19:29 GMT"
+      },
+      "discovery": {
+        "index_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M11/D15/",
+        "index_sha256": "d5b98486b40d949e9bdc15b25050fd02a93d211b26ad91bfbbe738ed670813b8",
+        "checked_at": "2026-11-14T19:00:05Z"
+      },
+      "verified_at": "2026-11-14T19:14:37Z",
+      "publication": {
+        "path": "web/assets/decode/dust-v2/snapshots/geos-fp-dust-20251115-1930.json",
+        "sha256_lf": "bbdda9f1a55093225aad6cabb37ca687ff62d5a68ea5e6ff2aab227bb25a3e64",
+        "bytes": 22231
+      },
+      "processed_sha256_lf": "a66527e73e183686f6844cfa84ea3d0c8ac8171e9bd818ba7b257345b9877644"
+    }
+  ]
+}
