@@ -28,7 +28,12 @@
         </div>
         <div class="guided-map-stage" dir="ltr">
           <svg id="guided-coast" aria-hidden="true" focusable="false"></svg>
+          <div id="guided-places" aria-hidden="true"></div>
           <div id="guided-zones"></div>
+        </div>
+        <div class="guided-map-signal" aria-hidden="true">
+          <span id="guided-active-label" data-message="mapReady"></span>
+          <span id="guided-pulses"></span>
         </div>
         <figcaption data-message="mapCredit"></figcaption>
       </figure>
@@ -62,10 +67,23 @@
       <section id="guided-result" class="guided-result" aria-labelledby="guided-result-title" hidden>
         <h2 id="guided-result-title" tabindex="-1"></h2>
         <p id="guided-feedback"></p>
-        <dl id="guided-readings"></dl>
-        <p data-message="method"></p>
-        <p data-message="limits"></p>
-        <details open>
+        <div class="guided-evidence">
+          <section class="guided-averages" aria-labelledby="guided-averages-title">
+            <h3 id="guided-averages-title" data-message="average"></h3>
+            <dl id="guided-readings"></dl>
+            <p data-message="barScale"></p>
+            <p data-message="method"></p>
+            <p data-message="limits"></p>
+          </section>
+          <figure id="guided-context" hidden>
+            <img id="guided-context-image" width="1920" height="1080" loading="lazy" decoding="async" alt="">
+            <figcaption>
+              <strong data-message="contextTitle"></strong>
+              <p data-message="alignment"></p>
+            </figcaption>
+          </figure>
+        </div>
+        <details id="guided-provenance" open>
           <summary data-message="provenance"></summary>
           <p id="guided-source"></p>
           <p id="guided-note"></p>

@@ -29,6 +29,7 @@ async function journey(lang, width) {
     assert.equal(await page.locator("#guided-zones .guided-zone").count(), 3);
     assert.equal(await page.locator("#guided-readings dd, [data-strongest]").count(), 0);
     assert.equal(await page.locator("#guided-note").textContent(), "");
+    assert.equal(await page.locator("#guided-context-image").getAttribute("src"), null);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
 
     await page.locator("#guided-mute").click();
@@ -38,6 +39,7 @@ async function journey(lang, width) {
     assert.equal(await page.locator("#guided-zones [data-active]").count(), 0);
     await page.locator("#guided-compare").click();
     await page.locator("#guided-zones .guided-zone").first().locator(":scope[data-active]").waitFor();
+    await page.locator("#guided-pulses i").first().waitFor();
     await page.locator("#guided-replay").click();
     await page.locator("#guided-transcript summary").click();
     await page.locator("#guided-transcript li").nth(2).waitFor();
@@ -56,16 +58,21 @@ async function journey(lang, width) {
     const names = lang === "ar" ? ["الشمال", "الوسط", "الجنوب"] : ["North", "Middle", "South"];
     assert.ok((await page.locator("#guided-result-title").textContent()).endsWith(names[winningRow]));
     assert.equal(await page.locator("#guided-zones [data-strongest]").count(), 1);
+    assert.equal(await page.locator(".guided-bar").count(), 3);
+    assert.equal(await page.locator(".guided-bar div").nth(winningRow).evaluate(bar => bar.style.inlineSize), "100%");
     const formatter = new Intl.NumberFormat(lang, { maximumSignificantDigits: 6 });
     for (const [row, mean] of means.entries()) {
       assert.ok((await page.locator("#guided-readings dd").nth(row).textContent()).includes(formatter.format(mean)));
     }
     await page.locator("#guided-note").waitFor();
+    await page.locator("#guided-context-image").scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => document.querySelector("#guided-context-image").naturalWidth === 1920);
     assert.match(await page.locator("#guided-note").textContent(), lang === "ar" ? /تشغيل منفصل/ : /separate GEOS-FP 2 km Replay/);
     assert.equal(await page.locator("#guided-sources a").last().getAttribute("href"), data.visualLink.svs);
     await page.locator("#guided-reset").click();
     assert.equal(await page.locator("#guided-readings dd, [data-strongest]").count(), 0);
     assert.equal(await page.locator("#guided-note").textContent(), "");
+    assert.equal(await page.locator("#guided-context-image").getAttribute("src"), null);
 
     for (const [level, count] of [["quick", 12], ["advanced", 48]]) {
       await page.locator("#guided-" + level).click();

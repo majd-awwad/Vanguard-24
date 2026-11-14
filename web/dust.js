@@ -11,6 +11,12 @@ const messages = {
   intro: ["Listen to three latitude bands across North Africa and the Mediterranean. Compare north, middle and south, then check your guess against the model.",
     "استمع إلى ثلاثة نطاقات عرضية عبر شمال أفريقيا والبحر المتوسّط. قارن الشمال والوسط والجنوب، ثم تحقّق من تخمينك بالرجوع إلى النموذج."],
   region: ["North Africa & Mediterranean", "شمال أفريقيا والبحر المتوسّط"],
+  mediterranean: ["Mediterranean Sea", "البحر المتوسّط"],
+  sahara: ["Sahara", "الصحراء الكبرى"],
+  atlantic: ["Atlantic", "المحيط الأطلسي"],
+  mapReady: ["Choose a band or compare all three", "اختَر نطاقًا أو قارن النطاقات الثلاثة"],
+  practiceSignal: ["Practice example", "مثال تدريبي"],
+  playingBand: ["Now playing: {band}", "التشغيل الآن: {band}"],
   mapCredit: ["Coastlines: Natural Earth. The bands run west to east.", "السواحل من Natural Earth. تمتد النطاقات من الغرب إلى الشرق."],
   listen: ["Listen and compare", "استمع وقارن"],
   mapping: ["More notes mean a higher rank in this comparison. Pitch and loudness stay fixed. The note count gives the order only, not an optical-depth value.",
@@ -37,6 +43,8 @@ const messages = {
   incomplete: ["Some bands have no usable readings. The result compares the available bands.", "بعض النطاقات بلا قراءات صالحة. تقارن النتيجة النطاقات المتاحة."],
   strongest: ["Strongest modeled band", "أقوى نطاق في النموذج"],
   average: ["Mean dust optical depth", "متوسط العمق البصري للغبار"],
+  barScale: ["All bars start at zero and use the same scale. The longest bar marks the highest available mean.", "كل الأشرطة بتبدأ من الصفر وبتستخدم نفس المقياس. أطول شريط بيمثّل أعلى متوسط متاح."],
+  gap: ["The strongest band is {difference} above {band} in mean optical depth.", "متوسط العمق البصري في أقوى نطاق أعلى بـ{difference} من نطاق {band}."],
   tie: ["Bands tied for strongest", "نطاقات تعادلت في المرتبة الأولى"],
   correct: ["Your choice matched the comparison.", "اختيارك طابق نتيجة المقارنة."],
   incorrect: ["Your choice was {band}. See the band averages below.", "اخترت {band}. راجع متوسطات النطاقات بالأسفل."],
@@ -48,6 +56,8 @@ const messages = {
   provenance: ["Data and NASA image provenance", "مصدر البيانات وعلاقتها بصورة ناسا"],
   source: ["NASA GEOS-FP data", "بيانات NASA GEOS-FP"],
   svs: ["NASA SVS 5669 context image", "صورة NASA SVS 5669 للسياق"],
+  contextTitle: ["NASA SVS 5669 · Related scientific context", "NASA SVS 5669 · سياق علمي مرتبط"],
+  contextAlt: ["Global NASA aerosol visualization for 19 August 2025, showing modeled dust in pink and magenta.", "تصوّر عالمي من ناسا للهباء الجوي في 19 أغسطس 2025، يظهر فيه الغبار المحاكى باللونين الوردي والأرجواني."],
   alignment: ["The separate SVS Replay frame is scientific context and is not pixel-aligned to this map.", "صورة SVS من تشغيل منفصل للسياق العلمي ولا تطابق بكسلات هذه الخريطة."],
   detective: ["Go deeper with Earth Detective", "تعمّق مع محقّق الأرض"],
   detectiveDescription: ["In the grid challenge, higher pitch means farther north, left and right mean west and east, and louder means more dust among cells that meet the cutoff. The {threshold} optical-depth cutoff is a game rule. A quiet cell can still contain dust.",
@@ -80,6 +90,14 @@ function renderCoast(bounds) {
     x(bounds.east) - x(bounds.west), y(bounds.south) - y(bounds.north)].join(" "));
   coast.setAttribute("preserveAspectRatio", "none");
   coast.append(svg("path", { d: land.fires }));
+  for (const [name, lon, lat] of [["atlantic", -13, 29], ["mediterranean", 22, 37], ["sahara", 15, 23]]) {
+    const place = document.createElement("span");
+    place.textContent = t(name);
+    place.dir = "auto";
+    place.style.left = 100 * (lon - bounds.west) / (bounds.east - bounds.west) + "%";
+    place.style.top = 100 * (bounds.north - lat) / (bounds.north - bounds.south) + "%";
+    byId("places").append(place);
+  }
 }
 
 function mountGuided(data) {
@@ -91,11 +109,25 @@ function mountGuided(data) {
   const formOptions = [...bandIds, "unknown"];
   const transcript = byId("transcript");
   const transcriptLines = byId("transcript-lines");
+  const activeLabel = byId("active-label");
+  const pulses = byId("pulses");
+  const contextImage = byId("context-image");
   let plan;
   let example = false;
   let lastBands = [];
   let previousStatus;
+  let activeEvent;
+  let activeBand;
   const showStatus = text => { if (status.textContent !== text) status.textContent = text; };
+
+  function renderSignal(event) {
+    if (event === activeEvent) return;
+    activeEvent = event;
+    activeLabel.textContent = event ? t(example ? "practiceSignal" : bandIds[event.row]) : t("mapReady");
+    const count = event?.tone ? plan.events.filter(note =>
+      note.row === event.row && note.onsetS <= event.onsetS && note.tone).length : 0;
+    pulses.replaceChildren(...Array.from({ length: count }, () => document.createElement("i")));
+  }
 
   function renderTranscript() {
     if (!transcript.open) {
@@ -160,11 +192,15 @@ function mountGuided(data) {
   }
 
   transport.subscribe(snapshot => {
-    const event = !example && snapshot.status === "playing" && !snapshot.awaitingOnset &&
-      plan?.events.find(({ id }) => id === snapshot.activeEventId);
-    const active = event ? bandIds[event.row] : undefined;
-    for (const [id, zone] of zones) zone.toggleAttribute("data-active", id === active);
-    if (event && !event.tone) showStatus(fill(t("cueMissing"), { band: t(active) }));
+    const event = snapshot.status === "playing" && !snapshot.awaitingOnset
+      ? plan?.events.find(({ id }) => id === snapshot.activeEventId) : undefined;
+    const active = event && !example ? bandIds[event.row] : undefined;
+    renderSignal(event);
+    if (active !== activeBand) {
+      activeBand = active;
+      for (const [id, zone] of zones) zone.toggleAttribute("data-active", id === active);
+      if (active) showStatus(fill(t(event.tone ? "playingBand" : "cueMissing"), { band: t(active) }));
+    }
     if (snapshot.status === "ended" && previousStatus === "playing") showStatus(t("ended"));
     if (snapshot.audioUnavailable) showStatus(t("unavailable"));
     previousStatus = snapshot.status;
@@ -199,16 +235,30 @@ function mountGuided(data) {
       ? result.strongest.includes(guess) ? t("correct") : fill(t("incorrect"), { band: t(guess) })
       : "";
     const incomplete = strongest && result.bands.some(band => band.mean === null);
-    byId("feedback").textContent = [feedback, incomplete && t("incomplete")]
+    const ranked = result.bands.filter(band => band.mean !== null).sort((a, b) => b.mean - a.mean);
+    const [first, second] = ranked;
+    const gap = result.strongest.length === 1 && second ? fill(t("gap"), {
+      difference: number(first.mean - second.mean), band: t(second.id),
+    }) : "";
+    byId("feedback").textContent = [feedback, gap, incomplete && t("incomplete")]
       .filter(Boolean).join(" ");
     byId("readings").replaceChildren(...result.bands.map(band => {
       const block = document.createElement("div");
       const label = document.createElement("dt");
       const reading = document.createElement("dd");
       label.textContent = t(band.id);
-      reading.textContent = band.mean === null ? t("missing") : t("average") + " · " + number(band.mean) + " · " +
+      reading.textContent = band.mean === null ? t("missing") : number(band.mean) + " · " +
         fill(t("coverage"), { count: number(band.count), total: number(data.levels.quick.cols) });
       block.append(label, reading);
+      if (band.mean !== null) {
+        const scale = document.createElement("div");
+        scale.className = "guided-bar";
+        scale.setAttribute("aria-hidden", "true");
+        const bar = document.createElement("div");
+        bar.style.inlineSize = (first.mean > 0 ? band.mean / first.mean * 100 : 0) + "%";
+        scale.append(bar);
+        reading.append(scale);
+      }
       return block;
     }));
     const interval = new Intl.DateTimeFormat(language, {
@@ -217,6 +267,11 @@ function mountGuided(data) {
     byId("source").textContent = data.source.product + " · " + data.source.version + " · " + interval + " UTC";
     byId("note").textContent = (language === "ar" ? appMessage("note." + data.id) : data.visualLink.note) +
       " " + t("alignment");
+    if (!data.fixture && data.id === caseId && data.visualLink.relation === "RELATED_CONTEXT") {
+      contextImage.alt = t("contextAlt");
+      contextImage.src = "./assets/decode/svs-5669-context.webp";
+      byId("context").hidden = false;
+    }
     byId("sources").replaceChildren();
     for (const [key, href] of [["source", data.source.url], ["svs", data.visualLink.svs]]) {
       const link = document.createElement("a");
@@ -237,7 +292,9 @@ function mountGuided(data) {
       byId("source").textContent = byId("note").textContent = "";
     byId("readings").replaceChildren();
     byId("sources").replaceChildren();
-    byId("result").querySelector("details").open = true;
+    byId("provenance").open = true;
+    byId("context").hidden = true;
+    contextImage.removeAttribute("src");
     for (const zone of zones.values()) zone.removeAttribute("data-strongest");
     form.reset();
     form.hidden = false;
