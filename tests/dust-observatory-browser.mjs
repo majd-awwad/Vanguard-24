@@ -73,6 +73,41 @@ async function journey(lang, width) {
     assert.deepEqual(await page.locator("#observatory-granules a").evaluateAll(links => links.map(link => link.href)),
       [snapshots.get(first).source.url, snapshots.get(second).source.url]);
     assert.doesNotMatch(await page.locator("#observatory-context").textContent() ?? "", /SVS 5669/);
+    const history = page.locator("#observatory-history");
+    await history.locator("summary").focus();
+    await page.keyboard.press("Enter");
+    await page.locator("#observatory-history-content").waitFor();
+    const rows = page.locator("#observatory-history-rows tr");
+    assert.equal(await rows.count(), catalog.snapshots.length);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    const chart = page.locator("#observatory-history-chart");
+    const model = catalog.snapshots.find(entry => entry.id === first).modelSource;
+    const matching = catalog.snapshots.filter(entry => entry.modelSource === model);
+    assert.equal(await chart.locator("circle").count(), matching.filter(entry => snapshots.get(entry.id).values[0] !== null).length);
+    const alternate = catalog.snapshots.find(entry => entry.modelSource !== model);
+    let alternateRow = rows.filter({ has: page.locator(`[data-open-date="${alternate.id}"]`) });
+    assert.equal(await alternateRow.getByRole("button").count(), 1);
+    const selectedRow = rows.filter({ has: page.locator(`[data-open-date="${second}"]`) });
+    const expectedWindow = await page.evaluate(({ lang, start, end }) => {
+      const format = new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "UTC" });
+      return format.format(new Date(start)) + "–" + format.format(new Date(end)) + " UTC";
+    }, { lang, ...snapshots.get(second).time });
+    assert.equal(await selectedRow.locator("td").first().textContent(), expectedWindow);
+    assert.ok((await selectedRow.locator("td").nth(1).textContent()).includes(formatted.format(snapshots.get(second).values[0])));
+    await page.locator(`[data-open-date="${alternate.id}"]`).click();
+    await page.locator("#observatory-history-rows [data-active-sample=historySelected]").waitFor();
+    assert.equal(await page.locator("#observatory-first").inputValue(), alternate.id);
+    assert.equal(await page.locator("#observatory-mode").inputValue(), "snapshot");
+    const firstPosition = await page.evaluate(lang => {
+      const one = new Intl.NumberFormat(lang).format(1);
+      return lang === "ar" ? `الصف ${one}، العمود ${one}` : `Row ${one}, column ${one}`;
+    }, lang);
+    assert.ok((await inspector.textContent()).includes(firstPosition));
+    const newComparison = catalog.snapshots.find(entry => entry.modelSource === alternate.modelSource && entry.id !== alternate.id);
+    await page.locator(`[data-compare-date="${newComparison.id}"]`).click();
+    await page.locator("#observatory-history-rows [data-active-sample=historyComparison]").waitFor();
+    assert.equal(await page.locator("#observatory-mode").inputValue(), "comparison");
+    assert.equal(await page.locator("#observatory-second").inputValue(), newComparison.id);
     assert.deepEqual(errors, []);
     console.log(`Dust Observatory keyboard and compatible-date journey: ${lang}, ${width}px passed.`);
   } finally {

@@ -72,6 +72,7 @@
 }
 .observatory-figure,
 .observatory-inspector,
+.observatory-history,
 .observatory-evidence {
   min-inline-size: 0;
   background: var(--obs-panel);
@@ -146,6 +147,47 @@ svg#observatory-map { display: block; width: 100%; height: 100%; position: absol
 #observatory-granules code { display: block; overflow-wrap: anywhere; }
 #observatory-granules code { font: .74rem/1.5 var(--mono); color: var(--obs-muted); }
 .observatory-evidence a { color: var(--accent); }
+.observatory-history {
+  grid-column: 1 / -1;
+  padding: clamp(.75rem, 2vw, 1.25rem);
+}
+.observatory-history summary { font-weight: 700; color: var(--accent); }
+.observatory-history > * + *, #observatory-history-content > * + * { margin-block-start: .65rem; }
+.observatory-history p, #observatory-history-scale { color: var(--obs-muted); }
+#observatory-history-location { font-weight: 650; }
+#observatory-history-figure {
+  border: 1px solid var(--obs-stroke);
+  border-radius: .5rem;
+  background: #101b1c;
+  padding: .65rem;
+}
+#observatory-history-chart { inline-size: 100%; display: block; max-block-size: 15rem; }
+#observatory-history-chart text { fill: var(--obs-paper); font: 14px var(--sans); }
+#observatory-history-chart line { stroke: var(--obs-stroke); vector-effect: non-scaling-stroke; }
+.observatory-history-point { fill: var(--accent); }
+.observatory-history-current { fill: var(--obs-focus); stroke: #101b1c; stroke-width: 1.5; }
+#observatory-history-scale { font-size: .85rem; }
+.observatory-history-table { overflow-x: auto; }
+.observatory-history-table table { border-collapse: collapse; width: 100%; min-inline-size: 38rem; }
+.observatory-history-table :is(th, td) {
+  text-align: start;
+  border-block-end: 1px solid var(--obs-stroke);
+  padding: .5rem .65rem;
+  vertical-align: top;
+}
+.observatory-history-table caption { text-align: start; padding: .35rem .65rem; font-weight: 700; }
+.observatory-history-table thead { color: var(--obs-muted); font-size: .85rem; }
+.observatory-history-table small { display: block; color: var(--obs-focus); }
+.observatory-history-table code {
+  display: block;
+  font: .72rem/1.45 var(--mono);
+  overflow-wrap: anywhere;
+  color: var(--obs-muted);
+  max-inline-size: 18rem;
+}
+.observatory-history-table :is(button, a) { display: table; margin-block-end: .25rem; }
+.observatory-history-table a { color: var(--accent); }
+.observatory-history-table [data-active-sample] { background: #283933; }
 @media (max-width: 54rem) {
   .observatory-layout { grid-template-columns: minmax(0, 1fr); }
 }

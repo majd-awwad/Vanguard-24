@@ -8,6 +8,38 @@ export function compatibleDates(entries, first) {
   return entries.filter(entry => entry.id !== first.id && entry.modelSource === first.modelSource);
 }
 
+// Asset validation happens before this projection. Keep failed fetches separate
+// from null cells; null is an actual, verified missing reading.
+export function cellHistory(entries, loaded, { modelSource, index }) {
+  return entries.map(entry => {
+    const snapshot = loaded.get(entry.id);
+    return {
+      entry,
+      value: snapshot?.values[index] ?? null,
+      available: Boolean(snapshot),
+      comparable: entry.modelSource === modelSource,
+    };
+  });
+}
+
+// Dots are placed at the actual UTC interval centers, without connecting lines.
+// Keep the time domain even for failed, missing, or incompatible snapshots.
+export function historyPlot(samples) {
+  const times = samples.map(({ entry }) => Date.parse(entry.time.center));
+  const start = Math.min(...times);
+  const end = Math.max(...times);
+  const points = samples.filter(sample => sample.comparable && sample.available && sample.value !== null);
+  const max = Math.max(opticalDepthLimit, Math.ceil(Math.max(...points.map(({ value }) => value)) * 2) / 2);
+  return {
+    start, end, max,
+    points: points.map(sample => ({
+      ...sample,
+      x: start === end ? .5 : (Date.parse(sample.entry.time.center) - start) / (end - start),
+      y: sample.value / max,
+    })),
+  };
+}
+
 export function fieldColor(value, difference) {
   if (value === null) return null;
   const colors = difference ? changeColors : levelColors;

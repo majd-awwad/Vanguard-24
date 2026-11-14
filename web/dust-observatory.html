@@ -97,6 +97,34 @@
         <p id="observatory-sound-key"></p>
         <p id="observatory-audio-status" role="status"></p>
       </section>
+      <details id="observatory-history" class="observatory-history">
+        <summary data-observatory="history"></summary>
+        <p id="observatory-history-location"></p>
+        <p data-observatory="historyMethod"></p>
+        <p id="observatory-history-status" role="status"></p>
+        <button id="observatory-history-retry" class="outline" type="button" data-observatory="retry" hidden></button>
+        <div id="observatory-history-content" hidden>
+          <figure id="observatory-history-figure" hidden>
+            <svg id="observatory-history-chart" aria-hidden="true" focusable="false"></svg>
+            <figcaption id="observatory-history-scale"></figcaption>
+          </figure>
+          <div class="observatory-history-table" tabindex="0" role="region" aria-labelledby="observatory-history-caption">
+            <table>
+              <caption id="observatory-history-caption" data-observatory="historySamples"></caption>
+              <thead>
+                <tr>
+                  <th scope="col" data-observatory="date"></th>
+                  <th scope="col" data-observatory="historyWindow"></th>
+                  <th scope="col" data-observatory="quantity"></th>
+                  <th scope="col" data-observatory="historyBuild"></th>
+                  <th scope="col" data-observatory="historyView"></th>
+                </tr>
+              </thead>
+              <tbody id="observatory-history-rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
       <section class="observatory-evidence" aria-labelledby="observatory-source-heading">
         <h2 id="observatory-source-heading" data-observatory="source"></h2>
         <p id="observatory-method"></p>

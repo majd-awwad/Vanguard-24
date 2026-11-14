@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFile } from "node:fs/promises";
 import {
-  cellSound, compatibleDates, fieldColor, fieldPalette, moveCell, opticalDepthLimit,
+  cellHistory, cellSound, compatibleDates, fieldColor, fieldPalette, historyPlot, moveCell, opticalDepthLimit,
 } from "../web/experiences/decode/observatory-field.js";
 import { validateDustCatalog } from "../web/sources/decode/dust-visual.js";
 
@@ -56,4 +56,27 @@ test("cell sound distinguishes zero from missing and the direction of signed cha
   assert.ok(pitches(sound(.4, true))[1] > pitches(sound(.1, true))[1]);
   assert.ok(pitches(sound(-.4, true))[1] < pitches(sound(-.1, true))[1]);
   assert.ok(sound(1, true).every(event => event.row === 4 && event.col === 2 && event.tone.gain === .14));
+});
+
+test("cell history retains actual dates and separates zero, missing, unavailable and other builds", () => {
+  const entry = (id, day, modelSource = "same") => ({
+    id, modelSource, time: { center: `2025-07-${day}T19:30:00Z` },
+  });
+  const entries = [entry("failed", "01"), entry("zero", "02"), entry("other", "04", "other"),
+    entry("missing", "07"), entry("high", "10")];
+  const loaded = new Map([
+    ["zero", { values: [9, 0] }], ["other", { values: [9, 6] }],
+    ["missing", { values: [9, null] }], ["high", { values: [9, 3.1] }],
+  ]);
+  const history = cellHistory(entries, loaded, { modelSource: "same", index: 1 });
+  assert.deepEqual(history.map(({ value, available, comparable }) => [value, available, comparable]), [
+    [null, false, true], [0, true, true], [6, true, false], [null, true, true], [3.1, true, true],
+  ]);
+  const plot = historyPlot(history);
+  assert.equal(plot.start, Date.parse(entries[0].time.center));
+  assert.equal(plot.end, Date.parse(entries.at(-1).time.center));
+  assert.equal(plot.max, 3.5);
+  assert.deepEqual(plot.points.map(({ entry, x, y }) => [entry.id, x, y]), [
+    ["zero", 1 / 9, 0], ["high", 1, 3.1 / 3.5],
+  ]);
 });
