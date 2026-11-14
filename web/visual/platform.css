@@ -35,6 +35,8 @@ h1, h2, h3, p, figure { margin: 0; }
 .arrival-copy > p:not(.eyebrow) { max-width: 36ch; color: var(--sub); }
 .actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .arrival .actions { margin-top: 21px; }
+#dust-text-entry { display: inline-block; margin-block-start: .9rem; color: var(--sub); font-size: .92rem; }
+#dust-text-entry:hover { color: var(--ink); }
 .solid, .outline { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 7px 12px; border: 1px solid transparent; border-radius: 3px; text-decoration: none; text-align: center; font-size: 14px; font-weight: 650; line-height: 1.22; }
 .solid { background: var(--accent); color: #13231d; }
 .solid:hover:not(:disabled) { background: #d7fbe9; }
@@ -44,6 +46,16 @@ h1, h2, h3, p, figure { margin: 0; }
 .earth-frame { min-width: 0; border: 1px solid #667771; background: #152521; }
 .earth-frame img { aspect-ratio: 2 / 1; object-fit: cover; }
 .earth-frame figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3px 12px; padding: 8px 11px; font-size: 13px; color: var(--sub); }
+.dust-hero-frame { border-color: #6b8071; box-shadow: 0 1rem 3.75rem #06110c66; }
+.dust-hero-frame img { aspect-ratio: 16 / 9; object-fit: contain; background: #101519; }
+.atlas-preview {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem; align-items: center; margin-block: .6rem 1.25rem;
+  padding: .85rem; border: 1px solid var(--line); background: var(--panel);
+}
+.atlas-preview-controls .actions { margin-block-start: .6rem; }
+.atlas-preview-controls select { max-inline-size: 100%; }
+.atlas-preview .earth-frame { justify-self: end; max-inline-size: 22rem; }
 .dust-path { display: grid; gap: 1.5rem; margin-block-end: 4rem; padding-block: 1.65rem; border-block: 1px solid var(--line); }
 .dust-path h2 { font: clamp(2rem, 4vw, 3.3rem)/1.1 var(--serif); }
 .dust-path p { margin-block-start: .5rem; color: var(--sub); max-inline-size: 58ch; }
@@ -53,7 +65,8 @@ h1, h2, h3, p, figure { margin: 0; }
 .dust-path-links strong { color: var(--accent); }
 .dust-path-links span { color: var(--sub); }
 @media (max-width: 43rem) {
-  .dust-path-links { grid-template-columns: 1fr; }
+  .dust-path-links, .atlas-preview { grid-template-columns: minmax(0, 1fr); }
+  .atlas-preview .earth-frame { justify-self: start; }
 }
 .atlas, .lens, .about { scroll-margin-top: 18px; }
 .atlas { padding-block-end: 73px; }

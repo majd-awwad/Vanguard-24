@@ -18,6 +18,9 @@ try {
   });
   await page.goto(url);
   await page.locator("#instrument").waitFor();
+  assert.equal(await page.locator(".dust-hero-frame img").getAttribute("src"), "./assets/decode/svs-5669-context.webp");
+  assert.match(await page.locator(".dust-hero-frame figcaption").textContent(), /separate model run/);
+  assert.equal(new URL(await page.locator("#dust-text-entry").evaluate(link => link.href)).searchParams.get("condition"), "text");
   assert.equal(await page.locator(".world").count(), 4);
   assert.equal(await page.locator("#reading-value").textContent(), "27.82 °C");
   await page.locator("#preview").click();
@@ -68,6 +71,10 @@ try {
   await page.locator("#replay").click();
   assert.equal(await page.evaluate(() => window.tones.length), prior);
   await page.locator("#language").click();
+  const textEntry = new URL(await page.locator("#dust-text-entry").evaluate(link => link.href));
+  assert.equal(textEntry.searchParams.get("lang"), "ar");
+  assert.equal(textEntry.searchParams.get("condition"), "text");
+  assert.match(await page.locator(".dust-hero-frame figcaption").textContent(), /تشغيل منفصل/);
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 850 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth), `Overflow at ${width}px`);

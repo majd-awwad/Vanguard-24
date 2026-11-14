@@ -20,20 +20,17 @@
     <section class="arrival wrap" aria-labelledby="hero-title">
       <div class="arrival-copy">
         <p class="eyebrow" data-copy="eyebrow">An Earth observation jukebox</p>
-        <h1 id="hero-title" data-copy="title">One Earth.<br>Many signals.</h1>
-        <p data-copy="intro">What if you could hear what Earth is telling us? Explore the science behind the sounds of ocean heat, rainfall, active fires and forests.</p>
+        <h1 id="hero-title" data-copy="title">Hear the unseen.</h1>
+        <p data-copy="intro">Three regions. One dust question. Listen to the signals, choose a region, then reveal what the NASA model shows.</p>
         <div class="actions">
           <a class="solid" id="dust-discovery" href="./dust.html" data-copy="dustDiscovery">Explore dust with sound</a>
           <a class="outline" href="#atlas" data-copy="explore">Explore Earth</a>
-          <label class="sr-only" for="preview-source" data-copy="previewChoice">Preview signal</label>
-          <select id="preview-source"></select>
-          <button id="preview" class="outline" type="button" disabled data-copy="preview">Listen</button>
         </div>
-        <p class="preview-note" id="preview-note" role="status"></p>
+        <a id="dust-text-entry" href="./decode.html?condition=text" data-copy="dustTextEntry">Play Earth Detective without sound</a>
       </div>
-      <figure class="earth-frame">
-        <img id="preview-image" src="./assets/atlas/svs-5101.jpg" width="1024" height="512" fetchpriority="high" alt="Global NASA visualization of sea-surface temperature">
-        <figcaption><span id="preview-caption">Ocean surface temperature · related NASA visualization</span><a id="preview-credit" href="https://svs.gsfc.nasa.gov/5101/">NASA SVS 5101 ↗</a></figcaption>
+      <figure class="earth-frame dust-hero-frame">
+        <img src="./assets/decode/svs-5669-context.webp" width="1920" height="1080" fetchpriority="high" data-alt="dustHeroAlt" alt="NASA simulation of atmospheric aerosols, with dust in pink and magenta">
+        <figcaption><span data-copy="dustHeroCaption">NASA’s global aerosol visualization · separate model run</span><a href="https://svs.gsfc.nasa.gov/5669/" data-copy="dustHeroSource">NASA SVS 5669 ↗</a></figcaption>
       </figure>
     </section>
     <section class="dust-path wrap" aria-labelledby="dust-path-title">
@@ -58,6 +55,21 @@
     </section>
     <section class="atlas wrap" id="atlas" aria-labelledby="atlas-title">
       <header class="section-head"><div><p class="eyebrow" data-copy="worlds">Explore Earth</p><h2 id="atlas-title" data-copy="atlas">Sound Atlas</h2></div></header>
+      <div class="atlas-preview">
+        <div class="atlas-preview-controls">
+          <h3 data-copy="atlasPreviewTitle">Sample the Sound Atlas</h3>
+          <div class="actions">
+            <label class="sr-only" for="preview-source" data-copy="previewChoice">Preview signal</label>
+            <select id="preview-source"></select>
+            <button id="preview" class="outline" type="button" disabled data-copy="preview">Listen</button>
+          </div>
+          <p class="preview-note" id="preview-note" role="status"></p>
+        </div>
+        <figure class="earth-frame">
+          <img id="preview-image" src="./assets/atlas/svs-5101.jpg" width="1024" height="512" loading="lazy" alt="Global NASA visualization of sea-surface temperature">
+          <figcaption><span id="preview-caption">Ocean surface temperature · related NASA visualization</span><a id="preview-credit" href="https://svs.gsfc.nasa.gov/5101/">NASA SVS 5101 ↗</a></figcaption>
+        </figure>
+      </div>
       <div id="atlas-worlds" class="atlas-worlds"></div>
     </section>
     <section class="lens wrap" id="lens" aria-labelledby="lens-title">

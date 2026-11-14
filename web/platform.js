@@ -119,6 +119,7 @@ function translate() {
   }
   for (const element of document.querySelectorAll("[data-alt]")) element.alt = t(element.dataset.alt);
   byId("dust-discovery").href = urlWithLanguage("./dust.html");
+  byId("dust-text-entry").href = urlWithLanguage("./decode.html?condition=text");
   byId("dust-path-guided").href = urlWithLanguage("./dust.html");
   byId("dust-path-observatory").href = urlWithLanguage("./dust-observatory.html");
   byId("dust-path-decode").href = urlWithLanguage("./decode.html");

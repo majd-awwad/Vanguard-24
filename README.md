@@ -5,8 +5,8 @@ Team Vanguard’s bilingual Earth-science listening platform. Explore ocean heat
 ## Dust discovery
 
 - [Guided Discovery](web/dust.html) lets you compare three latitude bands by ear, choose a hypothesis, and reveal the actual Quick-grid means. An optional practice clip and text cues make the comparison usable without headphones.
-- [Earth Detective](web/decode.html) keeps the original spatial grid challenge. Quick has 12 cells and Advanced has 48. Pitch locates north and south, stereo places west and east, and loudness varies among qualifying cells. The 0.20 cutoff is a challenge rule.
-- [Dust Observatory](web/dust-observatory.html) lets you inspect the 1,000-cell map across 13 verified three-hour snapshots and compare compatible dates. These selected windows support specific comparisons, not seasonal averages or long-term trend claims.
+- [Earth Detective](web/decode.html) keeps the original spatial grid challenge. Quick has 12 cells and Advanced has 48. Pitch locates north and south, stereo places west and east, and loudness varies among qualifying cells. The 0.20 cutoff is a challenge rule. [Text cues without sound](web/decode.html?condition=text) make the challenge playable through qualitative cell cues.
+- [Dust Observatory](web/dust-observatory.html) lets you inspect the 1,000-cell map across 13 verified three-hour snapshots and compare compatible dates. Open a cell's date history to read individual values and model builds, or start a comparison from that table. Each plotted point is a selected observation window.
 
 See [the guided method](docs/guided-dust.md), [the data validation and extraction ledger](docs/dust-v2-data.md), and [the demo and accessibility handoff](docs/dust-demo.md).
 
