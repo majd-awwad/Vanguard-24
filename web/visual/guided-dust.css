@@ -1,0 +1,93 @@
+body:has(.guided-main) {
+  --guided-surface: #1b2827;
+  --guided-gold: #fbd58f;
+  --guided-line: #526963;
+  background: radial-gradient(ellipse at 15% 0, #273b31, var(--bg) 52rem);
+}
+.guided-header, .guided-map-heading, .guided-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .55rem;
+}
+.guided-header {
+  justify-content: space-between;
+  min-height: 4.5rem;
+  border-block-end: 1px solid var(--guided-line);
+}
+.guided-main { padding-block: clamp(1.5rem, 4vw, 3rem) 3rem; }
+.guided-intro { margin-block-end: 1.75rem; }
+.guided-intro h1 {
+  max-inline-size: 20ch;
+  margin-block: .45rem .65rem;
+  font: 400 clamp(2.5rem, 6vw, 5.25rem)/1.02 var(--serif);
+  text-wrap: balance;
+}
+[dir="rtl"] .guided-intro h1 { font-size: clamp(2rem, 5vw, 4.2rem); font-weight: 700; }
+.guided-intro > p:last-child { color: var(--sub); max-inline-size: 64ch; }
+.guided-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
+}
+.guided-map, .guided-controls, .guided-result, .guided-detective {
+  border: 1px solid var(--guided-line);
+  border-radius: .85rem;
+  background: var(--guided-surface);
+}
+.guided-map { overflow: hidden; }
+.guided-map-heading { justify-content: space-between; padding: .75rem 1rem; }
+.guided-map-heading time, .guided-map figcaption { color: var(--sub); font-size: .86rem; }
+.guided-map figcaption { padding: .6rem 1rem; }
+.guided-map-stage {
+  position: relative;
+  min-block-size: 12rem;
+  aspect-ratio: 7 / 3;
+  background: #203e4d;
+  isolation: isolate;
+}
+#guided-coast, #guided-zones { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
+#guided-coast path { fill: #a0a482; stroke: #41493a; stroke-width: 1; vector-effect: non-scaling-stroke; }
+#guided-zones { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); }
+.guided-zone {
+  display: flex;
+  align-items: center;
+  padding-inline: .8rem;
+  border-block-start: 1px solid #e4eeeb9c;
+  transition: background-color .18s ease;
+}
+.guided-zone span { background: #13241f; border-radius: .25rem; padding: .2rem .55rem; }
+.guided-zone[data-active] { background: #fbd58f60; box-shadow: inset 0 0 0 3px var(--guided-gold); }
+.guided-zone[data-strongest] span { background: var(--guided-gold); color: #241c0e; }
+.guided-controls, .guided-result, .guided-detective { padding: clamp(.85rem, 2vw, 1.35rem); }
+.guided-controls h2, .guided-result h2, .guided-detective h2 { font-size: clamp(1.25rem, 2.4vw, 1.6rem); }
+.guided-controls p, .guided-result p, .guided-detective p { color: var(--sub); }
+.guided-controls section > * + *, .guided-result > * + *, .guided-detective > * + * { margin-block-start: .65rem; }
+.guided-main :is(button, a.outline) { min-block-size: 2.75rem; border-radius: .45rem; }
+#guided-mute[aria-pressed="true"] { border-color: var(--guided-gold); }
+#guided-status { min-block-size: 1.5em; }
+#guided-guess { margin-block-start: 1rem; }
+#guided-guess fieldset { margin: 0 0 .6rem; padding: 0; border: 0; }
+#guided-guess legend { font-weight: 700; }
+.guided-options { display: flex; flex-wrap: wrap; gap: .35rem; margin-block-start: .4rem; }
+.guided-options label { display: flex; align-items: center; gap: .35rem; min-block-size: 2.75rem; padding-inline: .4rem; }
+.guided-result { grid-column: 1 / -1; }
+#guided-readings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+#guided-readings div { padding: .65rem; border: 1px solid var(--guided-line); border-radius: .4rem; }
+#guided-readings dt { color: var(--guided-gold); font-weight: 700; }
+#guided-readings dd { margin: 0; overflow-wrap: anywhere; }
+.guided-result details p { margin-block: .5rem; }
+#guided-note { white-space: pre-line; }
+.guided-detective { margin-block-start: 1.25rem; }
+@media (max-width: 55rem) {
+  .guided-layout { grid-template-columns: minmax(0, 1fr); }
+  .guided-main, .guided-header { width: calc(100% - 1.5rem); }
+}
+@media (max-width: 31rem) {
+  #guided-readings { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:has(.guided-main) { scroll-behavior: auto; }
+  .guided-zone { transition: none; }
+}
