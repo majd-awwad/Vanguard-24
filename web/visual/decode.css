@@ -36,8 +36,8 @@
   pointer-events: none;
 }
 
-/* Reveal glyphs must paint over the opaque background of pressed cells. */
-#decode-visual:has(.decode-reveal-markers) {
+/* Playback and Reveal glyphs must paint over the opaque background of pressed cells. */
+#decode-visual:has(.decode-reveal-markers, .decode-map-highlight rect) {
   z-index: 1;
 }
 
@@ -45,16 +45,15 @@
   display: block;
   inline-size: 100%;
   block-size: 100%;
+  overflow: hidden;
 }
 
-#decode-visual .decode-map-geography {
-  fill: none;
-  stroke: var(--sub);
-  opacity: .45;
-}
-
-#decode-visual .decode-map-geography path {
-  vector-effect: non-scaling-stroke;
+#decode-visual .decode-map-geography .dust-basemap-land {
+  fill: #c3bd98;
+  fill-opacity: .16;
+  stroke: #c8c6ad;
+  stroke-opacity: .62;
+  stroke-width: 1.25px;
 }
 
 #decode-visual .decode-map-grid {

@@ -91,9 +91,11 @@ try {
     assert.equal(await page.locator("#decode-visual").getAttribute("data-test-active-cell"), "0,0");
     assert.equal(await page.locator(".dg-cell[data-playing]").count(), 1);
     assert.equal(await page.locator(".dg-cell[data-playing]").getAttribute("data-col"), "0");
+    assert.equal(await page.locator(".decode-map-highlight rect").count(), 1);
     assert.equal(await page.locator("[data-evidence]").count(), 0);
     await click("pause");
     assert.equal(await page.locator(".dg-cell[data-playing]").count(), 0);
+    assert.equal(await page.locator(".decode-map-highlight rect").count(), 0);
     assert.equal(await page.locator("#decode-visual").getAttribute("data-test-active-cell"), "");
     await click("mute");
     assert.equal(await page.locator("#decode-mute").getAttribute("aria-pressed"), "true");
@@ -166,7 +168,7 @@ try {
       assert.ok(relationOffset >= 0 && announcement.indexOf(sourceNote) > relationOffset);
       assert.doesNotMatch(announcement, /Numerical data/);
     }
-    assert.equal(await page.locator(".decode-map-geography path").count(), 0);
+    assert.equal(await page.locator(".decode-map-geography path.dust-basemap-land").count(), 1);
     assert.deepEqual(await page.locator(".decode-reveal-markers > text").allTextContents(), ["–", "✓", "–", "–", "–"]);
     const outcomes = page.locator("#decode-outcome-labels li");
     assert.equal(await outcomes.count(), 5);

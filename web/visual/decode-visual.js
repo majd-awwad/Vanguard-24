@@ -1,3 +1,4 @@
+import { drawDustMapBase } from "./dust-basemap.js";
 import { renderReveal } from "./reveal.js";
 
 const stages = ["intro", "legend", "listen", "decode", "reveal"];
@@ -48,7 +49,7 @@ function svgElement(document, name, attributes) {
 // Draw a resolved cell for the current plan in SVG grid coordinates.
 // The caller supplies the cell, or null when there is no active cell.
 export function drawPlaybackHighlight(layer, cell) {
-  const [row, col] = cell ?? [];
+  const [row, col] = Array.isArray(cell) ? cell : [];
   const bounds = highlightContexts.get(layer);
   if (!Number.isInteger(row) || !Number.isInteger(col) || row < 0 || col < 0 ||
       (bounds && (row >= bounds.rows || col >= bounds.cols))) {
@@ -66,7 +67,7 @@ export function drawPlaybackHighlight(layer, cell) {
 }
 
 /** @satisfies {import("../contracts/decode.d.ts").MountDecodeVisual} */
-export const mountDecodeVisual = (root, session, { t }) => {
+export const mountDecodeVisual = (root, session, { geography }) => {
   const document = root.ownerDocument;
   const svg = svgElement(document, "svg", {
     class: "decode-map",
@@ -77,7 +78,6 @@ export const mountDecodeVisual = (root, session, { t }) => {
     preserveAspectRatio: "none",
   });
   const gridLayer = svgElement(document, "g", { class: "decode-map-grid" });
-  // Future public coastline paths use the same grid-space viewBox.
   const geographyLayer = svgElement(document, "g", { class: "decode-map-geography" });
   const highlightLayer = svgElement(document, "g", {
     class: "decode-map-highlight",
@@ -91,6 +91,8 @@ export const mountDecodeVisual = (root, session, { t }) => {
   let phase;
   let pendingReveal;
   let mountedReveal;
+  let coastlineVisible = false;
+  let highlightedCell;
 
   function clearReveal() {
     pendingReveal = undefined;
@@ -124,7 +126,7 @@ export const mountDecodeVisual = (root, session, { t }) => {
     return apply;
   }
 
-  function render({ phase: nextPhase, caseId, level, planRevision, grid }) {
+  function render({ phase: nextPhase, caseId, level, planRevision, grid, activeCell }) {
     if (disposed) return;
     const { rows, cols } = grid;
     const previous = highlightContexts.get(highlightLayer);
@@ -133,20 +135,36 @@ export const mountDecodeVisual = (root, session, { t }) => {
       previous.rows !== rows || previous.cols !== cols);
     if (gridChanged || nextPhase !== "reveal") clearReveal();
     phase = nextPhase;
-    if (gridChanged || (previous && previous.planRevision !== planRevision)) {
-      drawPlaybackHighlight(highlightLayer, null);
-    }
+    const planChanged = gridChanged || (previous && previous.planRevision !== planRevision);
     highlightContexts.set(highlightLayer, { caseId, level, planRevision, rows, cols });
-    svg.setAttribute("viewBox", `0 0 ${cols} ${rows}`);
-    const cells = grid.cells.map(({ row, col }) => svgElement(document, "rect", {
-      x: col,
-      y: row,
-      width: 1,
-      height: 1,
-      fill: "none",
-      "vector-effect": "non-scaling-stroke",
-    }));
-    gridLayer.replaceChildren(...cells);
+    if (!previous || gridChanged) {
+      svg.setAttribute("viewBox", `0 0 ${cols} ${rows}`);
+      const cells = grid.cells.map(({ row, col }) => svgElement(document, "rect", {
+        x: col,
+        y: row,
+        width: 1,
+        height: 1,
+        fill: "none",
+        "vector-effect": "non-scaling-stroke",
+      }));
+      gridLayer.replaceChildren(...cells);
+    }
+    const matchesGeography = geography?.projection === "plate-carree" && geography.caseId === caseId;
+    if (coastlineVisible !== matchesGeography) {
+      geographyLayer.replaceChildren();
+      if (matchesGeography) drawDustMapBase(geographyLayer, geography.bounds);
+      coastlineVisible = matchesGeography;
+    }
+    if (coastlineVisible && (!previous || gridChanged)) {
+      geographyLayer.setAttribute("transform", `scale(${cols} ${rows})`);
+    }
+
+    // The renderer session resolves case and plan revision before publishing activeCell.
+    const [row, col] = Array.isArray(activeCell) ? activeCell : [];
+    if (planChanged || highlightedCell?.[0] !== row || highlightedCell?.[1] !== col) {
+      drawPlaybackHighlight(highlightLayer, activeCell);
+      highlightedCell = [row, col];
+    }
   }
 
   render(session.getState());

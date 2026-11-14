@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { drawDustMapBase } from "../web/visual/dust-basemap.js";
+import { land } from "../web/visual/land.js";
 import { renderReveal } from "../web/visual/reveal.js";
 import { createDecodeProgress, drawPlaybackHighlight, getDecodeStep, mountDecodeVisual, projectPlateCarree } from "../web/visual/decode-visual.js";
 
@@ -91,6 +93,8 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
         case "visual/platform.css":
         case "visual/decode.css":
         case "visual/decode-visual.js":
+        case "visual/dust-basemap.js":
+        case "visual/land.js":
         case "visual/reveal.js":
         case "assets/fonts/instrument-sans.woff2":
           await route.fulfill({ path: fileURLToPath(new URL(path, web)) });
@@ -113,7 +117,7 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
               await page.goto("http://earthpulse.test/decode.html");
               await page.addStyleTag({ url: "/visual/decode.css" });
               const snapshot = { ...fixture(rows, cols), caseId: dustCaseId };
-              await page.evaluate(async ({ snapshot, direction, zoom, grouped }) => {
+              await page.evaluate(async ({ snapshot, direction, zoom, grouped, bounds }) => {
                 const { mountDecodeVisual } = await import("/visual/decode-visual.js");
                 const grid = document.querySelector("#decode-grid");
                 const rtl = direction === "rtl";
@@ -154,7 +158,7 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
                 const mount = mountDecodeVisual(document.querySelector("#decode-visual"), {
                   getState: () => ({ ...snapshot, phase: "reveal" }),
                   subscribe: () => () => {},
-                }, { t: (key) => key });
+                }, { t: (key) => key, geography: { caseId: snapshot.caseId, projection: "plate-carree", bounds } });
                 if (zoom === 100 && !grouped) {
                   const evidence = document.createElement("section");
                   stage.after(evidence);
@@ -164,7 +168,7 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
                     throw new Error("Test Reveal failed to mount");
                   }
                 }
-              }, { snapshot, direction, zoom, grouped });
+              }, { snapshot, direction, zoom, grouped, bounds: dustBounds });
 
               const first = page.locator(".dg-cell").first();
               await page.evaluate(() => document.fonts.ready.then(() => {}));
@@ -175,6 +179,7 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
                 const visual = document.querySelector("#decode-visual");
                 const svg = visual.querySelector("svg");
                 const matrix = svg.getScreenCTM();
+                const coastline = svg.querySelector(".dust-basemap-land");
                 const { width: cols, height: rows } = svg.viewBox.baseVal;
                 const viewport = svg.getBoundingClientRect();
                 const cornerError = Math.max(...[
@@ -200,13 +205,23 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
                 }));
                 const west = buttons[0].getBoundingClientRect();
                 const east = buttons[1].getBoundingClientRect();
+                // Cairo and central Sahara must fall in the land polygon. A point
+                // south of Crete and one off the Canary Islands must be in water.
+                const landmarks = [[31.3, 30.1, true], [15, 25, true], [22, 34, false], [-19, 30, false]];
+                const localFromScreen = coastline.getScreenCTM().inverse();
+                const coastlineAligned = landmarks.every(([lon, lat, isLand]) => {
+                  const { x, y } = projectPlateCarree({ lon, lat }, bounds, { rows, cols });
+                  const local = new DOMPoint(x, y).matrixTransform(matrix).matrixTransform(localFromScreen);
+                  return coastline.isPointInFill(local) === isLand;
+                });
                 return {
                   maxEdgeError,
                   cornerError,
                   noOverflow: document.documentElement.scrollWidth === innerWidth,
                   direction: getComputedStyle(buttons[0]).direction,
                   westToEast: west.left < east.left && matrix.a > 0,
-                  pointerTransparent: [visual, svg, ...svgCells, ...svg.querySelectorAll("text")]
+                  coastlineAligned,
+                  pointerTransparent: [visual, svg, coastline, ...svgCells, ...svg.querySelectorAll("text")]
                     .every((node) => getComputedStyle(node).pointerEvents === "none"),
                   inert: visual.inert && visual.getAttribute("aria-hidden") === "true" && svg.getAttribute("focusable") === "false",
                   hit: document.elementFromPoint(west.x + west.width / 2, west.y + west.height / 2) === buttons[0],
@@ -217,7 +232,7 @@ test("Test data: browser grid buttons align with the SVG in both directions and 
               assert.ok(audit.maxEdgeError <= 0.5, `${scenario}: largest edge error ${audit.maxEdgeError}px`);
               assert.ok(audit.cornerError <= 0.5, `${scenario}: dust corner projection error ${audit.cornerError}px`);
               assert.equal(audit.direction, direction, scenario);
-              for (const check of ["noOverflow", "westToEast", "pointerTransparent", "inert", "hit"]) {
+              for (const check of ["noOverflow", "westToEast", "coastlineAligned", "pointerTransparent", "inert", "hit"]) {
                 assert.ok(audit[check], `${scenario}: ${check}`);
               }
 
@@ -527,6 +542,32 @@ test("Test data: a null or out-of-bounds playback cell clears the mounted highli
   dispose();
 });
 
+test("Test data: mounted playback follows resolved activeCell without repainting transport ticks", () => {
+  const { highlight, update, dispose } = mountPlaybackFixture({
+    ...quickPlayback, activeCell: [0, 1],
+  });
+  const [first] = highlight.children;
+  assert.equal(first.attributes.x, "1.08");
+  assert.equal(first.attributes.y, "0.08");
+
+  update({ ...quickPlayback, activeCell: [0, 1] });
+  assert.equal(highlight.children[0], first);
+  update({ ...quickPlayback, planRevision: 2, activeCell: [0, 1] });
+  assert.notEqual(highlight.children[0], first);
+  update({ ...quickPlayback, planRevision: 2, activeCell: [2, 3] });
+  assert.equal(highlight.children[0].attributes.x, "3.08");
+  assert.equal(highlight.children[0].attributes.y, "2.08");
+  update({ ...quickPlayback, planRevision: 2, activeCell: null });
+  assert.equal(highlight.childElementCount, 0);
+  update({ ...quickPlayback, planRevision: 2, activeCell: [8, 9] });
+  assert.equal(highlight.childElementCount, 0);
+  update({ ...quickPlayback, planRevision: 2, activeCell: [0, 0] });
+  assert.equal(highlight.childElementCount, 1);
+  update({ ...quickPlayback, planRevision: 2 });
+  assert.equal(highlight.childElementCount, 0);
+  dispose();
+});
+
 test("Plate Carree maps the production dust bounds into Quick and Advanced SVG coordinates", () => {
   for (const grid of [{ cols: 4, rows: 3 }, { cols: 8, rows: 6 }]) {
     const { cols, rows } = grid;
@@ -540,6 +581,65 @@ test("Plate Carree maps the production dust bounds into Quick and Advanced SVG c
     assert.deepEqual(project(-20 + 35 / cols, 45 - 15 / rows), { x: 0.5, y: 0.5 });
     assert.deepEqual(project(-37.5, 52.5), { x: -cols / 4, y: -rows / 4 });
   }
+});
+
+test("the Natural Earth basemap reprojects the existing Atlas path to the requested viewport", () => {
+  const svg = new Element("svg");
+  const path = drawDustMapBase(svg, dustBounds);
+  assert.deepEqual(svg.children, [path]);
+  assert.equal(path.name, "path");
+  assert.equal(path.attributes.d, land.fires);
+  assert.equal(path.attributes["pointer-events"], "none");
+  assert.equal(path.attributes["vector-effect"], "non-scaling-stroke");
+
+  const [sx, skewY, skewX, sy, tx, ty] = path.attributes.transform.slice(7, -1).split(" ").map(Number);
+  assert.equal(skewX, 0);
+  assert.equal(skewY, 0);
+  const x = lon => sx * (48 + (lon - 13) * 612 / 29) + tx;
+  const y = lat => sy * (27 + (54 - lat) * 288 / 16) + ty;
+  for (const [lon, lat, expectedX, expectedY] of [[-20, 45, 0, 0], [50, 15, 1, 1], [15, 30, 0.5, 0.5]]) {
+    assert.ok(Math.abs(x(lon) - expectedX) < 1e-12);
+    assert.ok(Math.abs(y(lat) - expectedY) < 1e-12);
+  }
+  for (const bounds of [null, { ...dustBounds, west: Infinity }, { ...dustBounds, north: 15 },
+    { ...dustBounds, east: 181 }, { ...dustBounds, west: 55 }]) {
+    assert.equal(drawDustMapBase(svg, bounds), null);
+  }
+  assert.deepEqual(svg.children, [path]);
+});
+
+test("the Decode coastline matches its verified case and keeps its footprint between levels", () => {
+  const root = new Element("div");
+  const quick = { ...guardedDiscovery(3, 4), caseId: dustCaseId, level: "quick", planRevision: 1 };
+  let update;
+  const mount = mountDecodeVisual(root, {
+    getState: () => quick,
+    subscribe(listener) {
+      update = listener;
+      return () => {};
+    },
+  }, { t: key => key, geography: { caseId: dustCaseId, bounds: dustBounds, projection: "plate-carree" } });
+  const [svg] = root.children;
+  const [geography, grid] = svg.children;
+  const [path] = geography.children;
+  assert.equal(path.attributes.class, "dust-basemap-land");
+  assert.equal(geography.attributes.transform, "scale(4 3)");
+  const [firstCell] = grid.children;
+  update({ ...quick, planRevision: 2 });
+  assert.equal(grid.children[0], firstCell);
+
+  update({ ...guardedDiscovery(6, 8), caseId: dustCaseId, level: "advanced" });
+  assert.equal(geography.children[0], path);
+  assert.equal(geography.attributes.transform, "scale(8 6)");
+  assert.equal(grid.childElementCount, 48);
+
+  update({ ...quick, caseId: "unrelated-fixture" });
+  assert.equal(geography.childElementCount, 0);
+  update(quick);
+  assert.equal(geography.childElementCount, 1);
+  assert.equal(geography.attributes.transform, "scale(4 3)");
+  mount.dispose();
+  assert.equal(root.childElementCount, 0);
 });
 
 test("Test data: the legacy mount leaves geography empty without a verified source across case changes", () => {
