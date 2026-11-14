@@ -1,0 +1,155 @@
+.decode-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .375rem .75rem;
+  margin: 0;
+  padding-inline-start: 1.5rem;
+  color: var(--sub);
+}
+
+.decode-progress li {
+  padding-inline-end: .75rem;
+}
+
+.decode-progress .decode-progress-complete {
+  color: var(--ink);
+}
+
+.decode-progress [aria-current="step"] {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: .25em;
+}
+
+#decode-stage {
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  background: var(--panel);
+}
+
+#decode-visual {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Cell markers must paint over the opaque background of pressed cells. */
+#decode-visual:has(.decode-reveal-markers, .decode-map-highlight rect) {
+  z-index: 1;
+}
+
+#decode-visual .decode-map {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+#decode-visual .decode-map-geography {
+  fill: none;
+  stroke: var(--sub);
+  opacity: .45;
+}
+
+#decode-visual .decode-map-geography path {
+  vector-effect: non-scaling-stroke;
+}
+
+#decode-visual .decode-map-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+/* A static outline also serves the reduced-motion presentation. */
+#decode-visual .decode-map-highlight {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+#decode-grid {
+  position: relative;
+  direction: ltr;
+}
+
+/* Start at a 4:3 extent and let the equal-height rows grow for wrapped labels. */
+#decode-grid[role="grid"]:has(> [role="row"]),
+#decode-grid[role="grid"] > [role="rowgroup"]:has(> [role="row"]) {
+  display: grid;
+  grid-auto-rows: 1fr;
+  min-block-size: 75cqi;
+}
+
+#decode-grid [role="row"] {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+#decode-grid [role="gridcell"] {
+  display: grid;
+  min-inline-size: 0;
+}
+
+#decode-grid .dg-cell {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: clamp(2.75rem, 8vw, 5rem);
+  padding: .25rem;
+  overflow-wrap: anywhere;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+[dir="rtl"] #decode-grid .dg-cell,
+#decode-grid[dir="rtl"] .dg-cell {
+  direction: rtl;
+}
+
+#decode-grid .dg-cell[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--panel);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+#decode-grid .dg-cell:active {
+  background: var(--line);
+}
+
+#decode-grid .dg-cell:focus-visible {
+  outline: 2px solid #ffe2a7;
+  outline-offset: -4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #decode-visual .decode-map,
+  #decode-grid .dg-cell,
+  .decode-progress li {
+    animation: none;
+    transition: none;
+  }
+}
+
+.decode-reveal-markers {
+  pointer-events: none;
+  font-size: .65px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: .045px;
+}
+
+.decode-reveal-correct { fill: var(--accent); }
+.decode-reveal-incorrect { fill: #ffaea6; }
+.decode-reveal-missed { fill: #ffe2a7; }
+
+.decode-reveal-labels {
+  padding-inline-start: 1.5rem;
+  overflow-wrap: anywhere;
+}

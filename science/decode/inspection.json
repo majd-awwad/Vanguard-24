@@ -1,0 +1,270 @@
+{
+  "source_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M08/D19/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+  "downloaded_file": "raw/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+  "bytes": 121678028,
+  "sha256": "091ab5cdfdf8f68983283d1f3909014258d75738d499bf44a5e5d87e75cb87db",
+  "file_format": "NETCDF4",
+  "global_attributes": {
+    "Contact": "http://gmao.gsfc.nasa.gov",
+    "Institution": "NASA Global Modeling and Assimilation Office",
+    "History": "Original file generated: Wed Aug 20 02:09:25 2025 GMT",
+    "Filename": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+    "Comment": "GMAO filename: f5295_fp.tavg3_2d_aer_Nx.20250819_1930z.nc4",
+    "Source": "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp",
+    "Conventions": "CF-1",
+    "Title": "GEOS FP (Forward Processing)",
+    "References": "http://gmao.gsfc.nasa.gov",
+    "Format": "NetCDF-4/HDF-5",
+    "SpatialCoverage": "global",
+    "VersionID": "5.29.5",
+    "TemporalRange": "2023-02-07 - ongoing",
+    "ShortName": "DFPT3NXAER",
+    "RangeBeginningDate": "2025-08-19",
+    "RangeBeginningTime": "18:00:00.000000",
+    "RangeEndingDate": "2025-08-19",
+    "RangeEndingTime": "21:00:00.000000",
+    "GranuleID": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+    "ProductionDateTime": "Original file generated: Wed Aug 20 02:09:25 2025 GMT",
+    "LongName": "GEOS FP 2d time-averaged primary aerosol diagnostics",
+    "SouthernmostLatitude": "-90.0",
+    "NorthernmostLatitude": "90.0",
+    "WesternmostLongitude": "-180.0",
+    "EasternmostLongitude": "179.6875",
+    "LatitudeResolution": "0.25",
+    "LongitudeResolution": "0.3125",
+    "DataResolution": "0.25 x 0.3125"
+  },
+  "dimensions": {
+    "lat": 721,
+    "lon": 1152,
+    "time": 1
+  },
+  "all_variables": [
+    "lon",
+    "lat",
+    "time",
+    "BCANGSTR",
+    "BCCMASS",
+    "BCEXTTAU",
+    "BCFLUXU",
+    "BCFLUXV",
+    "BCSCATAU",
+    "BCSMASS",
+    "DMSCMASS",
+    "DMSSMASS",
+    "DUANGSTR",
+    "DUCMASS",
+    "DUCMASS25",
+    "DUEXTT25",
+    "DUEXTTAU",
+    "DUFLUXU",
+    "DUFLUXV",
+    "DUSCAT25",
+    "DUSCATAU",
+    "DUSMASS",
+    "DUSMASS25",
+    "HNO3CMASS",
+    "HNO3SMASS",
+    "NH3CMASS",
+    "NH3SMASS",
+    "NH4CMASS",
+    "NH4SMASS",
+    "NIANGSTR",
+    "NICMASS",
+    "NICMASS25",
+    "NIEXTTAU",
+    "NIEXTTFM",
+    "NIFLUXU",
+    "NIFLUXV",
+    "NISCATAU",
+    "NISCATFM",
+    "NISMASS",
+    "NISMASS25",
+    "OCANGSTR",
+    "OCCMASS",
+    "OCEXTTAU",
+    "OCFLUXU",
+    "OCFLUXV",
+    "OCSCATAU",
+    "OCSMASS",
+    "SO2CMASS",
+    "SO2SMASS",
+    "SO4CMASS",
+    "SO4SMASS",
+    "SSANGSTR",
+    "SSCMASS",
+    "SSCMASS25",
+    "SSEXTT25",
+    "SSEXTTAU",
+    "SSFLUXU",
+    "SSFLUXV",
+    "SSSCAT25",
+    "SSSCATAU",
+    "SSSMASS",
+    "SSSMASS25",
+    "SUANGSTR",
+    "SUEXTTAU",
+    "SUFLUXU",
+    "SUFLUXV",
+    "SUSCATAU",
+    "TOTANGSTR",
+    "TOTEXTTAU",
+    "TOTSCATAU",
+    "TAITIME"
+  ],
+  "variable": {
+    "name": "DUEXTTAU",
+    "dtype": "float32",
+    "dimensions": [
+      "time",
+      "lat",
+      "lon"
+    ],
+    "attributes": {
+      "_FillValue": 999999986991104.0,
+      "add_offset": 0.0,
+      "fmissing_value": 999999986991104.0,
+      "long_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+      "missing_value": 999999986991104.0,
+      "scale_factor": 1.0,
+      "standard_name": "Dust Extinction AOT [550 nm] __ENSEMBLE__",
+      "units": "1",
+      "vmax": 999999986991104.0,
+      "vmin": -999999986991104.0,
+      "valid_range": [
+        -999999986991104.0,
+        999999986991104.0
+      ]
+    },
+    "chunking": [
+      1,
+      721,
+      1152
+    ],
+    "filters": {
+      "zlib": true,
+      "szip": false,
+      "zstd": false,
+      "bzip2": false,
+      "blosc": false,
+      "shuffle": true,
+      "complevel": 2,
+      "fletcher32": false
+    }
+  },
+  "coordinates": {
+    "time": {
+      "values": [
+        0
+      ],
+      "timestamps_utc": [
+        "2025-08-19T19:30:00Z"
+      ],
+      "attributes": {
+        "begin_date": 20250819,
+        "begin_time": 193000,
+        "long_name": "time",
+        "time_increment": 30000,
+        "units": "minutes since 2025-08-19 19:30:00"
+      },
+      "calendar_note": "No calendar attribute; num2date uses standard Gregorian."
+    },
+    "lat": {
+      "count": 721,
+      "first": -90.0,
+      "last": 90.0,
+      "step": 0.25,
+      "attributes": {
+        "long_name": "latitude",
+        "units": "degrees_north"
+      }
+    },
+    "lon": {
+      "count": 1152,
+      "first": -180.0,
+      "last": 179.6875,
+      "step": 0.3125,
+      "attributes": {
+        "long_name": "longitude",
+        "units": "degrees_east"
+      }
+    }
+  },
+  "global_statistics": {
+    "shape": [
+      1,
+      721,
+      1152
+    ],
+    "valid_count": 830592,
+    "missing_or_nonfinite_count": 0,
+    "negative_count": 0,
+    "zero_count": 0,
+    "min": 0.0009364131838083267,
+    "max": 2.195476531982422,
+    "mean": 0.021258588959897358,
+    "minimum_at": {
+      "lat": -5.25,
+      "lon": 141.25
+    },
+    "maximum_at": {
+      "lat": 26.25,
+      "lon": -2.8125
+    }
+  },
+  "regional_subset": {
+    "file": "derived/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.DUEXTTAU.N15_N45.W20_E50.nc4",
+    "kind": "Locally cropped genuine NASA values; not an official NASA subset download",
+    "bounds_of_retained_coordinate_centers": {
+      "south": 15,
+      "north": 45,
+      "west": -20,
+      "east": 50
+    },
+    "source_zero_based_indices_inclusive": {
+      "time": [
+        0,
+        0
+      ],
+      "lat": [
+        420,
+        540
+      ],
+      "lon": [
+        512,
+        736
+      ]
+    },
+    "statistics": {
+      "shape": [
+        1,
+        121,
+        225
+      ],
+      "valid_count": 27225,
+      "missing_or_nonfinite_count": 0,
+      "negative_count": 0,
+      "zero_count": 0,
+      "min": 0.0020747664384543896,
+      "max": 2.195476531982422,
+      "mean": 0.17769721846016684,
+      "minimum_at": {
+        "lat": 34.5,
+        "lon": -10.3125
+      },
+      "maximum_at": {
+        "lat": 26.25,
+        "lon": -2.8125
+      }
+    },
+    "sha256": "7b96accc8fda7341a08e4d6ddda2fa98bbddbf71d16fe458cdc274a756663118",
+    "bytes": 89061,
+    "lossless_readback_verified": true
+  },
+  "software": {
+    "netCDF4": "1.7.5.1.post1",
+    "numpy": "2.5.4",
+    "netcdf_c": "4.10.1",
+    "hdf5": "2.2.0"
+  }
+}

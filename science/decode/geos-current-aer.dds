@@ -1,0 +1,733 @@
+Dataset {
+  Grid {
+    ARRAY:
+      Float32 duangstr[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } duangstr;
+  Grid {
+    ARRAY:
+      Float32 sufluxv[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } sufluxv;
+  Grid {
+    ARRAY:
+      Float32 so2cmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } so2cmass;
+  Grid {
+    ARRAY:
+      Float32 ssscat25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssscat25;
+  Grid {
+    ARRAY:
+      Float32 nifluxu[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nifluxu;
+  Grid {
+    ARRAY:
+      Float32 nismass25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nismass25;
+  Grid {
+    ARRAY:
+      Float32 niangstr[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } niangstr;
+  Grid {
+    ARRAY:
+      Float32 dustexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } dustexttau;
+  Grid {
+    ARRAY:
+      Float32 duextt25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } duextt25;
+  Grid {
+    ARRAY:
+      Float32 sustexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } sustexttau;
+  Grid {
+    ARRAY:
+      Float32 suangstr[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } suangstr;
+  Grid {
+    ARRAY:
+      Float32 bcsmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bcsmass;
+  Grid {
+    ARRAY:
+      Float32 totexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } totexttau;
+  Grid {
+    ARRAY:
+      Float32 niexttfm[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } niexttfm;
+  Grid {
+    ARRAY:
+      Float32 ssfluxv[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssfluxv;
+  Grid {
+    ARRAY:
+      Float32 totscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } totscatau;
+  Grid {
+    ARRAY:
+      Float32 sustscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } sustscatau;
+  Grid {
+    ARRAY:
+      Float32 ssextt25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssextt25;
+  Grid {
+    ARRAY:
+      Float32 ssscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssscatau;
+  Grid {
+    ARRAY:
+      Float32 dufluxu[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } dufluxu;
+  Grid {
+    ARRAY:
+      Float32 occmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } occmass;
+  Grid {
+    ARRAY:
+      Float32 dufluxv[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } dufluxv;
+  Grid {
+    ARRAY:
+      Float32 brexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brexttau;
+  Grid {
+    ARRAY:
+      Float32 totstexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } totstexttau;
+  Grid {
+    ARRAY:
+      Float32 so4cmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } so4cmass;
+  Grid {
+    ARRAY:
+      Float32 hno3smass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } hno3smass;
+  Grid {
+    ARRAY:
+      Float32 ssexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssexttau;
+  Grid {
+    ARRAY:
+      Float32 ocstexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ocstexttau;
+  Grid {
+    ARRAY:
+      Float32 bccmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bccmass;
+  Grid {
+    ARRAY:
+      Float32 sssmass25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } sssmass25;
+  Grid {
+    ARRAY:
+      Float32 brangstr[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brangstr;
+  Grid {
+    ARRAY:
+      Float32 nh3cmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nh3cmass;
+  Grid {
+    ARRAY:
+      Float32 ocstscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ocstscatau;
+  Grid {
+    ARRAY:
+      Float32 sscmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } sscmass;
+  Grid {
+    ARRAY:
+      Float32 pm25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } pm25;
+  Grid {
+    ARRAY:
+      Float32 dmscmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } dmscmass;
+  Grid {
+    ARRAY:
+      Float32 nh4cmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nh4cmass;
+  Grid {
+    ARRAY:
+      Float32 bcexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bcexttau;
+  Grid {
+    ARRAY:
+      Float32 brscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brscatau;
+  Grid {
+    ARRAY:
+      Float32 dustscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } dustscatau;
+  Grid {
+    ARRAY:
+      Float32 hno3cmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } hno3cmass;
+  Grid {
+    ARRAY:
+      Float32 dmssmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } dmssmass;
+  Grid {
+    ARRAY:
+      Float32 ocfluxv[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ocfluxv;
+  Grid {
+    ARRAY:
+      Float32 bcfluxv[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bcfluxv;
+  Grid {
+    ARRAY:
+      Float32 pm[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } pm;
+  Grid {
+    ARRAY:
+      Float32 ssstscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssstscatau;
+  Grid {
+    ARRAY:
+      Float32 duscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } duscatau;
+  Grid {
+    ARRAY:
+      Float32 niscatfm[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } niscatfm;
+  Grid {
+    ARRAY:
+      Float32 sssmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } sssmass;
+  Grid {
+    ARRAY:
+      Float32 ssfluxu[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssfluxu;
+  Grid {
+    ARRAY:
+      Float32 nh4smass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nh4smass;
+  Grid {
+    ARRAY:
+      Float32 brstscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brstscatau;
+  Grid {
+    ARRAY:
+      Float32 nh3smass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nh3smass;
+  Grid {
+    ARRAY:
+      Float32 brfluxu[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brfluxu;
+  Grid {
+    ARRAY:
+      Float32 ocscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ocscatau;
+  Grid {
+    ARRAY:
+      Float32 brfluxv[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brfluxv;
+  Grid {
+    ARRAY:
+      Float32 niscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } niscatau;
+  Grid {
+    ARRAY:
+      Float32 ocsmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ocsmass;
+  Grid {
+    ARRAY:
+      Float32 so2smass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } so2smass;
+  Grid {
+    ARRAY:
+      Float32 nifluxv[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nifluxv;
+  Grid {
+    ARRAY:
+      Float32 totstscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } totstscatau;
+  Grid {
+    ARRAY:
+      Float32 nicmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nicmass;
+  Grid {
+    ARRAY:
+      Float32 suexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } suexttau;
+  Grid {
+    ARRAY:
+      Float32 brsmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brsmass;
+  Grid {
+    ARRAY:
+      Float32 bcangstr[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bcangstr;
+  Grid {
+    ARRAY:
+      Float32 duexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } duexttau;
+  Grid {
+    ARRAY:
+      Float32 brcmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brcmass;
+  Grid {
+    ARRAY:
+      Float32 ducmass25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ducmass25;
+  Grid {
+    ARRAY:
+      Float32 brstexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } brstexttau;
+  Grid {
+    ARRAY:
+      Float32 ocfluxu[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ocfluxu;
+  Grid {
+    ARRAY:
+      Float32 ssstexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssstexttau;
+  Grid {
+    ARRAY:
+      Float32 dusmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } dusmass;
+  Grid {
+    ARRAY:
+      Float32 bcfluxu[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bcfluxu;
+  Grid {
+    ARRAY:
+      Float32 so4smass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } so4smass;
+  Grid {
+    ARRAY:
+      Float32 totangstr[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } totangstr;
+  Grid {
+    ARRAY:
+      Float32 suscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } suscatau;
+  Grid {
+    ARRAY:
+      Float32 ocangstr[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ocangstr;
+  Grid {
+    ARRAY:
+      Float32 ssangstr[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ssangstr;
+  Grid {
+    ARRAY:
+      Float32 dusmass25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } dusmass25;
+  Grid {
+    ARRAY:
+      Float32 nicmass25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nicmass25;
+  Grid {
+    ARRAY:
+      Float32 duscat25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } duscat25;
+  Grid {
+    ARRAY:
+      Float32 nismass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } nismass;
+  Grid {
+    ARRAY:
+      Float32 bcscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bcscatau;
+  Grid {
+    ARRAY:
+      Float32 taitime[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } taitime;
+  Grid {
+    ARRAY:
+      Float32 ocexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ocexttau;
+  Grid {
+    ARRAY:
+      Float32 niexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } niexttau;
+  Grid {
+    ARRAY:
+      Float32 ducmass[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } ducmass;
+  Grid {
+    ARRAY:
+      Float32 bcstexttau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bcstexttau;
+  Grid {
+    ARRAY:
+      Float32 bcstscatau[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } bcstscatau;
+  Grid {
+    ARRAY:
+      Float32 sufluxu[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } sufluxu;
+  Grid {
+    ARRAY:
+      Float32 sscmass25[time = 2083][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 2083];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } sscmass25;
+  Float64 time[time = 2083];
+  Float64 lat[lat = 721];
+  Float64 lon[lon = 1152];
+} /GEOS-5/fp/0.25_deg/assim/tavg3_2d_aer_Nx;

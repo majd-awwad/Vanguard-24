@@ -1,0 +1,1116 @@
+{
+  "case_id": "dust-geos-fp-20250819-1930-north-africa-med",
+  "case_path": "web/assets/decode/data/dust-geos-fp-20250819-1930-north-africa-med.json",
+  "case_sha256_lf": "7f71da5fe3b10af60e6e78f169d2a68578f67d5d33c4717b1bc047023b5ca582",
+  "source": {
+    "path": "science/decode/raw/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+    "url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M08/D19/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+    "sha256": "091ab5cdfdf8f68983283d1f3909014258d75738d499bf44a5e5d87e75cb87db",
+    "granule": "GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+    "variable": "DUEXTTAU",
+    "unit": "1",
+    "timestamp_utc": "2025-08-19T19:30:00Z",
+    "interval_utc": {
+      "start": "2025-08-19T18:00:00Z",
+      "end": "2025-08-19T21:00:00Z"
+    }
+  },
+  "bounds": {
+    "north": 45,
+    "south": 15,
+    "east": 50,
+    "west": -20
+  },
+  "visual_relation": "RELATED_CONTEXT",
+  "coordinate_note": "Source declares degrees_north/degrees_east, not an explicit datum. Case geometry follows the Decode contract's WGS84 geographic convention; no datum transform applied.",
+  "native_footprint_assumption": "Regular native cells inferred from center +/- half spacing; clipped to each target rectangle. Piecewise-constant AOT on a sphere.",
+  "advanced_aggregation": "spherical-area-weighted mean of DUEXTTAU native-cell overlaps; any missing or invalid contributor makes the cell missing",
+  "quick_aggregation": "mean of 2x2 advanced cells; any missing child makes the parent missing",
+  "threshold": {
+    "value": 0.2,
+    "unit": "1",
+    "rule": "value >= threshold",
+    "rationale": "Fixed educational cutoff for appreciable dust-column extinction at 550 nm, chosen before aggregation; not a NASA dust-event, visibility, or health standard. Optical depth 0.20 corresponds to exp(-0.20) direct-beam transmission through the dust column for a vertical path (about 18.1% attenuation).",
+    "context_url": "https://science.nasa.gov/earth/earth-observatory/global-maps/aerosol-optical-depth/"
+  },
+  "levels": {
+    "quick": {
+      "rows": 3,
+      "cols": 4,
+      "positive_cells": 5,
+      "missing_cells": 0,
+      "min": 0.0183999006784819,
+      "max": 0.35246955030020244
+    },
+    "advanced": {
+      "rows": 6,
+      "cols": 8,
+      "positive_cells": 18,
+      "missing_cells": 0,
+      "min": 0.007107787772447903,
+      "max": 0.5760480272364584
+    }
+  },
+  "advanced_cell_evidence": [
+    {
+      "row": 0,
+      "col": 0,
+      "bounds": {
+        "north": 45,
+        "south": 40,
+        "east": -11.25,
+        "west": -20.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        520,
+        540
+      ],
+      "source_lon_indices_inclusive": [
+        512,
+        540
+      ],
+      "overlap_solid_angle_sr": 0.009822586504762894,
+      "aot_times_solid_angle": 0.0001083032255426373
+    },
+    {
+      "row": 0,
+      "col": 1,
+      "bounds": {
+        "north": 45,
+        "south": 40,
+        "east": -2.5,
+        "west": -11.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        520,
+        540
+      ],
+      "source_lon_indices_inclusive": [
+        540,
+        568
+      ],
+      "overlap_solid_angle_sr": 0.009822586504762894,
+      "aot_times_solid_angle": 0.0002204685598038415
+    },
+    {
+      "row": 0,
+      "col": 2,
+      "bounds": {
+        "north": 45,
+        "south": 40,
+        "east": 6.25,
+        "west": -2.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        520,
+        540
+      ],
+      "source_lon_indices_inclusive": [
+        568,
+        596
+      ],
+      "overlap_solid_angle_sr": 0.009822586504762894,
+      "aot_times_solid_angle": 0.0007097926824790714
+    },
+    {
+      "row": 0,
+      "col": 3,
+      "bounds": {
+        "north": 45,
+        "south": 40,
+        "east": 15.0,
+        "west": 6.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        520,
+        540
+      ],
+      "source_lon_indices_inclusive": [
+        596,
+        624
+      ],
+      "overlap_solid_angle_sr": 0.009822586504762894,
+      "aot_times_solid_angle": 0.0008156827852979861
+    },
+    {
+      "row": 0,
+      "col": 4,
+      "bounds": {
+        "north": 45,
+        "south": 40,
+        "east": 23.75,
+        "west": 15.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        520,
+        540
+      ],
+      "source_lon_indices_inclusive": [
+        624,
+        652
+      ],
+      "overlap_solid_angle_sr": 0.009822586504762894,
+      "aot_times_solid_angle": 0.00019577757759743346
+    },
+    {
+      "row": 0,
+      "col": 5,
+      "bounds": {
+        "north": 45,
+        "south": 40,
+        "east": 32.5,
+        "west": 23.75
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        520,
+        540
+      ],
+      "source_lon_indices_inclusive": [
+        652,
+        680
+      ],
+      "overlap_solid_angle_sr": 0.009822586504762894,
+      "aot_times_solid_angle": 0.0001905002494687883
+    },
+    {
+      "row": 0,
+      "col": 6,
+      "bounds": {
+        "north": 45,
+        "south": 40,
+        "east": 41.25,
+        "west": 32.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        520,
+        540
+      ],
+      "source_lon_indices_inclusive": [
+        680,
+        708
+      ],
+      "overlap_solid_angle_sr": 0.009822586504762894,
+      "aot_times_solid_angle": 0.0002582788648701547
+    },
+    {
+      "row": 0,
+      "col": 7,
+      "bounds": {
+        "north": 45,
+        "south": 40,
+        "east": 50.0,
+        "west": 41.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        520,
+        540
+      ],
+      "source_lon_indices_inclusive": [
+        708,
+        736
+      ],
+      "overlap_solid_angle_sr": 0.009822586504762894,
+      "aot_times_solid_angle": 0.0004052300917941933
+    },
+    {
+      "row": 1,
+      "col": 0,
+      "bounds": {
+        "north": 40,
+        "south": 35,
+        "east": -11.25,
+        "west": -20.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        500,
+        520
+      ],
+      "source_lon_indices_inclusive": [
+        512,
+        540
+      ],
+      "overlap_solid_angle_sr": 0.010569674971387546,
+      "aot_times_solid_angle": 7.512700652037704e-05
+    },
+    {
+      "row": 1,
+      "col": 1,
+      "bounds": {
+        "north": 40,
+        "south": 35,
+        "east": -2.5,
+        "west": -11.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        500,
+        520
+      ],
+      "source_lon_indices_inclusive": [
+        540,
+        568
+      ],
+      "overlap_solid_angle_sr": 0.010569674971387546,
+      "aot_times_solid_angle": 0.0003490192893507951
+    },
+    {
+      "row": 1,
+      "col": 2,
+      "bounds": {
+        "north": 40,
+        "south": 35,
+        "east": 6.25,
+        "west": -2.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        500,
+        520
+      ],
+      "source_lon_indices_inclusive": [
+        568,
+        596
+      ],
+      "overlap_solid_angle_sr": 0.010569674971387546,
+      "aot_times_solid_angle": 0.0013928442180819768
+    },
+    {
+      "row": 1,
+      "col": 3,
+      "bounds": {
+        "north": 40,
+        "south": 35,
+        "east": 15.0,
+        "west": 6.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        500,
+        520
+      ],
+      "source_lon_indices_inclusive": [
+        596,
+        624
+      ],
+      "overlap_solid_angle_sr": 0.010569674971387546,
+      "aot_times_solid_angle": 0.0014535920753391265
+    },
+    {
+      "row": 1,
+      "col": 4,
+      "bounds": {
+        "north": 40,
+        "south": 35,
+        "east": 23.75,
+        "west": 15.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        500,
+        520
+      ],
+      "source_lon_indices_inclusive": [
+        624,
+        652
+      ],
+      "overlap_solid_angle_sr": 0.010569674971387546,
+      "aot_times_solid_angle": 0.0002565464764233751
+    },
+    {
+      "row": 1,
+      "col": 5,
+      "bounds": {
+        "north": 40,
+        "south": 35,
+        "east": 32.5,
+        "west": 23.75
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        500,
+        520
+      ],
+      "source_lon_indices_inclusive": [
+        652,
+        680
+      ],
+      "overlap_solid_angle_sr": 0.010569674971387546,
+      "aot_times_solid_angle": 0.00021046038730072848
+    },
+    {
+      "row": 1,
+      "col": 6,
+      "bounds": {
+        "north": 40,
+        "south": 35,
+        "east": 41.25,
+        "west": 32.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        500,
+        520
+      ],
+      "source_lon_indices_inclusive": [
+        680,
+        708
+      ],
+      "overlap_solid_angle_sr": 0.010569674971387546,
+      "aot_times_solid_angle": 0.0004869842234130372
+    },
+    {
+      "row": 1,
+      "col": 7,
+      "bounds": {
+        "north": 40,
+        "south": 35,
+        "east": 50.0,
+        "west": 41.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        500,
+        520
+      ],
+      "source_lon_indices_inclusive": [
+        708,
+        736
+      ],
+      "overlap_solid_angle_sr": 0.010569674971387546,
+      "aot_times_solid_angle": 0.0011454110252003143
+    },
+    {
+      "row": 2,
+      "col": 0,
+      "bounds": {
+        "north": 35,
+        "south": 30,
+        "east": -11.25,
+        "west": -20.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        480,
+        500
+      ],
+      "source_lon_indices_inclusive": [
+        512,
+        540
+      ],
+      "overlap_solid_angle_sr": 0.011236321829335722,
+      "aot_times_solid_angle": 0.0005148791676541432
+    },
+    {
+      "row": 2,
+      "col": 1,
+      "bounds": {
+        "north": 35,
+        "south": 30,
+        "east": -2.5,
+        "west": -11.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        480,
+        500
+      ],
+      "source_lon_indices_inclusive": [
+        540,
+        568
+      ],
+      "overlap_solid_angle_sr": 0.011236321829335722,
+      "aot_times_solid_angle": 0.0011142042927006393
+    },
+    {
+      "row": 2,
+      "col": 2,
+      "bounds": {
+        "north": 35,
+        "south": 30,
+        "east": 6.25,
+        "west": -2.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        480,
+        500
+      ],
+      "source_lon_indices_inclusive": [
+        568,
+        596
+      ],
+      "overlap_solid_angle_sr": 0.011236321829335722,
+      "aot_times_solid_angle": 0.0013248845755502083
+    },
+    {
+      "row": 2,
+      "col": 3,
+      "bounds": {
+        "north": 35,
+        "south": 30,
+        "east": 15.0,
+        "west": 6.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        480,
+        500
+      ],
+      "source_lon_indices_inclusive": [
+        596,
+        624
+      ],
+      "overlap_solid_angle_sr": 0.011236321829335722,
+      "aot_times_solid_angle": 0.00142795326316409
+    },
+    {
+      "row": 2,
+      "col": 4,
+      "bounds": {
+        "north": 35,
+        "south": 30,
+        "east": 23.75,
+        "west": 15.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        480,
+        500
+      ],
+      "source_lon_indices_inclusive": [
+        624,
+        652
+      ],
+      "overlap_solid_angle_sr": 0.011236321829335722,
+      "aot_times_solid_angle": 0.00036670244777847267
+    },
+    {
+      "row": 2,
+      "col": 5,
+      "bounds": {
+        "north": 35,
+        "south": 30,
+        "east": 32.5,
+        "west": 23.75
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        480,
+        500
+      ],
+      "source_lon_indices_inclusive": [
+        652,
+        680
+      ],
+      "overlap_solid_angle_sr": 0.011236321829335722,
+      "aot_times_solid_angle": 0.0004640765289974305
+    },
+    {
+      "row": 2,
+      "col": 6,
+      "bounds": {
+        "north": 35,
+        "south": 30,
+        "east": 41.25,
+        "west": 32.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        480,
+        500
+      ],
+      "source_lon_indices_inclusive": [
+        680,
+        708
+      ],
+      "overlap_solid_angle_sr": 0.011236321829335722,
+      "aot_times_solid_angle": 0.0008616212057248555
+    },
+    {
+      "row": 2,
+      "col": 7,
+      "bounds": {
+        "north": 35,
+        "south": 30,
+        "east": 50.0,
+        "west": 41.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        480,
+        500
+      ],
+      "source_lon_indices_inclusive": [
+        708,
+        736
+      ],
+      "overlap_solid_angle_sr": 0.011236321829335722,
+      "aot_times_solid_angle": 0.002670360232426486
+    },
+    {
+      "row": 3,
+      "col": 0,
+      "bounds": {
+        "north": 30,
+        "south": 25,
+        "east": -11.25,
+        "west": -20.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        460,
+        480
+      ],
+      "source_lon_indices_inclusive": [
+        512,
+        540
+      ],
+      "overlap_solid_angle_sr": 0.011817453493486018,
+      "aot_times_solid_angle": 0.003482586410387385
+    },
+    {
+      "row": 3,
+      "col": 1,
+      "bounds": {
+        "north": 30,
+        "south": 25,
+        "east": -2.5,
+        "west": -11.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        460,
+        480
+      ],
+      "source_lon_indices_inclusive": [
+        540,
+        568
+      ],
+      "overlap_solid_angle_sr": 0.011817453493486018,
+      "aot_times_solid_angle": 0.006807420771881214
+    },
+    {
+      "row": 3,
+      "col": 2,
+      "bounds": {
+        "north": 30,
+        "south": 25,
+        "east": 6.25,
+        "west": -2.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        460,
+        480
+      ],
+      "source_lon_indices_inclusive": [
+        568,
+        596
+      ],
+      "overlap_solid_angle_sr": 0.011817453493486018,
+      "aot_times_solid_angle": 0.005950164908330209
+    },
+    {
+      "row": 3,
+      "col": 3,
+      "bounds": {
+        "north": 30,
+        "south": 25,
+        "east": 15.0,
+        "west": 6.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        460,
+        480
+      ],
+      "source_lon_indices_inclusive": [
+        596,
+        624
+      ],
+      "overlap_solid_angle_sr": 0.011817453493486018,
+      "aot_times_solid_angle": 0.0014650759551272205
+    },
+    {
+      "row": 3,
+      "col": 4,
+      "bounds": {
+        "north": 30,
+        "south": 25,
+        "east": 23.75,
+        "west": 15.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        460,
+        480
+      ],
+      "source_lon_indices_inclusive": [
+        624,
+        652
+      ],
+      "overlap_solid_angle_sr": 0.011817453493486018,
+      "aot_times_solid_angle": 0.001312748171735937
+    },
+    {
+      "row": 3,
+      "col": 5,
+      "bounds": {
+        "north": 30,
+        "south": 25,
+        "east": 32.5,
+        "west": 23.75
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        460,
+        480
+      ],
+      "source_lon_indices_inclusive": [
+        652,
+        680
+      ],
+      "overlap_solid_angle_sr": 0.011817453493486018,
+      "aot_times_solid_angle": 0.0011560398261104801
+    },
+    {
+      "row": 3,
+      "col": 6,
+      "bounds": {
+        "north": 30,
+        "south": 25,
+        "east": 41.25,
+        "west": 32.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        460,
+        480
+      ],
+      "source_lon_indices_inclusive": [
+        680,
+        708
+      ],
+      "overlap_solid_angle_sr": 0.011817453493486018,
+      "aot_times_solid_angle": 0.0022238269668840346
+    },
+    {
+      "row": 3,
+      "col": 7,
+      "bounds": {
+        "north": 30,
+        "south": 25,
+        "east": 50.0,
+        "west": 41.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        460,
+        480
+      ],
+      "source_lon_indices_inclusive": [
+        708,
+        736
+      ],
+      "overlap_solid_angle_sr": 0.011817453493486018,
+      "aot_times_solid_angle": 0.0026661726292542655
+    },
+    {
+      "row": 4,
+      "col": 0,
+      "bounds": {
+        "north": 25,
+        "south": 20,
+        "east": -11.25,
+        "west": -20.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        440,
+        460
+      ],
+      "source_lon_indices_inclusive": [
+        512,
+        540
+      ],
+      "overlap_solid_angle_sr": 0.012308647200977399,
+      "aot_times_solid_angle": 0.0043071501221264435
+    },
+    {
+      "row": 4,
+      "col": 1,
+      "bounds": {
+        "north": 25,
+        "south": 20,
+        "east": -2.5,
+        "west": -11.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        440,
+        460
+      ],
+      "source_lon_indices_inclusive": [
+        540,
+        568
+      ],
+      "overlap_solid_angle_sr": 0.012308647200977399,
+      "aot_times_solid_angle": 0.005954264462168142
+    },
+    {
+      "row": 4,
+      "col": 2,
+      "bounds": {
+        "north": 25,
+        "south": 20,
+        "east": 6.25,
+        "west": -2.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        440,
+        460
+      ],
+      "source_lon_indices_inclusive": [
+        568,
+        596
+      ],
+      "overlap_solid_angle_sr": 0.012308647200977399,
+      "aot_times_solid_angle": 0.004555304117091149
+    },
+    {
+      "row": 4,
+      "col": 3,
+      "bounds": {
+        "north": 25,
+        "south": 20,
+        "east": 15.0,
+        "west": 6.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        440,
+        460
+      ],
+      "source_lon_indices_inclusive": [
+        596,
+        624
+      ],
+      "overlap_solid_angle_sr": 0.012308647200977399,
+      "aot_times_solid_angle": 0.0029483148233891265
+    },
+    {
+      "row": 4,
+      "col": 4,
+      "bounds": {
+        "north": 25,
+        "south": 20,
+        "east": 23.75,
+        "west": 15.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        440,
+        460
+      ],
+      "source_lon_indices_inclusive": [
+        624,
+        652
+      ],
+      "overlap_solid_angle_sr": 0.012308647200977399,
+      "aot_times_solid_angle": 0.0018593542417604946
+    },
+    {
+      "row": 4,
+      "col": 5,
+      "bounds": {
+        "north": 25,
+        "south": 20,
+        "east": 32.5,
+        "west": 23.75
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        440,
+        460
+      ],
+      "source_lon_indices_inclusive": [
+        652,
+        680
+      ],
+      "overlap_solid_angle_sr": 0.012308647200977399,
+      "aot_times_solid_angle": 0.0016882483380104224
+    },
+    {
+      "row": 4,
+      "col": 6,
+      "bounds": {
+        "north": 25,
+        "south": 20,
+        "east": 41.25,
+        "west": 32.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        440,
+        460
+      ],
+      "source_lon_indices_inclusive": [
+        680,
+        708
+      ],
+      "overlap_solid_angle_sr": 0.012308647200977399,
+      "aot_times_solid_angle": 0.0048016289399369
+    },
+    {
+      "row": 4,
+      "col": 7,
+      "bounds": {
+        "north": 25,
+        "south": 20,
+        "east": 50.0,
+        "west": 41.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        440,
+        460
+      ],
+      "source_lon_indices_inclusive": [
+        708,
+        736
+      ],
+      "overlap_solid_angle_sr": 0.012308647200977399,
+      "aot_times_solid_angle": 0.0041569554127829055
+    },
+    {
+      "row": 5,
+      "col": 0,
+      "bounds": {
+        "north": 20,
+        "south": 15,
+        "east": -11.25,
+        "west": -20.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        420,
+        440
+      ],
+      "source_lon_indices_inclusive": [
+        512,
+        540
+      ],
+      "overlap_solid_angle_sr": 0.012706164671104938,
+      "aot_times_solid_angle": 0.003936963972237971
+    },
+    {
+      "row": 5,
+      "col": 1,
+      "bounds": {
+        "north": 20,
+        "south": 15,
+        "east": -2.5,
+        "west": -11.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        420,
+        440
+      ],
+      "source_lon_indices_inclusive": [
+        540,
+        568
+      ],
+      "overlap_solid_angle_sr": 0.012706164671104938,
+      "aot_times_solid_angle": 0.0024477533097585547
+    },
+    {
+      "row": 5,
+      "col": 2,
+      "bounds": {
+        "north": 20,
+        "south": 15,
+        "east": 6.25,
+        "west": -2.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        420,
+        440
+      ],
+      "source_lon_indices_inclusive": [
+        568,
+        596
+      ],
+      "overlap_solid_angle_sr": 0.012706164671104938,
+      "aot_times_solid_angle": 0.0034879527057213007
+    },
+    {
+      "row": 5,
+      "col": 3,
+      "bounds": {
+        "north": 20,
+        "south": 15,
+        "east": 15.0,
+        "west": 6.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        420,
+        440
+      ],
+      "source_lon_indices_inclusive": [
+        596,
+        624
+      ],
+      "overlap_solid_angle_sr": 0.012706164671104938,
+      "aot_times_solid_angle": 0.005484242805285646
+    },
+    {
+      "row": 5,
+      "col": 4,
+      "bounds": {
+        "north": 20,
+        "south": 15,
+        "east": 23.75,
+        "west": 15.0
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        420,
+        440
+      ],
+      "source_lon_indices_inclusive": [
+        624,
+        652
+      ],
+      "overlap_solid_angle_sr": 0.012706164671104938,
+      "aot_times_solid_angle": 0.003363838533464698
+    },
+    {
+      "row": 5,
+      "col": 5,
+      "bounds": {
+        "north": 20,
+        "south": 15,
+        "east": 32.5,
+        "west": 23.75
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        420,
+        440
+      ],
+      "source_lon_indices_inclusive": [
+        652,
+        680
+      ],
+      "overlap_solid_angle_sr": 0.012706164671104938,
+      "aot_times_solid_angle": 0.0030859742560917424
+    },
+    {
+      "row": 5,
+      "col": 6,
+      "bounds": {
+        "north": 20,
+        "south": 15,
+        "east": 41.25,
+        "west": 32.5
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        420,
+        440
+      ],
+      "source_lon_indices_inclusive": [
+        680,
+        708
+      ],
+      "overlap_solid_angle_sr": 0.012706164671104938,
+      "aot_times_solid_angle": 0.005055388824441966
+    },
+    {
+      "row": 5,
+      "col": 7,
+      "bounds": {
+        "north": 20,
+        "south": 15,
+        "east": 50.0,
+        "west": 41.25
+      },
+      "native_contributors": 609,
+      "invalid_contributors": 0,
+      "source_lat_indices_inclusive": [
+        420,
+        440
+      ],
+      "source_lon_indices_inclusive": [
+        708,
+        736
+      ],
+      "overlap_solid_angle_sr": 0.012706164671104938,
+      "aot_times_solid_angle": 0.003610846865504811
+    }
+  ],
+  "software": {
+    "netCDF4": "1.7.5.1.post1",
+    "numpy": "2.5.4"
+  }
+}

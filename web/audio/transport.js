@@ -1,5 +1,7 @@
 function webAudio() {
-  return new AudioContext();
+  const Context = globalThis.AudioContext ?? globalThis.webkitAudioContext;
+  if (!Context) throw new Error("Web Audio is unavailable.");
+  return new Context();
 }
 
 export function createTransport({
@@ -62,12 +64,14 @@ export function createTransport({
   }
 
   function scheduleTone(tone, onset) {
-      const { frequencyHz, attackS, releaseS, durationS, gain, waveform = "sine" } = tone;
-      if (onset < position - 1e-9 || onset >= limit) return;
-      const start = origin + (onset - position) / speed;
-      const end = start + Math.min(durationS, limit - onset) / speed;
-      const span = (end - start) * speed;
-      if (span < attackS + releaseS) return;
+    // Both spatial voice types use their supplied envelope; crackle durationS
+    // is per pulse, just like legacy temporal rain plans.
+    const { frequencyHz, attackS, releaseS, durationS, gain, waveform = "sine" } = tone;
+    if (onset < position - 1e-9 || onset >= limit) return;
+    const start = origin + (onset - position) / speed;
+    const end = start + Math.min(durationS, limit - onset) / speed;
+    const span = (end - start) * speed;
+    if (span < attackS + releaseS) return;
     const oscillator = context.createOscillator();
     const envelope = context.createGain();
     oscillator.type = waveform;
@@ -77,11 +81,27 @@ export function createTransport({
     envelope.gain.setValueAtTime(gain, end - releaseS / speed);
     envelope.gain.linearRampToValueAtTime(0, end);
     oscillator.connect(envelope);
-    envelope.connect(master);
+    let panner;
+    if (Number.isFinite(tone.pan) && typeof context.createStereoPanner === "function") {
+      try {
+        panner = context.createStereoPanner();
+        panner.pan.value = Math.max(-1, Math.min(1, tone.pan));
+      } catch {
+        panner?.disconnect();
+        panner = undefined;
+      }
+    }
+    if (panner) {
+      envelope.connect(panner);
+      panner.connect(master);
+    } else {
+      envelope.connect(master);
+    }
     oscillator.onended = () => {
       pending.delete(oscillator);
       oscillator.disconnect();
       envelope.disconnect();
+      panner?.disconnect();
     };
     oscillator.start(start);
     pending.add(oscillator);

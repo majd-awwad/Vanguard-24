@@ -1,0 +1,632 @@
+{
+  "schema": "earthpulse.decode/2",
+  "id": "dust-geos-fp-20250819-1930-north-africa-med",
+  "phenomenon": "dust",
+  "behavior": "continuous",
+  "fixture": false,
+  "source": {
+    "product": "GEOS FP 2d time-averaged primary aerosol diagnostics (DFPT3NXAER; DUEXTTAU at 550 nm)",
+    "version": "5.29.5-p6 / V01",
+    "url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2025/M08/D19/GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4",
+    "granules": [
+      "GEOS.fp.asm.tavg3_2d_aer_Nx.20250819_1930.V01.nc4"
+    ],
+    "time": {
+      "start": "2025-08-19T18:00:00Z",
+      "end": "2025-08-19T21:00:00Z"
+    }
+  },
+  "visualLink": {
+    "svs": "https://svs.gsfc.nasa.gov/5669/",
+    "image": "https://svs.gsfc.nasa.gov/vis/a000000/a005600/a005669/Aerosols_2025-08-19T20_00_00_1920x1080.png",
+    "relation": "RELATED_CONTEXT",
+    "note": "Numerical data are standard GEOS-FP 0.25-degree latitude by 0.3125-degree longitude assimilation, a three-hour mean from 18:00 to 21:00 UTC centered at 19:30 UTC on 2025-08-19. SVS 5669 uses a separate GEOS-FP 2 km Replay at 20:00 UTC. These are related scientific context, not the same visualization dataset or instantaneous field."
+  },
+  "unit": "1",
+  "bounds": {
+    "north": 45,
+    "south": 15,
+    "east": 50,
+    "west": -20
+  },
+  "levels": {
+    "quick": {
+      "rows": 3,
+      "cols": 4,
+      "cells": [
+        {
+          "row": 0,
+          "col": 0,
+          "lat": 40.0,
+          "lon": -11.25,
+          "value": 0.0183999006784819,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 1,
+          "lat": 40.0,
+          "lon": 6.25,
+          "value": 0.10615124697268888,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "lat": 40.0,
+          "lon": 23.75,
+          "value": 0.020877280946872866,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 3,
+          "lat": 40.0,
+          "lon": 41.25,
+          "value": 0.0554976743198005,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "lat": 30.0,
+          "lon": -11.25,
+          "value": 0.25393256815780973,
+          "status": "measured"
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "lat": 30.0,
+          "lon": 6.25,
+          "value": 0.21811917453749857,
+          "status": "measured"
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "lat": 30.0,
+          "lon": 23.75,
+          "value": 0.07071180900283318,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 3,
+          "lat": 30.0,
+          "lon": 41.25,
+          "value": 0.18203269622510582,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "lat": 20.0,
+          "lon": -11.25,
+          "value": 0.33404124658604534,
+          "status": "measured"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "lat": 20.0,
+          "lon": 6.25,
+          "value": 0.3289377671506812,
+          "status": "measured"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "lat": 20.0,
+          "lon": 23.75,
+          "value": 0.19895830596116754,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 3,
+          "lat": 20.0,
+          "lon": 41.25,
+          "value": 0.35246955030020244,
+          "status": "measured"
+        }
+      ],
+      "truth": {
+        "rule": "value >= threshold",
+        "threshold": 0.2,
+        "present": [
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      "aggregation": "mean of 2x2 advanced cells"
+    },
+    "advanced": {
+      "rows": 6,
+      "cols": 8,
+      "cells": [
+        {
+          "row": 0,
+          "col": 0,
+          "lat": 42.5,
+          "lon": -15.625,
+          "value": 0.011025937566456851,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 1,
+          "lat": 42.5,
+          "lon": -6.875,
+          "value": 0.022445061664454473,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "lat": 42.5,
+          "lon": 1.875,
+          "value": 0.07226128088919336,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 3,
+          "lat": 42.5,
+          "lon": 10.625,
+          "value": 0.08304154765167687,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 4,
+          "lat": 42.5,
+          "lon": 19.375,
+          "value": 0.019931367110129543,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 5,
+          "lat": 42.5,
+          "lon": 28.125,
+          "value": 0.019394102497994416,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 6,
+          "lat": 42.5,
+          "lon": 36.875,
+          "value": 0.026294384350284652,
+          "status": "below_threshold"
+        },
+        {
+          "row": 0,
+          "col": 7,
+          "lat": 42.5,
+          "lon": 45.625,
+          "value": 0.04125492726357772,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "lat": 37.5,
+          "lon": -15.625,
+          "value": 0.007107787772447903,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "lat": 37.5,
+          "lon": -6.875,
+          "value": 0.03302081571056836,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "lat": 37.5,
+          "lon": 1.875,
+          "value": 0.13177739351990023,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 3,
+          "lat": 37.5,
+          "lon": 10.625,
+          "value": 0.13752476582998507,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 4,
+          "lat": 37.5,
+          "lon": 19.375,
+          "value": 0.02427193618704972,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 5,
+          "lat": 37.5,
+          "lon": 28.125,
+          "value": 0.019911717992317796,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 6,
+          "lat": 37.5,
+          "lon": 36.875,
+          "value": 0.04607371794604085,
+          "status": "below_threshold"
+        },
+        {
+          "row": 1,
+          "col": 7,
+          "lat": 37.5,
+          "lon": 45.625,
+          "value": 0.10836766771929877,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "lat": 32.5,
+          "lon": -15.625,
+          "value": 0.045822750137852024,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "lat": 32.5,
+          "lon": -6.875,
+          "value": 0.09916094515837748,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "lat": 32.5,
+          "lon": 1.875,
+          "value": 0.11791087828146819,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 3,
+          "lat": 32.5,
+          "lon": 10.625,
+          "value": 0.1270836920526785,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 4,
+          "lat": 32.5,
+          "lon": 19.375,
+          "value": 0.03263545253937886,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 5,
+          "lat": 32.5,
+          "lon": 28.125,
+          "value": 0.04130146288492932,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 6,
+          "lat": 32.5,
+          "lon": 36.875,
+          "value": 0.0766817842005326,
+          "status": "below_threshold"
+        },
+        {
+          "row": 2,
+          "col": 7,
+          "lat": 32.5,
+          "lon": 45.625,
+          "value": 0.2376543029814904,
+          "status": "measured"
+        },
+        {
+          "row": 3,
+          "col": 0,
+          "lat": 27.5,
+          "lon": -15.625,
+          "value": 0.2946985500985509,
+          "status": "measured"
+        },
+        {
+          "row": 3,
+          "col": 1,
+          "lat": 27.5,
+          "lon": -6.875,
+          "value": 0.5760480272364584,
+          "status": "measured"
+        },
+        {
+          "row": 3,
+          "col": 2,
+          "lat": 27.5,
+          "lon": 1.875,
+          "value": 0.5035065220785545,
+          "status": "measured"
+        },
+        {
+          "row": 3,
+          "col": 3,
+          "lat": 27.5,
+          "lon": 10.625,
+          "value": 0.12397560573729319,
+          "status": "below_threshold"
+        },
+        {
+          "row": 3,
+          "col": 4,
+          "lat": 27.5,
+          "lon": 19.375,
+          "value": 0.11108553737567456,
+          "status": "below_threshold"
+        },
+        {
+          "row": 3,
+          "col": 5,
+          "lat": 27.5,
+          "lon": 28.125,
+          "value": 0.09782478321134998,
+          "status": "below_threshold"
+        },
+        {
+          "row": 3,
+          "col": 6,
+          "lat": 27.5,
+          "lon": 36.875,
+          "value": 0.1881815712758968,
+          "status": "below_threshold"
+        },
+        {
+          "row": 3,
+          "col": 7,
+          "lat": 27.5,
+          "lon": 45.625,
+          "value": 0.22561312644250348,
+          "status": "measured"
+        },
+        {
+          "row": 4,
+          "col": 0,
+          "lat": 22.5,
+          "lon": -15.625,
+          "value": 0.3499287981691785,
+          "status": "measured"
+        },
+        {
+          "row": 4,
+          "col": 1,
+          "lat": 22.5,
+          "lon": -6.875,
+          "value": 0.48374645604395333,
+          "status": "measured"
+        },
+        {
+          "row": 4,
+          "col": 2,
+          "lat": 22.5,
+          "lon": 1.875,
+          "value": 0.3700897460713167,
+          "status": "measured"
+        },
+        {
+          "row": 4,
+          "col": 3,
+          "lat": 22.5,
+          "lon": 10.625,
+          "value": 0.23953199529148972,
+          "status": "measured"
+        },
+        {
+          "row": 4,
+          "col": 4,
+          "lat": 22.5,
+          "lon": 19.375,
+          "value": 0.15106081207793884,
+          "status": "below_threshold"
+        },
+        {
+          "row": 4,
+          "col": 5,
+          "lat": 22.5,
+          "lon": 28.125,
+          "value": 0.13715953592985936,
+          "status": "below_threshold"
+        },
+        {
+          "row": 4,
+          "col": 6,
+          "lat": 22.5,
+          "lon": 36.875,
+          "value": 0.3901020852686081,
+          "status": "measured"
+        },
+        {
+          "row": 4,
+          "col": 7,
+          "lat": 22.5,
+          "lon": 45.625,
+          "value": 0.3377264247571262,
+          "status": "measured"
+        },
+        {
+          "row": 5,
+          "col": 0,
+          "lat": 17.5,
+          "lon": -15.625,
+          "value": 0.30984676132767364,
+          "status": "measured"
+        },
+        {
+          "row": 5,
+          "col": 1,
+          "lat": 17.5,
+          "lon": -6.875,
+          "value": 0.1926429708033759,
+          "status": "below_threshold"
+        },
+        {
+          "row": 5,
+          "col": 2,
+          "lat": 17.5,
+          "lon": 1.875,
+          "value": 0.27450869684171864,
+          "status": "measured"
+        },
+        {
+          "row": 5,
+          "col": 3,
+          "lat": 17.5,
+          "lon": 10.625,
+          "value": 0.4316206303981996,
+          "status": "measured"
+        },
+        {
+          "row": 5,
+          "col": 4,
+          "lat": 17.5,
+          "lon": 19.375,
+          "value": 0.2647406688435572,
+          "status": "measured"
+        },
+        {
+          "row": 5,
+          "col": 5,
+          "lat": 17.5,
+          "lon": 28.125,
+          "value": 0.24287220699331483,
+          "status": "measured"
+        },
+        {
+          "row": 5,
+          "col": 6,
+          "lat": 17.5,
+          "lon": 36.875,
+          "value": 0.3978689837019361,
+          "status": "measured"
+        },
+        {
+          "row": 5,
+          "col": 7,
+          "lat": 17.5,
+          "lon": 45.625,
+          "value": 0.2841807074731394,
+          "status": "measured"
+        }
+      ],
+      "truth": {
+        "rule": "value >= threshold",
+        "threshold": 0.2,
+        "present": [
+          [
+            2,
+            7
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            4,
+            7
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      },
+      "aggregation": "spherical-area-weighted mean of DUEXTTAU native-cell overlaps; any missing or invalid contributor makes the cell missing"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# Local acquisition inputs and Python tooling. Keep audit/scripts/metadata in git.
+/raw/
+/derived/
+/.venv/
+/.python/
+/.cache/
+/__pycache__/
+*.part

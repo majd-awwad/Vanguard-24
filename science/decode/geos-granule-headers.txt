@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+Date: Sat, 14 Nov 2026 16:55:36 GMT
+Server: nginx/1.14.1
+Strict-Transport-Security: max-age=31536000
+Content-Type: application/octet-stream
+Content-Length: 121678028
+Last-Modified: Wed, 20 Aug 2025 02:19:58 GMT
+ETag: "68a530ce-740a8cc"
+Accept-Ranges: bytes
+Strict-Transport-Security: max-age=63072000; includeSubDomains;
+

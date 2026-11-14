@@ -1,0 +1,21 @@
+Dataset {
+  Grid {
+    ARRAY:
+      Float32 aodinc[time = 26156][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 26156];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } aodinc;
+  Grid {
+    ARRAY:
+      Float32 aodana[time = 26156][lat = 721][lon = 1152];
+    MAPS:
+      Float64 time[time = 26156];
+      Float64 lat[lat = 721];
+      Float64 lon[lon = 1152];
+  } aodana;
+  Float64 time[time = 26156];
+  Float64 lat[lat = 721];
+  Float64 lon[lon = 1152];
+} /GEOS-5/fp/0.25_deg/assim/inst3_2d_gas_Nx;

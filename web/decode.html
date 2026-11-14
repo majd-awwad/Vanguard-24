@@ -6,21 +6,61 @@
   <title>Decode · EARTHPULSE</title>
   <link rel="icon" href="./assets/atlas/pulse.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./visual/platform.css">
+  <link rel="stylesheet" href="./visual/decode.css">
   <style>
-    #decode-stage { position: relative; }
     #decode-visual { pointer-events: none; }
+    #decode-controls { display: flex; gap: .5rem; flex-wrap: wrap; margin-block: 1rem; }
+    #decode-evidence table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-block: 1rem; }
+    #decode-evidence th, #decode-evidence td { padding: .35rem; border: 1px solid currentColor; text-align: start; overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <p><a href="./">Sound Atlas</a></p>
-    <h1>Decode</h1>
-    <p>The dust experience is awaiting source verification and integration.</p>
-    <section id="decode-stage" aria-label="Decode map">
+  <main class="wrap" id="decode-page">
+    <p><a id="decode-home" href="./">Sound Atlas</a></p>
+    <h1 id="decode-title">Decode</h1>
+    <p id="decode-state" role="status"></p>
+    <button type="button" id="decode-retry" hidden></button>
+    <div id="decode-interface" hidden>
+      <p id="decode-notice" hidden></p>
+      <p id="decode-region"></p>
+      <p id="decode-question"></p>
+      <h2 id="decode-phase" tabindex="-1"></h2>
+      <p id="decode-description"></p>
+      <div id="decode-controls">
+        <button type="button" id="decode-next" hidden></button>
+        <button type="button" id="decode-play" hidden></button>
+        <button type="button" id="decode-pause" hidden></button>
+        <button type="button" id="decode-replay" hidden></button>
+        <button type="button" id="decode-mute" hidden></button>
+        <button type="button" id="decode-submit" hidden></button>
+        <button type="button" id="decode-restart" hidden></button>
+      </div>
+    </div>
+    <section id="decode-stage" aria-label="Decode map" dir="ltr">
       <div id="decode-visual" aria-hidden="true" inert></div>
       <div id="decode-grid"></div>
     </section>
     <p id="decode-status" role="status" aria-live="polite"></p>
+    <section id="decode-evidence" aria-labelledby="decode-phase" hidden>
+      <p id="decode-score"></p>
+      <div id="decode-outcome-labels"></div>
+      <table>
+        <thead><tr>
+          <th scope="col" id="decode-positions"></th>
+          <th scope="col" id="decode-values"></th>
+          <th scope="col" id="decode-classifications"></th>
+        </tr></thead>
+        <tbody id="decode-readings"></tbody>
+      </table>
+      <p id="decode-source-details"></p>
+      <p><a id="decode-source"></a></p>
+      <p id="decode-context-note"></p>
+      <p><a id="decode-context"></a> <a id="decode-frame"></a></p>
+    </section>
   </main>
+  <script type="module">
+    import { startDecode } from "./decode.js";
+    startDecode(document.querySelector("#decode-page"));
+  </script>
 </body>
 </html>
