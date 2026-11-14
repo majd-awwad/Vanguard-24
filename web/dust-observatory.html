@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101715">
+  <title>Dust Observatory · EARTHPULSE</title>
+  <link rel="icon" href="./assets/atlas/pulse.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./visual/platform.css">
+  <link rel="stylesheet" href="./visual/dust-observatory.css">
+</head>
+<body class="observatory-page">
+  <a class="skip" href="#observatory-main" data-observatory="skip">Skip to the map</a>
+  <header class="wrap observatory-header">
+    <a id="observatory-home" class="brand" href="./">EARTH<span>PULSE</span></a>
+    <nav aria-label="EARTHPULSE">
+      <a id="observatory-guided" href="./dust.html" data-observatory="guided"></a>
+      <a id="observatory-language" href="?lang=ar" lang="ar" hreflang="ar">العربية</a>
+    </nav>
+  </header>
+  <main class="wrap" id="observatory-main">
+    <header class="observatory-title">
+      <p class="eyebrow" data-observatory="region"></p>
+      <h1 data-observatory="title">Dust Observatory</h1>
+      <p data-observatory="intro"></p>
+    </header>
+    <div class="observatory-controls" id="observatory-controls" hidden>
+      <label>
+        <span data-observatory="view"></span>
+        <select id="observatory-mode">
+          <option value="snapshot" data-observatory="snapshot"></option>
+          <option value="comparison" data-observatory="comparison"></option>
+        </select>
+      </label>
+      <label>
+        <span id="observatory-first-label" data-observatory="date"></span>
+        <select id="observatory-first"></select>
+      </label>
+      <label id="observatory-second-field" hidden>
+        <span data-observatory="second"></span>
+        <select id="observatory-second"></select>
+      </label>
+    </div>
+    <div class="observatory-feedback">
+      <p id="observatory-status" role="status"></p>
+      <button class="outline" id="observatory-retry" type="button" data-observatory="retry" hidden></button>
+    </div>
+    <div id="observatory-field" class="observatory-layout" hidden>
+      <figure class="observatory-figure">
+        <div class="observatory-map-head">
+          <h2 id="observatory-map-heading"></h2>
+          <p id="observatory-extent" dir="ltr">20° W – 50° E · 15° N – 45° N</p>
+        </div>
+        <div class="observatory-map-area" dir="ltr" tabindex="0" role="group"
+          aria-labelledby="observatory-map-heading" aria-describedby="observatory-keyboard">
+          <svg id="observatory-map" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <defs>
+              <pattern id="observatory-missing" width="1" height="1" patternContentUnits="objectBoundingBox">
+                <rect width="1" height="1" fill="#263038"></rect>
+                <path d="M0 .8L.8 0M.2 1L1 .2" stroke="#8b9191" stroke-width=".08"></path>
+              </pattern>
+            </defs>
+            <g id="observatory-values"></g>
+            <g id="observatory-coast"></g>
+            <rect id="observatory-cursor" aria-hidden="true"></rect>
+          </svg>
+        </div>
+        <figcaption>
+          <div class="observatory-color-key">
+            <div class="observatory-colors">
+              <div id="observatory-palette" dir="ltr" aria-hidden="true"></div>
+              <p id="observatory-labels" dir="ltr"></p>
+            </div>
+            <span class="observatory-missing-key"><i aria-hidden="true"></i><span data-observatory="missing"></span></span>
+          </div>
+          <p id="observatory-scale"></p>
+          <p data-observatory="coast"></p>
+        </figcaption>
+      </figure>
+      <section class="observatory-inspector" aria-labelledby="observatory-inspector-heading">
+        <h2 id="observatory-inspector-heading" data-observatory="inspect"></h2>
+        <p id="observatory-keyboard" data-observatory="keyboard"></p>
+        <p id="observatory-cell-position"></p>
+        <p id="observatory-cell-value"></p>
+        <p id="observatory-cell-detail"></p>
+        <p id="observatory-cell-speech" class="sr-only" role="status" aria-atomic="true"></p>
+        <div class="observatory-step" aria-label="Map direction" id="observatory-directions">
+          <button class="outline" type="button" data-step="ArrowUp" data-observatory="north"></button>
+          <button class="outline" type="button" data-step="ArrowLeft" data-observatory="west"></button>
+          <button class="outline" type="button" data-step="ArrowRight" data-observatory="east"></button>
+          <button class="outline" type="button" data-step="ArrowDown" data-observatory="south"></button>
+        </div>
+        <div class="observatory-audio">
+          <button class="solid" type="button" id="observatory-listen" data-observatory="listen"></button>
+          <button class="outline" type="button" id="observatory-mute" aria-pressed="false" data-observatory="mute"></button>
+        </div>
+        <p id="observatory-sound-key"></p>
+        <p id="observatory-audio-status" role="status"></p>
+      </section>
+      <section class="observatory-evidence" aria-labelledby="observatory-source-heading">
+        <h2 id="observatory-source-heading" data-observatory="source"></h2>
+        <p id="observatory-method"></p>
+        <p data-observatory="health"></p>
+        <ul id="observatory-granules"></ul>
+        <p id="observatory-context" hidden></p>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="dust-observatory.js"></script>
+</body>
+</html>
