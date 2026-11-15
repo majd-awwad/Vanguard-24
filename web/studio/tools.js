@@ -38,6 +38,9 @@ export function mountTools(api) {
     el.frame.dataset.tool = name;
     for (const [key, button] of Object.entries(buttons)) button.setAttribute("aria-pressed", String(key === name));
     el.toolHelp.textContent = c.tools.help[name];
+    areaPanel.hidden = name !== "area";
+    pathPanel.hidden = name !== "path";
+    state.drawers.dataset.tool = name;
     api.invalidate();
   }
   for (const name of names) buttons[name].addEventListener("click", () => setTool(name));
@@ -52,8 +55,9 @@ export function mountTools(api) {
   const speedSelect = h(document, "select", { id: "st-speed", "aria-label": c.scan.speed });
   for (const speed of SPEEDS) speedSelect.append(h(document, "option", { value: speed, text: speed + "×", selected: speed === 1 }));
   el.summary = h(document, "div", { class: "st-summary", hidden: true, tabindex: "-1" });
-  const runPanel = h(document, "section", { class: "panel", "aria-labelledby": "st-run-title" }, h(document, "h2", { id: "st-run-title", text: c.scan.playback }),
-    h(document, "div", { class: "st-tools-row" }, playPause, stopButton, h(document, "label", { class: "st-speed", for: "st-speed" }, h(document, "span", { text: c.scan.speed }), speedSelect)), el.runState, el.reading, el.summary);
+  const runControls = h(document, "div", { class: "st-tools-row" }, playPause, stopButton, h(document, "label", { class: "st-speed", for: "st-speed" }, h(document, "span", { text: c.scan.speed }), speedSelect));
+  const runPanel = h(document, "section", { class: "panel st-run-panel", "aria-labelledby": "st-run-title" }, h(document, "h2", { id: "st-run-title", text: c.scan.playback }),
+    runControls, el.runState, el.reading, el.summary);
 
   function drawSummary(run) {
     const s = run.stats;
@@ -146,8 +150,9 @@ export function mountTools(api) {
   const playSelected = h(document, "button", { type: "button", class: "button ghost", text: c.scan.selected });
   playVisible.addEventListener("click", () => playArea(visibleRect()));
   playSelected.addEventListener("click", () => playArea(state.rect));
-  const areaPanel = h(document, "section", { class: "panel", "aria-labelledby": "st-area-title" }, h(document, "h2", { id: "st-area-title", text: c.scan.title }),
-    h(document, "div", { class: "st-tools-row" }, playVisible, playSelected), h(document, "p", { class: "small", text: c.scan.help }));
+  runControls.prepend(playVisible);
+  const areaPanel = h(document, "section", { class: "panel st-tool-detail st-area-panel", "aria-labelledby": "st-area-title", hidden: true }, h(document, "h2", { id: "st-area-title", text: c.scan.title }),
+    h(document, "div", { class: "st-tools-row" }, playSelected), h(document, "p", { class: "small", text: c.scan.help }));
 
   // Drawing a rectangle: mouse/touch drag or Enter at two corners.
   state.pointerHandlers.push((type, event, p, pointers) => {
@@ -195,7 +200,7 @@ export function mountTools(api) {
   });
   clearPath.addEventListener("click", () => { state.path = []; refreshPath(); });
   undoPath.addEventListener("click", () => { state.path.pop(); refreshPath(); });
-  const pathPanel = h(document, "section", { class: "panel", "aria-labelledby": "st-path-title" }, h(document, "h2", { id: "st-path-title", text: c.path.title }),
+  const pathPanel = h(document, "section", { class: "panel st-tool-detail st-path-panel", "aria-labelledby": "st-path-title", hidden: true }, h(document, "h2", { id: "st-path-title", text: c.path.title }),
     h(document, "div", { class: "st-tools-row" }, playPath, undoPath, clearPath), pathInfo, el.profile);
 
   // Profile chart: the real cell values along the path on the same fixed log scale as the colours.
@@ -281,9 +286,9 @@ export function mountTools(api) {
     }
   });
 
-  state.right.insertBefore(runPanel, state.right.children[1]);
-  state.right.insertBefore(areaPanel, runPanel);
-  state.right.insertBefore(pathPanel, runPanel);
+  state.dock.append(runPanel);
+  state.drawers.prepend(pathPanel);
+  state.drawers.prepend(areaPanel);
   Object.assign(api, { setTool, playArea, playVisible: () => playArea(visibleRect()), stopRun, begin, pathSteps: () => pathSteps(state.path, api.layerValues(), grid), addPoint, refreshPath });
   return api;
 }

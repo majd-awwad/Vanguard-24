@@ -119,6 +119,19 @@ Arabic), `R` reads the value as text in a live region, `Space` plays the cell, `
 and the tools have keyboard equivalents. All controls are real buttons, selects and sliders. Reduced motion turns off
 view animation. Without WebGL a 2D canvas map shows the same layer (`?renderer=2d` forces it).
 
+## Exhibition interface hierarchy
+
+The interface keeps one scientific loop visible: choose a real snapshot, inspect a real cell, hear the deterministic
+mapping, and play the visible geography. The map occupies the stage rather than behaving like a dashboard tile. Its HUD
+repeats only the source identity and active reading; the complete provenance remains in the Understand panel.
+
+The date and exploration controls float at the map edge, the evidence inspector stays opposite them, and sound plus
+playback share one bottom dock so that visual, numeric, and audible state remain in the same context. Area, path,
+comparison, keyboard help, and sharing are progressive research drawers. Selecting Area or Path reveals its matching
+drawer; none of the underlying calculations or scientific validation changed. On narrow screens the same regions become
+a linear reading order: map, legend, date/tools, evidence, sound/playback, then research drawers. Arabic changes reading
+direction but never mirrors geographic east and west.
+
 ## Notes for Majd and Mohammad
 
 - `web/sources/decode/dust-visual.js` was used as is. `compareDustSnapshots` validates statistics strictly, which the

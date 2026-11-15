@@ -48,7 +48,7 @@ export function mountShare(api) {
     url.search = params.toString() + (new URLSearchParams(url.search).get("lang") ? "&lang=" + new URLSearchParams(url.search).get("lang") : "");
     try { await win.navigator.clipboard.writeText(url.href); status.textContent = c.share.copied; } catch { status.textContent = url.href; }
   });
-  state.right.append(h(document, "section", { class: "panel" }, button, status));
+  state.drawers.append(h(document, "section", { class: "panel st-share" }, button, status));
   // Apply a link on load.
   const wanted = decodeShare(new URL(document.URL).search, catalog, api.bounds);
   if (wanted.rect) { state.rect = wanted.rect; }

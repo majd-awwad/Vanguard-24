@@ -7,16 +7,16 @@
   <title>Sound Studio · EARTHPULSE</title>
   <link rel="icon" href="../assets/atlas/pulse.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../cinematic/site/site.css">
-  <link rel="stylesheet" href="../studio/studio.css">
+  <link rel="stylesheet" href="../studio/studio.css?v=2">
 </head>
-<body>
+<body class="studio-page">
   <header id="site-nav"></header>
   <main id="site-main" class="site-main">
     <div id="studio-root"></div>
     <noscript><p>This page needs JavaScript.</p></noscript>
   </main>
   <script type="module">
-    import { startStudio } from "../studio/studio.js";
+    import { startStudio } from "../studio/studio.js?v=2";
     startStudio();
   </script>
 </body>

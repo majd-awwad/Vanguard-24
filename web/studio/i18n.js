@@ -1,6 +1,6 @@
 const messages = {
   en: {
-    skip: "Skip to the map", back: "EarthPulse home", title: "Earth Sound Studio", subtitle: "Listen across a changing planet",
+    skip: "Skip to the map", back: "EarthPulse home", title: "Earth Sound Studio", subtitle: "Listen across a changing planet", primaryStudio: "Quantitative dust studio",
     reference: "NASA reference-image mode", referenceDetail: "Qualitative rendering · radiance import pending Earthdata access",
     mode2012: "2012 radiance image", mode2023: "2023 radiance image", modeChange: "2012 → 2023 change",
     reset: "World view", india: "Focus India", zoomIn: "Zoom in", zoomOut: "Zoom out", method: "Science & mapping",
@@ -30,7 +30,7 @@ const messages = {
     scanAnnounce: "Scanning the saved visible extent", pathAnnounce: "Playing the drawn geographic trail", hoverInstruction: "Enable sound, then move across the map to hear the rendered visual signal.",
   },
   ar: {
-    skip: "انتقل إلى الخريطة", back: "العودة إلى EarthPulse", title: "استوديو صوت الأرض", subtitle: "استمع إلى كوكب يتغيّر",
+    skip: "انتقل إلى الخريطة", back: "العودة إلى EarthPulse", title: "استوديو صوت الأرض", subtitle: "استمع إلى كوكب يتغيّر", primaryStudio: "استوديو الغبار الرقمي",
     reference: "وضع صورة ناسا المرجعية", referenceDetail: "تصوّر نوعي · استيراد الإشعاع بانتظار وصول Earthdata",
     mode2012: "صورة الإشعاع ٢٠١٢", mode2023: "صورة الإشعاع ٢٠٢٣", modeChange: "التغيّر ٢٠١٢ ← ٢٠٢٣",
     reset: "العالم", india: "ركّز على الهند", zoomIn: "تكبير", zoomOut: "تصغير", method: "العلم والتحويل الصوتي",

@@ -65,7 +65,12 @@ async function mountStudio(document, root, language) {
   const size = cellSize(bounds, grid);
   const list = chronological(catalog);
   const first = cache.values().next().value;
-  const state = { snapshot: first, comparison: null, layer: "dust", view: createView(bounds), cursor: null, tool: "explore", width: 1, height: 1 };
+  const strongestIndex = first.values.reduce((best, value, index, values) => value !== null && (values[best] === null || value > values[best]) ? index : best,
+    first.values.findIndex((value) => value !== null));
+  const guidedCursor = strongestIndex >= 0
+    ? { row: Math.floor(strongestIndex / grid.cols), col: strongestIndex % grid.cols, index: strongestIndex }
+    : null;
+  const state = { snapshot: first, comparison: null, layer: "dust", view: createView(bounds), cursor: guidedCursor, tool: "explore", width: 1, height: 1 };
   const el = {};
   const T = (template, extra) => fillIso(template, extra, language);
   const layerValues = () => (state.comparison ? state.comparison.values : state.snapshot.values);
@@ -79,6 +84,12 @@ async function mountStudio(document, root, language) {
   el.overlay.setAttribute("class", "st-overlay");
   el.overlay.setAttribute("aria-hidden", "true");
   el.frame.append(el.overlay);
+  el.hudDate = h(document, "span", { class: "st-hud-date" });
+  el.hudCell = h(document, "strong", { class: "st-hud-cell", text: "—" });
+  el.hudValue = h(document, "span", { class: "st-hud-value", text: c.understand.none });
+  el.frame.append(h(document, "div", { class: "st-map-hud", "aria-hidden": "true" },
+    h(document, "div", { class: "st-map-source" }, h(document, "span", { class: "badge badge-data", text: c.workspace.badge }), h(document, "span", { text: c.workspace.source })),
+    h(document, "div", { class: "st-map-reading" }, el.hudCell, el.hudValue, el.hudDate)));
   el.note = h(document, "p", { class: "small st-note", role: "note" });
   let renderer;
   let frameRequest = 0;
@@ -170,6 +181,7 @@ async function mountStudio(document, root, language) {
   function onDateChanged() {
     const time = state.snapshot.time;
     el.dateInfo.textContent = T(c.date.window, { date: formatUtcDate(time.start, language), from: formatUtcTime(time.start).replace(" UTC", ""), to: formatUtcTime(time.end).replace(" UTC", ""), hours: trimNumber((Date.parse(time.end) - Date.parse(time.start)) / 3600000, 2) });
+    el.hudDate.textContent = state.snapshot.id;
     el.build.textContent = T(c.date.group, { build: state.snapshot.source.modelSource });
     if (!state.comparison) applyLayer();
     onDataChanged();
@@ -241,6 +253,9 @@ async function mountStudio(document, root, language) {
     const cell = state.cursor;
     if (!cell) {
       el.status.textContent = c.understand.none;
+      el.status.hidden = false;
+      el.hudCell.textContent = "—";
+      el.hudValue.textContent = c.understand.none;
       for (const key of ["cell", "loc", "bounds", "value", "scale", "sound"]) u[key].dd.textContent = "—";
       return;
     }
@@ -248,16 +263,19 @@ async function mountStudio(document, root, language) {
     el.status.textContent = d.value === null ? c.understand.missing : "";
     el.status.hidden = d.value !== null;
     u.cell.dd.textContent = d.id;
+    el.hudCell.textContent = d.id;
     u.loc.dd.textContent = T(c.understand.cellRow, { lat: d.lat, lon: d.lon });
     u.loc.dd.className = "ltr";
     u.bounds.dd.textContent = T("{south} to {north}, {west} to {east}", { south: formatLat(d.r.south), north: formatLat(d.r.north), west: formatLon(d.r.west), east: formatLon(d.r.east) });
     u.bounds.dd.className = "ltr";
     if (d.kind === "dust") {
       u.value.dd.textContent = d.value === null ? "—" : T(c.understand.valueUnit, { value: fmt(d.value) });
+      el.hudValue.textContent = d.value === null ? c.understand.missing : `${fmt(d.value)} · ${c.layer.dustHelp}`;
       u.scale.dd.textContent = d.value === null ? "—" : T(c.understand.scaleText, { t: Math.round(valueT(d.value) * 100) });
     } else {
       const dir = d.value === null ? "" : Math.abs(d.value) < NEAR_ZERO ? c.understand.flat : d.value > 0 ? c.understand.up : c.understand.down;
       u.value.dd.textContent = d.value === null ? "—" : T(c.understand.changeText, { value: fmtChange(d.value), direction: dir });
+      el.hudValue.textContent = d.value === null ? c.understand.missing : T(c.understand.changeText, { value: fmtChange(d.value), direction: dir });
       u.scale.dd.textContent = d.value === null ? "—" : T(c.legend.near, { band: NEAR_ZERO });
     }
     u.sound.dd.textContent = soundText(d);
@@ -403,28 +421,38 @@ async function mountStudio(document, root, language) {
     }
   };
   const mapRange = T(c.sound.range, { low: PITCH_LOW_HZ, high: HIGH_HZ, min: VALUE_MIN, max: VALUE_MAX });
-  const soundPanel = h(document, "section", { class: "panel", "aria-labelledby": "st-sound-title" }, h(document, "h2", { id: "st-sound-title", text: c.sound.title }), el.soundButton, el.soundState,
-    h(document, "label", { class: "volume", for: "st-volume" }, h(document, "span", { text: c.sound.volume }), el.volume), el.wave,
-    h(document, "h3", { text: c.sound.mapping }), h(document, "ul", { class: "st-keys small" }, h(document, "li", { text: c.sound.mapDust + " " + mapRange }), h(document, "li", { text: c.sound.mapPan }), h(document, "li", { text: c.sound.mapMissing }), h(document, "li", { text: c.sound.changeMap })),
+  const soundMethod = h(document, "details", { class: "st-method" }, h(document, "summary", { text: c.sound.mapping }),
+    h(document, "ul", { class: "st-keys small" }, h(document, "li", { text: c.sound.mapDust + " " + mapRange }), h(document, "li", { text: c.sound.mapPan }), h(document, "li", { text: c.sound.mapMissing }), h(document, "li", { text: c.sound.changeMap })),
     h(document, "p", { class: "small", text: c.sound.note }));
+  const soundPanel = h(document, "section", { class: "panel st-sound-panel", "aria-labelledby": "st-sound-title" },
+    h(document, "div", { class: "st-panel-title" }, h(document, "h2", { id: "st-sound-title", text: c.sound.title }), el.soundButton),
+    el.soundState, h(document, "label", { class: "volume", for: "st-volume" }, h(document, "span", { text: c.sound.volume }), el.volume), el.wave, soundMethod);
   let waveFrame = win.requestAnimationFrame(function loop() { drawWaveform(el.wave, audio.tap.analyser, { color: "#68e0d0" }); waveFrame = win.requestAnimationFrame(loop); });
 
   // ---- Assemble
-  const left = h(document, "div", { class: "st-left" }, datePanel, viewPanel, soundPanel);
+  const left = h(document, "div", { class: "st-left", "aria-label": c.tools.title }, datePanel, viewPanel);
   state.left = left;
   const centre = h(document, "div", { class: "st-centre" }, el.frame, el.note, el.legend);
   state.centre = centre;
   const right = h(document, "div", { class: "st-right" }, understand);
   state.right = right;
+  const dock = h(document, "div", { class: "st-dock", "aria-label": c.scan.playback }, soundPanel);
+  state.dock = dock;
+  const drawers = h(document, "section", { class: "st-drawers", "aria-label": c.workspace.details });
+  state.drawers = drawers;
   const cellLat = trimNumber(size.lat);
   const cellLon = trimNumber(size.lon);
   const smoothing = h(document, "p", { class: "small st-smoothing", text: fill(c.map.smoothing, { cellLat, cellLon }) });
   centre.append(smoothing);
   el.keys = h(document, "ul", { class: "st-keys small", id: "st-keys" }, c.help.items.map((line) => h(document, "li", { text: line })));
-  right.append(h(document, "section", { class: "panel" }, h(document, "h2", { text: c.help.title }), el.keys));
+  const keyboardHelp = h(document, "details", { class: "panel st-drawer" }, h(document, "summary", { text: c.help.title }), el.keys);
+  drawers.append(keyboardHelp);
   root.replaceChildren(
-    h(document, "section", { class: "st-intro" }, h(document, "p", { class: "eyebrow", text: c.eyebrow }), h(document, "h1", {}, c.titleLead + " ", h(document, "em", { text: c.titleAccent })), h(document, "p", { class: "lede", text: c.lede })),
-    h(document, "div", { class: "st-layout" }, left, centre, right), h(document, "p", { class: "credit", text: c.credit }));
+    h(document, "section", { class: "st-intro" },
+      h(document, "div", { class: "st-intro-copy" }, h(document, "p", { class: "eyebrow", text: c.eyebrow }), h(document, "h1", {}, c.titleLead + " ", h(document, "em", { text: c.titleAccent })), h(document, "p", { class: "lede", text: c.lede })),
+      h(document, "aside", { class: "st-intro-meta" }, h(document, "span", { class: "badge badge-data", text: c.workspace.badge }), h(document, "strong", { text: c.workspace.source }), h(document, "p", { text: c.workspace.start }), h(document, "a", { href: "../studio.html", text: c.workspace.experiment }))),
+    h(document, "div", { class: "st-workspace" }, centre, left, right, dock), drawers,
+    h(document, "p", { class: "credit", text: c.credit }));
 
   makeRenderer(params.get("renderer") === "2d");
   new win.ResizeObserver(resize).observe(el.frame);

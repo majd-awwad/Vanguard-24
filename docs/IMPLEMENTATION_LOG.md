@@ -20,3 +20,10 @@ Local delivery uses a fresh ZIP. Future work can begin with manual NVDA/VoiceOve
 - Preserved the independent NASA SVS 5276 night-lights experiment at `studio.html`. It remains explicitly reference-image-only until authenticated VNP46A4 radiance granules pass the included extraction gate.
 - Resolved the cinematic navigation conflict by retaining the flat/text fallbacks, atmospheric mix, and page-hide cleanup while adopting the shared seven-page navigation, settings, stored volume and playback speed.
 - Kept both Studio test suites under distinct names and added a browser journey for the merged dust Studio. The homepage now opens the real quantitative dust Studio first and exposes the night-lights experiment as a separate route.
+
+## Unified Studio exhibition design
+
+- Rebuilt the quantitative Studio as one exhibition experience instead of a grid of equally weighted panels. The verified GEOS-FP map is now the central stage, with a guided real-cell starting point, a compact evidence HUD, persistent scientific readout, and a shared sound/playback dock.
+- Preserved every quantitative tool from the integrated branch: date selection, cursor inspection, area scan, path playback, comparison, share state, fixed scales, source metadata, missing-value handling, keyboard control, and deterministic sonification. Advanced controls now open progressively when their matching research mode is selected.
+- Connected the quantitative Studio and the separate night-lights reference-image experiment with explicit labels, keeping their scientific claims distinct. Added responsive Arabic/RTL coverage and a browser assertion that the mobile page has no horizontal overflow.
+- Verified both Studio browser journeys, all 215 automated tests, the 175-file release manifest, relative routes, scientific checksums, and fresh desktop/mobile captures under `release/`.

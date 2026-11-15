@@ -21,6 +21,9 @@ try {
   assert.match(await page.locator(".st-map").getAttribute("data-renderer"), /^(webgl|2d)$/);
   assert.match(await page.locator("#st-date-info").textContent(), /2025/);
   assert.match(await page.locator(".st-understand").textContent(), /NASA GMAO GEOS-FP|Move over the map/);
+  assert.notEqual(await page.locator(".st-hud-cell").textContent(), "—", "guided start must select one real cell");
+  assert.equal(await page.locator(".st-area-panel").isVisible(), false, "advanced area tools start collapsed");
+  if (process.env.EARTHPULSE_SCREENSHOT) await page.screenshot({ path: process.env.EARTHPULSE_SCREENSHOT, fullPage: true });
 
   await page.locator("#st-date").selectOption("geos-fp-dust-20250715-1930");
   await page.waitForFunction(() => document.querySelector("#st-date")?.value === "geos-fp-dust-20250715-1930");
@@ -35,6 +38,13 @@ try {
   await page.getByRole("button", { name: "Stop" }).click();
 
   assert.equal(errors.length, 0, errors.join("\n"));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(new URL("pages/studio.html?lang=ar", base).href, { waitUntil: "networkidle" });
+  await page.locator("#st-date").waitFor({ state: "visible" });
+  assert.equal(await page.locator("html").getAttribute("dir"), "rtl");
+  assert.equal(await page.locator(".st-map canvas").isVisible(), true);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, "mobile layout must not overflow horizontally");
+  if (process.env.EARTHPULSE_MOBILE_SCREENSHOT) await page.screenshot({ path: process.env.EARTHPULSE_MOBILE_SCREENSHOT, fullPage: true });
   console.log("Yaman dust studio lock, real catalog, renderer, date selection, keyboard, audio and scan passed.");
 } finally {
   await browser.close();

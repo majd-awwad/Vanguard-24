@@ -204,14 +204,14 @@ export function mountCompare(api) {
     }
   });
 
-  const panel = h(document, "section", { class: "panel st-compare", "aria-labelledby": "st-cmp-title" }, h(document, "h2", { id: "st-cmp-title", text: c.compare.title }),
+  const panel = h(document, "section", { class: "st-compare", "aria-labelledby": "st-cmp-title" }, h(document, "h2", { id: "st-cmp-title", text: c.compare.title }),
     h(document, "h3", { text: c.compare.time }),
     h(document, "label", { class: "st-pick", for: "st-cmp-a" }, h(document, "span", { text: c.compare.first }), el.cmpA), h(document, "label", { class: "st-pick", for: "st-cmp-b" }, h(document, "span", { text: c.compare.second }), el.cmpB),
     el.cmpStatus, el.cmpInfo, el.cmpButton, h(document, "p", { class: "small", text: c.compare.noMissing }), h(document, "p", { class: "small", text: c.compare.sound }),
     h(document, "h3", { text: c.compare.places }),
     h(document, "div", { class: "st-tools-row" }, ...placeButtons("a")), h(document, "div", { class: "st-tools-row" }, ...placeButtons("b")), el.placeTable,
     h(document, "div", { class: "st-tools-row" }, playBoth), el.placeNote, h(document, "p", { class: "small", text: c.compare.fingerprint + " " + c.compare.pointFp + " " + T(c.compare.areaFp, { n: FINGERPRINT_CELLS }) }));
-  state.right.insertBefore(panel, state.right.children[state.right.children.length - 1]);
+  state.drawers.append(h(document, "details", { class: "panel st-drawer st-compare-drawer" }, h(document, "summary", { text: c.compare.title }), panel));
   describe();
   refreshPlaces();
   Object.assign(api, { showChange, hideChange, describeComparison: describe, refreshPlaces, state });
