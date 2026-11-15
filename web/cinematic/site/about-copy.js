@@ -22,7 +22,7 @@ export const aboutCopy = {
       { title: "Environmental awareness", text: "One place and one day of real dust data, shown honestly, as a starting point for curiosity about the atmosphere." },
       { title: "Scientific exploration", text: "Every value traces back to a NASA data file, with its processing and limits written down." },
     ],
-    team: { title: "Meet the team", name: "Team Vanguard", place: "An-Najah National University, Palestine", text: "We are computer science students building EARTHPULSE for the NASA Space Apps Challenge 2026.", members: "Team members" },
+    team: { photoAlt: "Team Vanguard with event organizers in front of the NASA Space Apps Nablus banner", caption: "Team Vanguard at NASA Space Apps Challenge 2026 — Nablus, An-Najah National University", title: "Meet the team", name: "Team Vanguard", place: "An-Najah National University, Palestine", text: "We are computer science students building EARTHPULSE for the NASA Space Apps Challenge 2026.", members: "Team members" },
     credit: "Data: NASA GMAO GEOS-FP. Earth imagery: NASA Earth Observatory, Blue Marble. EARTHPULSE is a student project and is not endorsed by NASA.",
   },
   ar: {
@@ -42,7 +42,7 @@ export const aboutCopy = {
       { title: "وعي بيئي", text: "مكان واحد ويوم واحد من بيانات الغبار الحقيقية، تُعرض بأمانة، كنقطة بداية للفضول حول الغلاف الجوي." },
       { title: "استكشاف علمي", text: "كل قيمة تعود إلى ملف بيانات من ناسا، مع توثيق معالجتها وحدودها." },
     ],
-    team: { title: "تعرّف على الفريق", name: "فريق Vanguard", place: "جامعة النجاح الوطنية، فلسطين", text: "نحن طلبة علوم حاسوب نبني EARTHPULSE لتحدي ناسا Space Apps 2026.", members: "أعضاء الفريق" },
+    team: { photoAlt: "فريق Vanguard مع منظمي الفعالية أمام لافتة NASA Space Apps نابلس", caption: "فريق Vanguard في تحدي ناسا Space Apps 2026 — نابلس، جامعة النجاح الوطنية", title: "تعرّف على الفريق", name: "فريق Vanguard", place: "جامعة النجاح الوطنية، فلسطين", text: "نحن طلبة علوم حاسوب نبني EARTHPULSE لتحدي ناسا Space Apps 2026.", members: "أعضاء الفريق" },
     credit: "البيانات: NASA GMAO GEOS-FP. صور الأرض: مرصد الأرض التابع لناسا، Blue Marble. EARTHPULSE مشروع طلابي ولا تتبنّاه ناسا.",
   },
 };

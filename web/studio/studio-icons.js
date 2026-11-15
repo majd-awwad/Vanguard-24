@@ -15,6 +15,7 @@ export const ICON = {
   help: svg('<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1.1.9-1.1 1.7"/><path d="M12 16.8v.01"/>'),
   play: svg('<path d="M8 5.5v13l10-6.5z"/>'),
   pause: svg('<path d="M8.5 5.5v13M15.5 5.5v13"/>'),
+  calendar: svg('<rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>'),
   voice: svg('<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/>'),
   waves: svg('<path d="M3 12h2.5l2-6 3.5 12 3-9 2 3h5"/>'),
 };

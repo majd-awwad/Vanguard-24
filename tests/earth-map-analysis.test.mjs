@@ -193,7 +193,7 @@ test("ECHO-B: incompatible, short, gappy or irregular data gives a clear message
 });
 
 test("ECHO (real data): month selection, build groups, spacing and the separation rule", async () => {
-  for (const id of ["rainfall", "temperature", "wind"]) {
+  for (const id of ["rainfall", "wind"]) {
     const data = toEchoData(phens[id]);
     const g = monthlyGroup(data);
     assert.equal(g.snapshots.length, 9, id);
@@ -213,7 +213,7 @@ test("ECHO (real data): month selection, build groups, spacing and the separatio
     assert.equal(r.build, g.build);
     assert.deepEqual(r, await runEcho({ sourceIndex: src, mode: "shape", algorithm: "dtw" }, data), "deterministic");
   }
-  const dataA = toEchoData(phens.temperature);
+  const dataA = toEchoData(phens.wind);
   const a = await runEcho({ sourceIndex: 100, mode: "shape", build: monthlyGroup(dataA).groups[1].build }, dataA);
   assert.equal(a.status, "insufficient_data");
   assert.match(a.reason, /at least 6/);

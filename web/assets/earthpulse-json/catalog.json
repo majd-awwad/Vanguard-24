@@ -290,7 +290,7 @@
         "context": "Shared geometry or catalog supporting verified GEOS-FP DFPT3NXAER snapshots; not a separate NASA observation."
       },
       "bytes": 14659,
-      "sha256": "b36d435af33576a7102557820ad74fcd320a5e5d22bace7e8108e46e2c818dea"
+      "sha256": "3094068c7ef557f430e0f77c03ad3da5e9f88218d2a83b5160e012d5cdd32a8b"
     },
     {
       "id": "geos-fp-dust-20250415-1930--to--geos-fp-dust-20250715-1930",
@@ -735,8 +735,8 @@
           "lon": 0.3125
         }
       },
-      "bytes": 22471,
-      "sha256": "c229aca0cbe8a6ce15c149aa345a8e8efee3e32f168405bb44b702b245da8f01"
+      "bytes": 25083,
+      "sha256": "3dd6c72a102ed390efd495afc978abe7929ca738614ccff5668e05b4bd9492b4"
     },
     {
       "id": "geos-fp-dust-20250215-1930",
@@ -1085,8 +1085,8 @@
           "lon": 0.3125
         }
       },
-      "bytes": 21754,
-      "sha256": "f48b666a322b826d837bba07379b22dfa92d445981d7ec5bb2e41d4886a978fe"
+      "bytes": 24338,
+      "sha256": "ff143d0f072607244b029a9f95ba53d6e04f7338fa6a139576f99d49efc75cf2"
     },
     {
       "id": "geos-fp-dust-20250715-1930",
@@ -1155,8 +1155,8 @@
           "lon": 0.3125
         }
       },
-      "bytes": 21593,
-      "sha256": "fa77c71d5643d5d17fdac981b56e1c4da37924a194a25efd65e3961c4e6441cf"
+      "bytes": 24177,
+      "sha256": "fd23d7b29ddc72bb667eb6a311cd516f7ea83730a1855956d9e64bf015d58614"
     },
     {
       "id": "geos-fp-dust-20250815-1930",
@@ -1225,8 +1225,8 @@
           "lon": 0.3125
         }
       },
-      "bytes": 21601,
-      "sha256": "b5b3834d19d91ffd313bdfe1c619fdd0334bc45e630fa787e85521ba53142824"
+      "bytes": 24181,
+      "sha256": "feb3a8b6030bb3b4bd5747a054a3fc4b71f3101d34819d77695e5cbca367289d"
     },
     {
       "id": "geos-fp-dust-20250819-1930",
@@ -1435,8 +1435,8 @@
           "lon": 0.3125
         }
       },
-      "bytes": 21885,
-      "sha256": "ac4bc0f3309c6e09eb5c4042a2be004966db3a62aa1c731fe4b63fb26e22db39"
+      "bytes": 24469,
+      "sha256": "3548645a317dfccfb9359159308c3176475fb87deed0f9a9ef73710c23b10786"
     },
     {
       "id": "geos-fp-dust-20251115-1930",
@@ -1747,8 +1747,8 @@
       "sourceProvenance": {
         "context": "Shared geometry or catalog supporting verified GEOS-FP DFPT1NXFLX snapshots; not a separate NASA observation."
       },
-      "bytes": 10766,
-      "sha256": "05713ddaab3b7a526faccd69950a2cc0b958fde7f8f40b7a1af2120d345f412b"
+      "bytes": 12433,
+      "sha256": "6561e07702e245e2c22b498eea4956111a5f1fd21e8a94c0331ba62dfe1cc359"
     },
     {
       "id": "north-africa-med-25x40-v1-rainfall",
@@ -2936,8 +2936,8 @@
       "sourceProvenance": {
         "context": "Shared geometry or catalog supporting verified GEOS-FP DFPT1NXSLV snapshots; not a separate NASA observation."
       },
-      "bytes": 10895,
-      "sha256": "d349aea3fc5ee28cd6fee8b4f23699d5a5bf77038f61b6462676a1dd4d9b5730"
+      "bytes": 12601,
+      "sha256": "c7f7ce366afc1d5d0ef009b3ad4b6117d139c8d383f1c9a560969b29828b8615"
     },
     {
       "id": "north-africa-med-25x40-v1-temperature",
@@ -4126,8 +4126,8 @@
       "sourceProvenance": {
         "context": "Shared geometry or catalog supporting verified GEOS-FP DFPT1NXSLV snapshots; not a separate NASA observation."
       },
-      "bytes": 10594,
-      "sha256": "2fea1d515ae23694965df3da7b4cdcffeffe3cca916dd9f8fde4bf35ab0b48f5"
+      "bytes": 12209,
+      "sha256": "11236ab9b7d7a08ad05152834baa0ed6845e713e520cc2694f824222f0aca8a7"
     },
     {
       "id": "north-africa-med-25x40-v1-wind",
@@ -5091,16 +5091,9 @@
       "sha256": "86692596823bf6fe73a4750ec1ab71dbf03b78958ac64f82a79cfca7717340f5"
     }
   ],
-  "serializationNotes": [
-    {
-      "assetId": "geos-fp-dust-20251115-1930",
-      "publicationSha256LF": "bbdda9f1a55093225aad6cabb37ca687ff62d5a68ea5e6ff2aab227bb25a3e64",
-      "currentSha256": "c63890f00309ff58d7dd0ab7014d4296e83bfa63e1b128b3c3afd7255eff8141",
-      "note": "Serialization differs; scientific JSON content exactly equals hashed processing evidence. Copied without changes. Use master catalog sha256 for delivered bytes; the preserved upstream catalog retains its original release fingerprint."
-    }
-  ],
+  "serializationNotes": [],
   "referencePolicy": "Asset paths are relative to this catalog. Relative paths inside copied visualization assets resolve against their entry's referenceBase, matching the original collection contract. HTTPS NASA/SVS links are external provenance/optional imagery, not package dependencies.",
-  "integrityPolicy": "Each asset sha256 hashes the exact source bytes copied into this package. These are authoritative for delivered files. Archived publication fingerprints in preserved upstream catalogs can differ after content-identical formatting changes; see serializationNotes.",
+  "integrityPolicy": "Every SHA-256 and byte count describes exact UTF-8 LF file bytes. Collection publication digests, verified source evidence and master asset digests must all agree. No newline normalization or formatting exemption is applied during verification.",
   "scientificCaveats": [
     "Dust uses selected three-hour means; rainfall, temperature and wind use selected one-hour means. None are daily/monthly averages or climatology.",
     "No seasonal summary layers exist; seasonal catalog membership is included.",

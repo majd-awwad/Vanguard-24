@@ -38,7 +38,7 @@ test("Studio opens on a real value: default centre cell, sound off, inspector", 
 
 test("Studio shows one flyout at a time and closes it with Escape returning focus", () => {
   const studio = text("web/studio/studio.js");
-  assert.equal((studio.match(/class: "st-flyout st-panel floating"/g) ?? []).length, 1);
+  assert.equal((studio.match(/class: "st-flyout"/g) ?? []).length, 1);
   assert.match(studio, /el\.flyoutBody\.replaceChildren\(\.\.\.nodes\)/);
   assert.match(studio, /const closeFlyout = \(\) => \{ const opener = railButtons\[currentTool\]; openTool\("explore"\); opener\?\.focus\(\); \}/);
 });
@@ -47,4 +47,27 @@ test("settings drawer values persist and sanitize (speech volume included)", () 
   assert.equal(defaults.speechVolume, 1);
   assert.equal(sanitize({ speechVolume: 7 }).speechVolume, 1);
   assert.match(text("web/cinematic/site/nav.js"), /earthpulse:settings/);
+});
+
+test("one layer, one tool: layer chip, tool memory, map card, clustered pins", () => {
+  const studio = text("web/studio/studio.js");
+  assert.match(studio, /function renderLayerChip\(\)/);
+  assert.match(studio, /function leaveTool\(prev\)/);
+  assert.match(studio, /function enterTool\(id\)/);
+  assert.ok(studio.includes("function computeInsets()"), "the whole coverage fits the free area");
+  assert.match(studio, /st-pin-cluster/);
+  assert.ok(studio.includes("setFlyout(nodes.length > 0)"), "the flyout exists only for the active tool");
+});
+
+test("spoiler lock is enforced in the timeline, Compare and Find signals", () => {
+  assert.match(text("web/studio/studio.js"), /"aria-disabled": locked \? "true" : null/);
+  assert.match(text("web/studio/compare.js"), /disabled: locked\.has\(entry\.date\)/);
+  assert.match(text("web/studio/hunter-ui.js"), /disabled: lock\.has\(entry\.date\)/);
+});
+
+test("Find signals is a short question with human results and no anomaly option", () => {
+  const hunter = text("web/studio/hunter-ui.js");
+  assert.match(hunter, /const ORDER = \[QUERY\.HIGHEST, QUERY\.THRESHOLD, QUERY\.INCREASE, QUERY\.DECREASE\]/);
+  assert.match(hunter, /class: "em-result st-row"/);
+  assert.match(hunter, /s\.header/);
 });

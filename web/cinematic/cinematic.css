@@ -352,3 +352,7 @@ body.cine #decode-svs-card figure { max-inline-size: 15rem; }
 :root[data-text-size="lg"] { font-size: 114%; }
 :root[data-text-size="xl"] { font-size: 130%; }
 :root[data-contrast="high"] { --cine-bg: #000; --cine-ink: #fff; --cine-muted: #e4ecf4; --cine-glass: rgb(0 0 0 / .92); --cine-glass-line: rgb(255 255 255 / .6); }
+
+/* Dock tidy: step labels stay on one line, the primary action leads */
+.cine-dock #decode-steps li { white-space: nowrap; letter-spacing: .03em; font-size: .62rem; }
+.next-step { position: relative; z-index: 2; background: rgb(5 11 18 / .6); }

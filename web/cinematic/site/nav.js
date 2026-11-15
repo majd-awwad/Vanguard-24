@@ -12,19 +12,38 @@ export const NAV_ITEMS = Object.freeze([
   { id: "science", path: "pages/science.html" },
   { id: "about", path: "pages/about.html" },
 ]);
+/** The path through the site: Decode, then the data, then the Studio. The Studio itself is the end of the path. */
+export const NEXT_STEPS = Object.freeze({
+  decode: { path: "pages/explore.html", en: ["Explore the data", "You listened and decoded. Now look at the real data, cell by cell."], ar: ["استكشف البيانات", "استمعت وفككت الشيفرة. الآن انظر إلى البيانات الحقيقية خلية بخلية."] },
+  explore: { path: "pages/studio.html", en: ["Open the Sound Studio", "Compare dates, find signals and listen across the whole map."], ar: ["افتح استوديو الصوت", "قارن التواريخ وابحث عن الإشارات واستمع عبر الخريطة كلها."] },
+  science: { path: "pages/studio.html", en: ["Open the Sound Studio", "Now hear these numbers on the map, for dust, rain and wind."], ar: ["افتح استوديو الصوت", "والآن استمع إلى هذه الأرقام على الخريطة: غبار ومطر ورياح."] },
+  about: { path: "index.html", en: ["Start with Decode", "The best way to understand EARTHPULSE is to listen to it."], ar: ["ابدأ بفك الشيفرة", "أفضل طريقة لفهم EARTHPULSE هي أن تستمع إليه."] },
+  settings: { path: "index.html", en: ["Back to Decode", "Your settings are saved on this device."], ar: ["العودة إلى فك الشيفرة", "إعداداتك محفوظة على هذا الجهاز."] },
+});
+
+export function mountNext(document, { language, from = "root", active, host = document.getElementById("site-footer") } = {}) {
+  const step = NEXT_STEPS[active];
+  if (!step) return null;
+  const [label, text] = step[language] ?? step.en;
+  const band = h(document, "section", { class: "next-step", "aria-label": label },
+    h(document, "p", { class: "next-text", text }), h(document, "a", { class: "button next-button", href: hrefFor(step.path, from), text: label + (language === "ar" ? " ←" : " →") }));
+  if (host) host.before(band); else document.body.append(band);
+  return band;
+}
+
 export const SETTINGS_PATH = "pages/settings.html";
 export const ARCHIVE_PATH = "atlas.html";
 
 export const navText = {
   en: {
     label: "Main", menu: "Menu", close: "Close", decode: "Decode", explore: "Explore Earth", studio: "Sound Studio", science: "Science", about: "About", settings: "Accessibility and settings", language: "Language",
-    skip: "Skip to the content", drawerTitle: "Settings", allSettings: "All settings", volume: "Sound volume", voiceVolume: "Voice volume", contrast: "High contrast", textSize: "Text size", captions: "Captions",
+    guidance: "Spoken instructions", skip: "Skip to the content", drawerTitle: "Settings", allSettings: "All settings", volume: "Sound volume", voiceVolume: "Voice volume", contrast: "High contrast", textSize: "Text size", captions: "Captions",
     sizes: { sm: "Small", md: "Medium", lg: "Large", xl: "Extra large" }, speeds: "Playback speed",
     footer: { data: "Data: NASA GMAO GEOS-FP (model). Earth imagery: NASA Earth Observatory, Blue Marble.", notEndorsed: "EARTHPULSE is not endorsed by NASA.", archive: "Archive: Sound Atlas v1", team: "Team Vanguard · An-Najah National University, Palestine" },
   },
   ar: {
     label: "التنقل الرئيسي", menu: "القائمة", close: "إغلاق", decode: "فك الشيفرة", explore: "استكشف الأرض", studio: "استوديو الصوت", science: "العلوم", about: "حول", settings: "إمكانية الوصول والإعدادات", language: "اللغة",
-    skip: "تخطَّ إلى المحتوى", drawerTitle: "الإعدادات", allSettings: "كل الإعدادات", volume: "مستوى الصوت", voiceVolume: "مستوى صوت الكلام", contrast: "تباين عالٍ", textSize: "حجم النص", captions: "التعليقات النصية",
+    guidance: "التعليمات المنطوقة", skip: "تخطَّ إلى المحتوى", drawerTitle: "الإعدادات", allSettings: "كل الإعدادات", volume: "مستوى الصوت", voiceVolume: "مستوى صوت الكلام", contrast: "تباين عالٍ", textSize: "حجم النص", captions: "التعليقات النصية",
     sizes: { sm: "صغير", md: "متوسط", lg: "كبير", xl: "كبير جدًا" }, speeds: "سرعة التشغيل",
     footer: { data: "البيانات: NASA GMAO GEOS-FP (نموذج). صور الأرض: مرصد الأرض التابع لناسا، Blue Marble.", notEndorsed: "EARTHPULSE لا تتبنّاه ناسا.", archive: "الأرشيف: أطلس الصوت v1", team: "فريق Vanguard · جامعة النجاح الوطنية، فلسطين" },
   },
@@ -81,9 +100,11 @@ export function createSettingsDrawer(document, { language, from = "root", storag
   const backdrop = h(document, "div", { class: "drawer-backdrop", hidden: true });
   const close = h(document, "button", { type: "button", class: "icon-btn", "aria-label": t.close });
   close.innerHTML = CLOSE;
+  const switches = {};
   const toggle = (label, key) => {
     const button = h(document, "button", { type: "button", role: "switch", class: "switch", "aria-checked": String(settings[key]), "aria-label": label }, h(document, "span", { class: "knob", "aria-hidden": "true" }));
     button.addEventListener("click", () => { const next = button.getAttribute("aria-checked") !== "true"; button.setAttribute("aria-checked", String(next)); apply({ [key]: next }); });
+    switches[key] = button;
     return h(document, "div", { class: "setting-inline" }, h(document, "span", { text: label }), button);
   };
   const slider = (label, key) => {
@@ -102,9 +123,11 @@ export function createSettingsDrawer(document, { language, from = "root", storag
     return b;
   });
   const sizeRow = h(document, "div", { class: "setting-row" }, h(document, "span", { class: "setting-label", text: t.textSize }), h(document, "div", { class: "seg", role: "group", "aria-label": t.textSize }, ...sizeButtons));
+  // Another part of the page (for example the Studio's Guided / Pure switch) changed a setting: keep the switches true to it.
+  document.defaultView?.addEventListener("earthpulse:settings", (event) => { for (const [key, button] of Object.entries(switches)) if (typeof event.detail?.[key] === "boolean") button.setAttribute("aria-checked", String(event.detail[key])); });
   const node = h(document, "aside", { class: "drawer", id: "settings-drawer", role: "dialog", "aria-modal": "false", "aria-labelledby": "drawer-title", hidden: true },
     h(document, "div", { class: "drawer-head" }, h(document, "h2", { id: "drawer-title", text: t.drawerTitle }), close),
-    h(document, "div", { class: "drawer-body" }, languageRow, slider(t.volume, "volume"), slider(t.voiceVolume, "speechVolume"), toggle(t.contrast, "contrast"), sizeRow, toggle(t.captions, "captions")),
+    h(document, "div", { class: "drawer-body" }, languageRow, slider(t.volume, "volume"), slider(t.voiceVolume, "speechVolume"), toggle(t.contrast, "contrast"), sizeRow, toggle(t.captions, "captions"), toggle(t.guidance, "guidance")),
     h(document, "div", { class: "drawer-foot" }, h(document, "a", { class: "button ghost", href: hrefFor(SETTINGS_PATH, from), text: t.allSettings })));
   document.body.append(backdrop, node);
   const ctl = overlay(document, { node, backdrop, trigger, initialFocus: () => close });
@@ -167,6 +190,6 @@ export function mountNav(document, host, { active, from = "pages", url = documen
   host.classList.add("site-nav");
   host.dataset.variant = variant;
   host.replaceChildren(skip, logo, links, h(document, "div", { class: "site-tools" }, lang, shortLang, gear, menuButton));
-  if (footer) mountFooter(document, { language, from });
+  if (footer) { mountNext(document, { language, from, active }); mountFooter(document, { language, from }); }
   return language;
 }

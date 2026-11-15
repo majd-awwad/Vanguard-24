@@ -56,20 +56,20 @@
     "assetHash": {
       "master": "catalog.json",
       "files": 18,
-      "catalog": "b36d435af33576a7102557820ad74fcd320a5e5d22bace7e8108e46e2c818dea",
+      "catalog": "3094068c7ef557f430e0f77c03ad3da5e9f88218d2a83b5160e012d5cdd32a8b",
       "snapshots": {
         "geos-fp-dust-20241215-1930": "abb3f0111187dd8a47d9ca122afd413824afb5c017c0a4d4fb794cfde4f6bbb8",
-        "geos-fp-dust-20250115-1930": "c229aca0cbe8a6ce15c149aa345a8e8efee3e32f168405bb44b702b245da8f01",
+        "geos-fp-dust-20250115-1930": "3dd6c72a102ed390efd495afc978abe7929ca738614ccff5668e05b4bd9492b4",
         "geos-fp-dust-20250215-1930": "dd734d0ee1f4c8d196c8c68c8b922265589551fa714f4077850909b9be910879",
         "geos-fp-dust-20250315-1930": "24ff07287a902b57f45a00259cc1af57d0e5ad12488cb89c488a51a6ff75bfe1",
         "geos-fp-dust-20250415-1930": "71df0dfd5b5053d57808dc5e855b9f97db7384baa8e565a129a1e77b69208252",
         "geos-fp-dust-20250515-1930": "f38231c5bce58553aae59aa8ea2246f33c4f411874d2c0a3502ce9e29747b19a",
-        "geos-fp-dust-20250615-1930": "f48b666a322b826d837bba07379b22dfa92d445981d7ec5bb2e41d4886a978fe",
-        "geos-fp-dust-20250715-1930": "fa77c71d5643d5d17fdac981b56e1c4da37924a194a25efd65e3961c4e6441cf",
-        "geos-fp-dust-20250815-1930": "b5b3834d19d91ffd313bdfe1c619fdd0334bc45e630fa787e85521ba53142824",
+        "geos-fp-dust-20250615-1930": "ff143d0f072607244b029a9f95ba53d6e04f7338fa6a139576f99d49efc75cf2",
+        "geos-fp-dust-20250715-1930": "fd23d7b29ddc72bb667eb6a311cd516f7ea83730a1855956d9e64bf015d58614",
+        "geos-fp-dust-20250815-1930": "feb3a8b6030bb3b4bd5747a054a3fc4b71f3101d34819d77695e5cbca367289d",
         "geos-fp-dust-20250819-1930": "77bc9aba35819f4aac1b3aab61e035a56ee415455be0610ef6ee583340aa56c1",
         "geos-fp-dust-20250915-1930": "649cdb51c4df1bf7901a919cce43d663b699e74832e1035e4c351abd8d01857f",
-        "geos-fp-dust-20251015-1930": "ac4bc0f3309c6e09eb5c4042a2be004966db3a62aa1c731fe4b63fb26e22db39",
+        "geos-fp-dust-20251015-1930": "3548645a317dfccfb9359159308c3176475fb87deed0f9a9ef73710c23b10786",
         "geos-fp-dust-20251115-1930": "c63890f00309ff58d7dd0ab7014d4296e83bfa63e1b128b3c3afd7255eff8141"
       }
     }
@@ -131,7 +131,7 @@
     "assetHash": {
       "master": "catalog.json",
       "files": 15,
-      "catalog": "05713ddaab3b7a526faccd69950a2cc0b958fde7f8f40b7a1af2120d345f412b",
+      "catalog": "6561e07702e245e2c22b498eea4956111a5f1fd21e8a94c0331ba62dfe1cc359",
       "snapshots": {
         "geos-fp-rainfall-20241215-1930": "900deeb13d5b4f43345b5b402b79c705477ede249cd432fb997d057aa11b2ef3",
         "geos-fp-rainfall-20250115-1930": "7991cf66bece10af6f5035b0e34deaf94609ece3c5cb21bcbef0f378e822ee91",
@@ -146,81 +146,6 @@
         "geos-fp-rainfall-20250915-1930": "37bf51a6a9e0170a293d749776b1016a97473cb91f325628dcbabeea4228a8ff",
         "geos-fp-rainfall-20251015-1930": "e348f49bb028bf7a595b8f299d879f0cae28a282e05bdaa0520a407e27b9694e",
         "geos-fp-rainfall-20251115-1930": "595489516e26c0924b992d1a39b5318184689166f21a423f515540022c040ddc"
-      }
-    }
-  },
-  {
-    "datasetId": "geos-fp-temperature-sampled-2025",
-    "phenomenon": "temperature",
-    "eicVisualizationUrl": "https://svs.gsfc.nasa.gov/5147/",
-    "eicRelation": "RELATED_CONTEXT: the EIC visualization of GEOS-FP near-surface temperature; the relation is stated, nothing is drawn from it.",
-    "sourceDatasetUrl": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/",
-    "sourceGranuleExample": "https://portal.nccs.nasa.gov/datashare/gmao/geos-fp/das/Y2024/M12/D15/GEOS.fp.asm.tavg1_2d_slv_Nx.20241215_1930.V01.nc4",
-    "sourceType": "model",
-    "sourceProduct": "NASA GMAO GEOS-FP DFPT1NXSLV (GEOS FP 2d time-averaged single level diagnostics)",
-    "modelRelease": "5.29.5",
-    "variable": "T2M (2 m air temperature) in K and derived degC",
-    "unit": "K; derived degC",
-    "timeCoverage": {
-      "start": "2024-12-15",
-      "end": "2025-11-15",
-      "kind": "one-hour mean",
-      "note": "13 selected snapshots (the 15th of each month 2024-12 to 2025-11, plus 2025-08-19); each is one snapshot, not a daily, monthly or seasonal average and not a climatology."
-    },
-    "geoCoverage": {
-      "type": "bbox",
-      "west": -20,
-      "east": 50,
-      "south": 15,
-      "north": 45
-    },
-    "resolution": {
-      "native": {
-        "lat": 0.25,
-        "lon": 0.3125
-      },
-      "grid": "25 x 40 cells of 1.2 x 1.75 degrees"
-    },
-    "sampleCount": {
-      "snapshots": 13,
-      "cellsPerSnapshot": 1000
-    },
-    "buildLabels": [
-      "GEOSadas-5_29_5-p6 experiment_id: f5295_fp",
-      "GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp"
-    ],
-    "lastVerified": "2026-11-15",
-    "processingSteps": [
-      "Read the GEOS-FP NetCDF granule (SHA-256 recorded)",
-      "Spherical area-weighted mean of the native footprints inside each 1.2 x 1.75 degree cell",
-      "Serialise as JSON with provenance; every file verified against the master catalog sha256",
-      "Derive degC = T2M - 273.15"
-    ],
-    "missingPolicy": "null means missing; any invalid native overlap makes the target cell missing; missing is never replaced by zero or shown as no change (0 missing cells in this release).",
-    "qualityFlags": [
-      "model output, not a direct observation",
-      "different literal model build labels are not comparable (differences and Echo blocked across them)",
-      "native footprints inferred from regular coordinate centres; no explicit datum declaration"
-    ],
-    "licenseAndCredit": "Data: NASA GMAO GEOS-FP. Earth imagery: NASA Earth Observatory Blue Marble. No NASA logo; EARTHPULSE is a student project and is not endorsed by NASA.",
-    "assetHash": {
-      "master": "catalog.json",
-      "files": 15,
-      "catalog": "d349aea3fc5ee28cd6fee8b4f23699d5a5bf77038f61b6462676a1dd4d9b5730",
-      "snapshots": {
-        "geos-fp-temperature-20241215-1930": "51f65b8c14332a04dd38a396919e8add7d7daee7ee585121d0f01d0185b63456",
-        "geos-fp-temperature-20250115-1930": "3da540755ea12ad4c9f02edd468088b186fa38d3130337573f39aa4d738eaa41",
-        "geos-fp-temperature-20250215-1930": "28af45b1b11f92463af4fd320c272ca4379c9d6bb50f1b437ab37c7ba44f6cf1",
-        "geos-fp-temperature-20250315-1930": "0a36edc795e15724be55520fbf41cd07084c546b8f19a48695fbf84bb97e2e23",
-        "geos-fp-temperature-20250415-1930": "17a62e3dfa74f523788c157e43ad13a03c4578c7fd29d1b1e8249019bba81d22",
-        "geos-fp-temperature-20250515-1930": "17caf1c5590590a74821386323ac287cbe1ad0a5979519da2be83b5b731dcd7d",
-        "geos-fp-temperature-20250615-1930": "17ec080ac372bba7d7a8ca2664c9f74d7d0303639c496ca156f873a7509f66d7",
-        "geos-fp-temperature-20250715-1930": "863d92df7bf11cf2065db69b27b7e15831c1985873abe036eb70595e0fc2dde6",
-        "geos-fp-temperature-20250815-1930": "55e2d321b804b553c33edebe7a4f3dde5d42b10275606300e61566a56cc68ad7",
-        "geos-fp-temperature-20250819-1930": "c6c2263069429af5efa341992fd541336e07b27de4bfa660244ac8b67344f5d7",
-        "geos-fp-temperature-20250915-1930": "55a994371e2b5d3b35252db28cb8221d0ac739dcb8c50f3b8a9b0b61a2de6a6e",
-        "geos-fp-temperature-20251015-1930": "af3d78df148b28d9dada1f64a2d24d992d8dbaa72f5984bd0df5c3fff869ae81",
-        "geos-fp-temperature-20251115-1930": "945403dfb804e76fe919e4511dde2d8788ac9c5e99927d697cb9692a98e0d268"
       }
     }
   },
@@ -281,7 +206,7 @@
     "assetHash": {
       "master": "catalog.json",
       "files": 15,
-      "catalog": "2fea1d515ae23694965df3da7b4cdcffeffe3cca916dd9f8fde4bf35ab0b48f5",
+      "catalog": "11236ab9b7d7a08ad05152834baa0ed6845e713e520cc2694f824222f0aca8a7",
       "snapshots": {
         "geos-fp-wind-20241215-1930": "f192f08f05f4f7bcdf88eaa0c7a9ad20c4ca931af77175da6756eb665ebcb855",
         "geos-fp-wind-20250115-1930": "0a275618fe370cf8f6d5a566552318f58ae001a7fa89c45a9bbf1d05dff16985",

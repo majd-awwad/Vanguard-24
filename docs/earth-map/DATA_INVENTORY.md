@@ -23,6 +23,8 @@ Windows checkout `core.autocrlf=true` converted the package to CRLF, so a naive 
 catalog, and writes the generated copy `web/assets/earthpulse-json/` (with `.gitattributes: * -text` so git never
 converts it again). The browser applies the same normalisation when it verifies a file.
 
+**What the app uses:** Dust, Rain and Wind. The package carries one more phenomenon folder (15 files) that the app intentionally does not use: `copy-package.mjs` does not copy it, so the served copy holds 48 verified files (the 63 source files are still all verified in the source package, which is never edited).
+
 ## Common facts
 
 | Item | Value |
@@ -35,10 +37,10 @@ converts it again). The browser applies the same normalisation when it verifies 
 | Seasons | winter-2024-2025 (3), spring-2025 (3), summer-2025 (4), autumn-2025 (3): membership lists only |
 | Missing values | 0 nulls in all 13 x 1000 values of every measure in this release; code still handles null |
 | Data type | **model output** (NASA GMAO GEOS-FP), never "measured" or "observed" |
-| Build labels | Same for all four phenomena: **A** `GEOSadas-5_29_5-p6 experiment_id: f5295_fp` (2024-12-15, 2025-01-15, 2025-02-15) and **B** `GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp` (the other 10, incl. 2025-08-19) |
+| Build labels | Same for all three phenomena the app uses: **A** `GEOSadas-5_29_5-p6 experiment_id: f5295_fp` (2024-12-15, 2025-01-15, 2025-02-15) and **B** `GEOSadas-5_29_5-p6-SLES15 experiment_id: f5295_fp` (the other 10, incl. 2025-08-19) |
 
 Because every phenomenon has the same two build groups, **cross-build differences and Echo matches are blocked for all
-four** (the dust catalog publishes `compatibilityGroups` and `unavailableComparisons`; rainfall, temperature and wind
+three** (the dust catalog publishes `compatibilityGroups` and `unavailableComparisons`; the rainfall and wind
 catalogs publish neither, so the rule is derived from each snapshot's `source.modelSource`, which was checked here).
 
 ## Per phenomenon
@@ -60,12 +62,6 @@ catalogs publish neither, so the rule is derived from each snapshot's `source.mo
 - Files: 15 JSON (catalog, grid, 13 snapshots), no comparisons.
 - Range: rate 0 to 1.08e-3 kg m-2 s-1; accumulation 0 to 3.87 mm (very skewed).
 - Related visualization: IMERG / SVS 4285 may appear only as `RELATED_CONTEXT` (different product).
-
-### Temperature
-- Product / variable: GEOS-FP `DFPT1NXSLV`, `T2M` (2 m air temperature). Units: `kelvin` and derived `celsius` (T2M - 273.15).
-- Window: one-hour mean 19:00-20:00 UTC.
-- Files: 15 JSON. Range: 261.6 to 314.6 K (-11.6 to 41.5 degC).
-- Related visualization: SVS 5147 (GEOS-FP near-surface temperature), `RELATED_CONTEXT`; the relation is stated, nothing is drawn from it.
 
 ### Wind
 - Product / variable: GEOS-FP `DFPT1NXSLV`, `U10M` (eastward) and `V10M` (northward) at 10 m.
@@ -94,8 +90,8 @@ Not in this package. GEDI footprints elsewhere in the repo are six spatial check
 
 ## Verdict
 
-- **Feature 01 (map):** fits all four phenomena at full 25x40 resolution. The existing Studio is generalised from dust to
-  four phenomena rather than rebuilt.
+- **Feature 01 (map):** fits all three phenomena (Dust, Rain, Wind) at full 25x40 resolution. The existing Studio is generalised from dust to
+  three phenomena rather than rebuilt.
 - **Hunter:** fits. Highest values, threshold exceedance and largest increase/decrease work per phenomenon and date; changes
   only inside one build group. **Anomaly versus a baseline is "Not available"**: 12-13 selected snapshots of different
   seasons are not a baseline.

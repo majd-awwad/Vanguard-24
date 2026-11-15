@@ -17,11 +17,11 @@ Statuses: **Implemented**, **Partial**, **Blocked by data**, **Not started**. "A
 | 03 Bottom bar: timeline over the sampled dates, play/stop, real waveform, measure and unit | Implemented | waveform from the transport's AnalyserNode |
 | 03 Mobile: map first, bottom sheet for tools, three tabs and mode button always visible, targets >= 44 px | Implemented | Edge audit: 0 controls under 44 px; screenshots |
 | 11 State machine and events | Implemented | `state.js`; Auto: VOICE-C and the "must never happen" cases |
-| F01 four phenomena on one map with documented scales | Implemented | `datasets.js` `PHENOMENA` |
+| F01 three phenomena (Dust, Rain, Wind) on one map with documented scales | Implemented | `datasets.js` `PHENOMENA` |
 | F01 smooth registered layer, zoom/pan/pinch/keyboard, pan limited to the coverage, "outside coverage" message | Implemented | |
 | F01 arrow keys over the 1000 cells (row by row, geography never mirrored), Enter selects, R and "Explain my position" | Implemented | |
 | F01 auto scan, speed, mute, replay, stop, return to last position | Implemented | area scan 0.5x to 4x, path, "Return to last position" |
-| F01 area scan and path as extra tools; compare dates; places A/B; share link | Implemented | kept from the Studio, now for all four phenomena |
+| F01 area scan and path as extra tools; compare dates; places A/B; share link | Implemented | kept from the Studio, now for all three phenomena |
 | F02 Hunter: highest values | Implemented | Auto |
 | F02 Hunter: threshold exceedance (`value >= threshold`, in the unit; dust preset 0.20) | Implemented | |
 | F02 Hunter: largest increase and decrease between two dates (delta, percent only when valid) | Implemented | blocked across build labels with the catalog reason |
@@ -35,7 +35,7 @@ Statuses: **Implemented**, **Partial**, **Blocked by data**, **Not started**. "A
 | F03 Echo: dust while the Decode dates are locked | **Blocked by data** until Decode is finished | needs 2025-08-15; never silently shortened |
 | 07 Guided Voice: speechSynthesis only with a voice for `ar`/`en`, live-region fallback, debounce 550 ms, cancel on context change, ducking, separate volumes, "What can I do here?" | Implemented | Auto with a fake synth, Edge with a spy |
 | 07 Pure Sonification: zero automatic TTS, ARIA and text stay, speech can be re-enabled | Implemented | explicit requests (R, Explain) still speak by design |
-| 08 Sonification `earthmap-v1` for four phenomena, fixed documented limits | Implemented | `SONIFICATION_MAPPING.md` |
+| 08 Sonification `earthmap-v1` for three phenomena, fixed documented limits | Implemented | `SONIFICATION_MAPPING.md` |
 | 08 Dust as "filtered noise" | **Partial** | approximated by a dense deterministic pulse train (the transport has no noise source) |
 | 08 Optional realistic wind sound layer | Not started | optional, off by default |
 | 09 Provenance manifest per dataset, 09.1 inventory | Implemented | `DATA_PROVENANCE.md`, `provenance.json`, `DATA_INVENTORY.md` |
@@ -48,7 +48,7 @@ Statuses: **Implemented**, **Partial**, **Blocked by data**, **Not started**. "A
 
 | Test | Status | Automated | Edge |
 |---|---|---|---|
-| F01-A real sample shows value, unit, date, source | Implemented | `earth-map-core` (package, scales), `earth-map-ui` (SOURCE) | info panel for all four phenomena |
+| F01-A real sample shows value, unit, date, source | Implemented | `earth-map-core` (package, scales), `earth-map-ui` (SOURCE) | info panel for all three phenomena |
 | F01-B different sample changes the sound per the documented rule | Implemented | `earth-map-core` "each phenomenon changes the right quantity" | analyser signal for all four |
 | VOICE-A Guided reads options and the value after the selection settles | Implemented | `earth-map-core` speech tests | spy: nothing during movement, one announcement after |
 | VOICE-B Pure: no automatic TTS on pointer or arrow movement | Implemented | `earth-map-core` speech test | spy: 0 calls during movement |

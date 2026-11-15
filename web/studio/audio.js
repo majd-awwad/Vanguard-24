@@ -1,76 +1,55 @@
 import { createTransport } from "../audio/transport.js";
-import { createAudioTap } from "../cinematic/audio-tap.js";
-import { MAPPING_VERSION, TONE_GAIN } from "./mapping.js";
-import { continuousVoice } from "../audio/voices.js";
 
-// Audio for the Studio: the shared transport (web/audio/transport.js) with the analyser tap used elsewhere on the
-// site, so the waveform shows the real output. Sound starts only after an explicit user gesture.
+// The Studio's clock. The shared transport (web/audio/transport.js) runs the area scans, paths, comparisons and Echo
+// series: it counts time, handles play, pause, stop and speed, and reports the active step. It synthesizes nothing here:
+// the plans carry markers only (no tones), and each time a step becomes active the Studio plays a slice of the user's
+// recording for it (web/studio/recordings.js). Sound starts only after an explicit user gesture.
 
-export const HOVER_INTERVAL_MS = 90;
-
-/** A short "sound is on" note, so enabling sound is itself audible. */
-export function confirmationPlan() {
-  const tone = { ...continuousVoice({ frequencyHz: 440, gain: TONE_GAIN, pan: 0 }), durationS: 0.16, attackS: 0.01, releaseS: 0.05 };
-  return { caseId: "studio", level: "studio", mappingVersion: MAPPING_VERSION, mode: "confirm", durationS: 0.2, events: [{ id: "ev-0", onsetS: 0, row: 0, col: 0, step: 0, tone, evidence: { mappingVersion: MAPPING_VERSION } }] };
-}
-
-export function createStudioAudio({ volume = 0.72, now = () => performance.now(), setTimer = (f, ms) => setTimeout(f, ms), clearTimer = (id) => clearTimeout(id) } = {}) {
-  const tap = createAudioTap();
-  const transport = createTransport({ createContext: () => tap.createContext() });
+export function createStudioAudio({ volume = 0.72 } = {}) {
+  const transport = createTransport();
   let enabled = false;
-  let lastKey = null;
-  let lastAt = -Infinity;
-  let timer = null;
-  let pending = null;
   let speed = 1;
   let baseVolume = volume;
   let duck = 1;
-  let rampTimer = null;
-  const applyVolume = () => transport.setVolume(baseVolume * duck);
-  applyVolume();
+  let plan = null;
+  let revision = -1;
+  let last = null;
 
-  async function start(plan) {
+  transport.subscribe((snap) => {
+    if (snap.planRevision !== revision) { revision = snap.planRevision; last = null; }
+    if (snap.status === "playing" && snap.activeEventId && snap.activeEventId !== last) {
+      last = snap.activeEventId;
+      const event = plan?.events.find((e) => e.id === last);
+      if (event) api.onEvent?.(event, plan);
+    }
+    if (snap.status === "paused" || snap.status === "idle") api.onHalt?.(snap.status);
+  });
+
+  async function start(next) {
     transport.pause();
-    transport.load(plan);
+    plan = next;
+    transport.load(next);
     await transport.play();
   }
 
   const api = {
-    transport, tap,
+    transport,
+    onEvent: null,
+    onHalt: null,
     get enabled() { return enabled; },
     get unavailable() { return transport.snapshot().audioUnavailable; },
     /** Must be called from a user gesture (click or key press). */
-    async enable() { enabled = true; lastKey = null; await start(confirmationPlan()); return enabled; },
-    disable() { enabled = false; clearTimer(timer); timer = null; pending = null; transport.pause(); },
-    setVolume(value) { baseVolume = value; applyVolume(); },
-    /** Lower the data sound while speech is speaking, then restore it smoothly (never silenced). */
-    setDuck(on, { factor = 0.35, rampMs = 300, stepMs = 30 } = {}) {
-      clearTimer(rampTimer);
-      const target = on ? factor : 1;
-      const steps = Math.max(1, Math.round(rampMs / stepMs));
-      const from = duck;
-      let i = 0;
-      const tick = () => { i++; duck = from + ((target - from) * i) / steps; applyVolume(); if (i < steps) rampTimer = setTimer(tick, stepMs); else rampTimer = null; };
-      rampTimer = setTimer(tick, stepMs);
-    },
+    async enable() { enabled = true; return enabled; },
+    disable() { enabled = false; transport.pause(); },
+    setVolume(value) { baseVolume = value; },
+    get volume() { return baseVolume; },
+    setDuck(on) { duck = on ? 0.35 : 1; },
     get duck() { return duck; },
     setSpeed(value) { speed = value; transport.setSpeed(value); },
     get speed() { return speed; },
-    /** Immediate play of a plan (explicit actions: Space, area, path, fingerprints). */
-    play(plan) { lastKey = null; transport.setSpeed(speed); return start(plan); },
-    stop() { clearTimer(timer); timer = null; pending = null; transport.pause(); },
-    /**
-     * Hover/cursor tone: deterministic (same key -> same plan), skipped when the key has not changed, and throttled
-     * so quick pointer movement never stutters (the last position always plays, after the interval).
-     */
-    hover(key, makePlan) {
-      if (!enabled || key === lastKey) return;
-      const wait = HOVER_INTERVAL_MS - (now() - lastAt);
-      const fire = () => { timer = null; const job = pending; pending = null; if (!job || !enabled) return; lastKey = job.key; lastAt = now(); transport.setSpeed(1); start(job.makePlan()); };
-      pending = { key, makePlan };
-      if (wait <= 0) { clearTimer(timer); fire(); } else if (timer === null) timer = setTimer(fire, wait);
-    },
-    resetHover() { lastKey = null; },
+    /** Runs a marker plan on the clock (explicit actions: area, path, comparisons, Echo). */
+    play(next) { transport.setSpeed(speed); return start(next); },
+    stop() { transport.pause(); },
   };
   return api;
 }

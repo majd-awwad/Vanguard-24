@@ -60,5 +60,17 @@ body.explore-3d[data-flight="hero"] .xp-grid, body.explore-3d[data-flight="flyin
 .xp-left h1 { font-size: clamp(1.8rem, 3vw, 2.6rem); }
 .xp-left .panel { font-size: var(--fs-small); }
 .lock { background: var(--surface); backdrop-filter: var(--blur); box-shadow: var(--shadow-float); }
-body.explore-3d:has(.lock) .site-main { display: grid; align-content: center; min-height: calc(100dvh - var(--nav-h)); }
+
 @media (max-width: 900px) { .xp-layout { grid-template-columns: 1fr; } .xp-left .panel { display: none; } }
+
+/* One selected-cell card; Compare opens in a drawer */
+.xp-card { display: grid; gap: var(--s-3); }
+.xp-part { background: transparent; border: 0; padding: 0; border-radius: 0; }
+.xp-part + .xp-part { padding-top: var(--s-3); border-top: 1px solid var(--line); }
+.xp-drawer { position: fixed; z-index: 55; inset-block: var(--nav-h) 0; inset-inline-end: 0; width: min(24rem, 100vw); overflow-y: auto; padding: var(--s-3) var(--s-4) var(--s-5); background: var(--surface-solid); border-inline-start: 1px solid var(--line-strong); box-shadow: var(--shadow-float); }
+.xp-drawer[hidden] { display: none; }
+.xp-drawer-head { display: flex; justify-content: flex-end; margin-bottom: var(--s-2); }
+.xp-compare-body { background: transparent; border: 0; padding: 0; }
+body:has(.panel.lock) .next-step { display: none; }
+.lock { padding-block: 3.5rem; }
+.lock { min-height: calc(100dvh - var(--nav-h) - 17rem); display: grid; align-content: center; }

@@ -24,7 +24,7 @@ export function decodeShare(search, catalog, bounds) {
   const byDate = Object.fromEntries(catalog.snapshots.map((s) => [s.date, s.id]));
   const out = {};
   const phen = params.get("phen");
-  if (["dust", "rainfall", "temperature", "wind"].includes(phen)) out.phenomenon = phen;
+  if (["dust", "rainfall", "wind"].includes(phen)) out.phenomenon = phen;
   const date = params.get("date");
   if (date && (byDate[date] || catalog.snapshots.some((s) => s.id === date))) out.snapshotId = byDate[date] ?? date;
   const cmp = params.get("cmp")?.split(",");

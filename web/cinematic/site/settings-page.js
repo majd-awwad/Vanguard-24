@@ -100,15 +100,17 @@ export async function startSettings(document = globalThis.document) {
   // Instructions as text; spoken only when a voice exists for this language.
   const instructions = h(document, "ol", { class: "instructions" }, c.instructions.map((line) => h(document, "li", { text: line })));
   const speech = globalThis.speechSynthesis;
+  const guidanceSwitch = toggle("set-guidance", c.guidance.label, settings.guidance, (value) => update({ guidance: value }));
+  const guidanceRow = h(document, "div", { class: "switch-row" }, h(document, "span", { text: c.guidance.label }), guidanceSwitch);
   const guidanceBody = h(document, "div", {});
   const refreshGuidance = () => {
     const available = Boolean(speech) && hasVoice(speech.getVoices(), language);
-    if (!available) { guidanceBody.replaceChildren(h(document, "p", { class: "callout", text: c.guidance.unavailable })); return; }
+    if (!available) { guidanceBody.replaceChildren(guidanceRow, h(document, "p", { class: "callout", text: c.guidance.unavailable })); return; }
     const read = h(document, "button", { type: "button", class: "button ghost", text: c.guidance.read });
     const stop = h(document, "button", { type: "button", class: "button ghost", text: c.guidance.stop });
     read.addEventListener("click", () => { speech.cancel(); const utterance = new SpeechSynthesisUtterance(c.instructions.join(" ")); utterance.lang = language; speech.speak(utterance); });
     stop.addEventListener("click", () => speech.cancel());
-    guidanceBody.replaceChildren(h(document, "div", { class: "player-buttons" }, read, stop));
+    guidanceBody.replaceChildren(guidanceRow, h(document, "div", { class: "player-buttons" }, read, stop));
   };
   refreshGuidance();
   speech?.addEventListener?.("voiceschanged", refreshGuidance);

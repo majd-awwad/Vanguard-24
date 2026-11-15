@@ -1,19 +1,22 @@
-import { cellId, fill, fillIso, trimNumber } from "../cinematic/site/cells.js";
+import { cellId, fillIso, formatLat, formatLon, trimNumber } from "../cinematic/site/cells.js";
 import { h } from "../cinematic/site/dom.js";
 import { formatChange, formatValue } from "./datasets.js";
 import { cellCenter } from "./field.js";
 import { QUERY, toHunterData } from "./hunter-core.js";
 import { analysisCopy } from "./analysis-copy.js";
 import { mapCopy } from "./earthmap-copy.js";
+import { signalsCopy } from "./signals-copy.js";
+import { infoIcon, stateBox } from "./studio-ui-kit.js";
 
-// Find signals (Feature 02): the form, the worker call, the ranked results pinned on the same map, and the
+// Find signals: one question sentence, a primary button, human results pinned on the same map, and the
 // "How was this found?" evidence. Nothing here computes science: hunter-core.js does, off the main thread.
 
-const ORDER = [QUERY.HIGHEST, QUERY.THRESHOLD, QUERY.INCREASE, QUERY.DECREASE, QUERY.ANOMALY];
+const ORDER = [QUERY.HIGHEST, QUERY.THRESHOLD, QUERY.INCREASE, QUERY.DECREASE];
 
 export function mountHunter(api, container) {
   const { document, store, language, state } = api;
   const a = analysisCopy[language].hunter;
+  const s = signalsCopy[language].hunter;
   const m = mapCopy[language];
   const T = (template, values) => fillIso(template, values, language);
   const el = {};
@@ -21,76 +24,64 @@ export function mountHunter(api, container) {
 
   const spec = () => api.phen.spec;
   const unitName = () => m.phen.unitName[api.phen.id];
-  const dates = () => api.phen.list.filter((s) => !api.lockedDates().includes(s.date));
+  const locked = () => new Set(api.lockedDates());
 
-  // ---- Form
-  el.radios = h(document, "div", { class: "em-radios", role: "radiogroup", "aria-label": a.question });
-  const radioFor = {};
-  for (const type of ORDER) {
-    const disabled = type === QUERY.ANOMALY;
-    const input = h(document, "input", { type: "radio", name: "hunter-q", id: "hq-" + type, value: type, checked: type === QUERY.HIGHEST, disabled });
-    const label = h(document, "label", { for: input.id, class: "em-radio" }, input, h(document, "span", { text: a.q[type] }));
-    radioFor[type] = input;
-    el.radios.append(label);
-    input.addEventListener("change", syncForm);
-  }
-  el.anomalyNote = h(document, "p", { class: "small callout", text: a.anomalyNo });
-  el.date = h(document, "select", { id: "hunter-date", "aria-label": a.date });
-  el.from = h(document, "select", { id: "hunter-from", "aria-label": a.from });
-  el.to = h(document, "select", { id: "hunter-to", "aria-label": a.to });
-  el.threshold = h(document, "input", { type: "number", id: "hunter-threshold", step: "any", inputmode: "decimal", "aria-label": "threshold" });
-  el.thresholdLabel = h(document, "label", { for: "hunter-threshold", class: "st-pick" });
+  // ---- The question: "Show the [10] [highest] Dust values on [date]"
+  el.type = h(document, "select", { id: "hunter-type", "aria-label": s.typeLabel }, ...ORDER.map((type) => h(document, "option", { value: type, text: s.types[type] })));
+  el.limit = h(document, "select", { id: "hunter-limit", "aria-label": s.limitLabel }, ...[5, 10, 20].map((n) => h(document, "option", { value: n, text: String(n), selected: n === 10 })));
+  el.date = h(document, "select", { id: "hunter-date", "aria-label": s.dateLabel });
+  el.from = h(document, "select", { id: "hunter-from", "aria-label": s.fromLabel });
+  el.to = h(document, "select", { id: "hunter-to", "aria-label": s.toLabel });
+  el.threshold = h(document, "input", { type: "number", id: "hunter-threshold", step: "any", inputmode: "decimal", "aria-label": a.threshold.replace("{unit}", "") });
   el.preset = h(document, "button", { type: "button", class: "button ghost small-button" });
-  el.limit = h(document, "select", { id: "hunter-limit", "aria-label": a.limit }, ...[5, 10, 20].map((n) => h(document, "option", { value: n, text: String(n), selected: n === 10 })));
+  el.sentence = h(document, "div", { class: "st-sentence", dir: "auto" });
+  el.thresholdRow = h(document, "div", { class: "st-sentence st-sentence-sub" });
   el.search = h(document, "button", { type: "button", class: "button", text: a.search });
-  el.cancel = h(document, "button", { type: "button", class: "button ghost", text: a.cancel, hidden: true });
-  el.status = h(document, "p", { class: "callout", role: "status", "aria-live": "polite", text: a.idle });
-  el.lockNote = h(document, "p", { class: "small", hidden: true, text: a.lockedDates });
-  const pick = (id, label, node) => h(document, "label", { class: "st-pick", for: id }, h(document, "span", { text: label }), node);
-  el.dateRow = pick("hunter-date", a.date, el.date);
-  el.fromRow = pick("hunter-from", a.from, el.from);
-  el.toRow = pick("hunter-to", a.to, el.to);
-  el.thresholdRow = h(document, "div", { class: "em-threshold" }, el.thresholdLabel, el.threshold, el.preset);
-  el.list = h(document, "ol", { class: "em-results", "aria-label": a.resultsLabel });
+  el.cancel = h(document, "button", { type: "button", class: "button ghost", text: a.cancel });
+  el.state = h(document, "div", { class: "st-state-slot" });
+  el.head = h(document, "div", { class: "st-results-head", hidden: true });
+  el.list = h(document, "ol", { class: "em-results st-rows", "aria-label": a.resultsLabel });
   el.how = h(document, "details", { class: "em-how", hidden: true });
   el.listen = h(document, "button", { type: "button", class: "button ghost small-button", text: a.listen, hidden: true });
-  container.append(h(document, "section", { class: "panel", "aria-labelledby": "hunter-title" }, h(document, "h2", { id: "hunter-title", text: a.title }), h(document, "p", { class: "small", text: a.intro }),
-    el.radios, el.anomalyNote, el.lockNote, el.dateRow, el.fromRow, el.toRow, el.thresholdRow, pick("hunter-limit", a.limit, el.limit),
-    h(document, "div", { class: "st-tools-row" }, el.search, el.cancel), el.status),
-    h(document, "section", { class: "panel", "aria-live": "off" }, el.list, el.listen, el.how));
+  container.append(h(document, "section", { class: "panel st-tool", "aria-labelledby": "hunter-title" }, h(document, "h2", { id: "hunter-title", text: a.title }),
+    h(document, "div", { class: "st-question" }, el.sentence, el.thresholdRow, h(document, "div", { class: "st-question-actions" }, el.search, infoIcon(document, s.help))),
+    el.state, el.head, el.list, el.listen, el.how));
 
+  const selectedType = () => el.type.value || QUERY.HIGHEST;
+  function dateOptions(selected) {
+    const lock = locked();
+    return api.phen.list.map((entry) => h(document, "option", { value: entry.date, text: entry.date + (lock.has(entry.date) ? " 🔒" : ""), selected: entry.date === selected, disabled: lock.has(entry.date), title: lock.has(entry.date) ? m.date.locked : "" }));
+  }
   function fillDates() {
-    const options = (selected) => dates().map((s) => h(document, "option", { value: s.date, text: s.date, selected: s.date === selected }));
-    const list = dates();
-    const dflt = list.find((s) => s.date === state.snapshot.date)?.date ?? list[0]?.date;
-    el.date.replaceChildren(...options(dflt));
-    el.from.replaceChildren(...options(list.find((s) => s.date === "2025-04-15")?.date ?? list[0]?.date));
-    el.to.replaceChildren(...options(list.find((s) => s.date === "2025-07-15")?.date ?? list.at(-1)?.date));
-    el.lockNote.hidden = api.lockedDates().length === 0;
+    const lock = locked();
+    const open = api.phen.list.filter((entry) => !lock.has(entry.date));
+    const dflt = open.find((entry) => entry.date === state.snapshot.date)?.date ?? open[0]?.date;
+    el.date.replaceChildren(...dateOptions(dflt));
+    el.from.replaceChildren(...dateOptions(open.find((entry) => entry.date === "2025-04-15")?.date ?? open[0]?.date));
+    el.to.replaceChildren(...dateOptions(open.find((entry) => entry.date === "2025-07-15")?.date ?? open.at(-1)?.date));
   }
   function syncForm() {
     const type = selectedType();
-    el.dateRow.hidden = !(type === QUERY.HIGHEST || type === QUERY.THRESHOLD);
-    el.fromRow.hidden = el.toRow.hidden = !(type === QUERY.INCREASE || type === QUERY.DECREASE);
+    const change = type === QUERY.INCREASE || type === QUERY.DECREASE;
+    const phen = m.phen[api.phen.id];
+    const lead = h(document, "span", { text: s.show });
+    const tail = h(document, "span", { text: T(change ? s.tailBetween : s.tailOn, { phen }) });
+    el.sentence.replaceChildren(lead, el.limit, el.type, tail, ...(change ? [el.from, h(document, "span", { text: s.and }), el.to] : [el.date]));
     el.thresholdRow.hidden = type !== QUERY.THRESHOLD;
-    el.thresholdLabel.textContent = T(a.threshold, { unit: unitName() });
-    const s = spec();
-    if (document.activeElement !== el.threshold && (el.threshold.value === "" || el.threshold.dataset.phen !== api.phen.id)) { el.threshold.value = String(s.defaultThreshold); el.threshold.dataset.phen = api.phen.id; }
-    el.preset.hidden = api.phen.id !== "dust";
-    el.preset.textContent = T(a.preset, { value: s.decodeThreshold ?? "" });
-    el.anomalyNote.hidden = false;
+    if (type === QUERY.THRESHOLD) {
+      el.thresholdRow.replaceChildren(h(document, "span", { text: s.atLeast }), el.threshold, h(document, "span", { class: "st-unit", text: unitName() }), ...(api.phen.id === "dust" ? [el.preset] : []));
+    }
+    if (document.activeElement !== el.threshold && (el.threshold.value === "" || el.threshold.dataset.phen !== api.phen.id)) { el.threshold.value = String(spec().defaultThreshold); el.threshold.dataset.phen = api.phen.id; }
+    el.preset.textContent = T(a.preset, { value: spec().decodeThreshold ?? "" });
   }
-  const selectedType = () => ORDER.find((type) => radioFor[type].checked) ?? QUERY.HIGHEST;
+  el.type.addEventListener("change", syncForm);
   el.preset.addEventListener("click", () => { el.threshold.value = String(spec().decodeThreshold); });
 
-  // ---- Rendering of results
+  // ---- Human results: rank, value (big) with a bar relative to the best, coordinates, the cell code last
   const unitText = () => unitName();
   const valueText = (v) => formatValue(spec(), v);
-  function describeFinding(f) {
-    const id = cellId(f.row, f.col);
-    if (f.delta !== null) return T(a.deltaRow, { id, delta: formatChange(spec(), f.delta), unit: unitText(), first: f.firstDate, second: f.secondDate });
-    return T(a.valueRow, { id, value: valueText(f.value), unit: unitText(), date: f.date });
-  }
+  const where = (f) => { const c = cellCenter(api.grid, f.row, f.col); return `${formatLat(c.lat)}, ${formatLon(c.lon)}`; };
+  const describeFinding = (f) => (f.delta !== null ? T(a.deltaRow, { id: cellId(f.row, f.col), delta: formatChange(spec(), f.delta), unit: unitText(), first: f.firstDate, second: f.secondDate }) : T(a.valueRow, { id: cellId(f.row, f.col), value: valueText(f.value), unit: unitText(), date: f.date }));
   function linkPin(button, index) {
     for (const type of ["mouseenter", "focus"]) button.addEventListener(type, () => api.hoverPin?.(index));
     for (const type of ["mouseleave", "blur"]) button.addEventListener(type, () => api.hoverPin?.(null));
@@ -101,16 +92,37 @@ export function mountHunter(api, container) {
   }
   function renderResults() {
     const findings = store.state.findings;
+    const top = Math.max(...findings.map((f) => Math.abs(f.delta !== null ? f.delta : f.value)), 0) || 1;
     el.list.replaceChildren(...findings.map((f) => {
-      const b = h(document, "button", { type: "button", class: "em-result", "aria-pressed": String(f.id === store.state.selectedFindingId), "data-id": f.id, "data-index": f.sampleId },
-        h(document, "span", { class: "em-rank", text: String(f.rank) }), h(document, "span", { text: describeFinding(f) }),
-        f.delta !== null ? h(document, "span", { class: "small", text: f.percent !== null ? T(a.percent, { p: trimNumber(f.percent, 1) }) : a.percentNo }) : null);
+      const v = f.delta !== null ? f.delta : f.value;
+      const pct = Math.max(3, Math.round((Math.abs(v) / top) * 100));
+      const big = f.delta !== null ? formatChange(spec(), f.delta) : valueText(f.value);
+      const b = h(document, "button", { type: "button", class: "em-result st-row", "aria-pressed": String(f.id === store.state.selectedFindingId), "data-id": f.id, "data-index": f.sampleId, "aria-label": describeFinding(f) },
+        h(document, "span", { class: "em-rank", text: String(f.rank) }),
+        h(document, "span", { class: "st-row-main" }, h(document, "strong", { class: "st-row-value ltr", text: big }), h(document, "span", { class: "st-row-bar", "aria-hidden": "true" }, h(document, "i", { style: `width:${pct}%` }))),
+        h(document, "span", { class: "st-row-where ltr" }, where(f), h(document, "small", { text: cellId(f.row, f.col) + (f.delta !== null && f.percent !== null ? " · " + (f.percent > 0 ? "+" : "") + trimNumber(f.percent, 1) + "%" : "") })));
       b.addEventListener("click", () => openFinding(f.id));
       linkPin(b, f.sampleId);
       return h(document, "li", {}, b);
     }));
     renderPins();
-    if (findings.length) el.list.scrollIntoView?.({ block: "nearest" });
+  }
+  el.list.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    const rows = [...el.list.querySelectorAll(".em-result")];
+    const i = rows.indexOf(document.activeElement);
+    if (i < 0) return;
+    event.preventDefault();
+    rows[Math.min(rows.length - 1, Math.max(0, i + (event.key === "ArrowDown" ? 1 : -1)))].focus();
+  });
+  function renderHead(result) {
+    const first = result.findings[0];
+    const change = first.delta !== null;
+    const when = change ? `${first.firstDate} → ${first.secondDate}` : first.date;
+    el.head.replaceChildren(h(document, "strong", { text: T(s.header, { n: result.findings.length, total: result.totalMatches ?? result.findings.length, when }) }),
+      infoIcon(document, T(a.total, { total: result.totalMatches, n: result.findings.length }) + " " + result.scopeLabel + "."),
+      h(document, "span", { class: "st-unitline", text: T(change ? s.unitChange : s.unitValue, { unit: unitText() }) }));
+    el.head.hidden = false;
   }
   function renderHow(result, f) {
     if (!f) { el.how.hidden = true; return; }
@@ -133,7 +145,8 @@ export function mountHunter(api, container) {
     el.how.hidden = false;
   }
   let lastResult = null;
-  function setStatus(text, kind) { el.status.textContent = text; el.status.className = "callout" + (kind === "warn" ? " warn" : ""); }
+  function setState(kind, text, actions = []) { el.state.replaceChildren(...(text ? [stateBox(document, kind, text, actions)] : [])); }
+  function clearResults() { el.list.replaceChildren(); el.head.hidden = true; el.how.hidden = true; el.listen.hidden = true; }
 
   // ---- Search
   async function search() {
@@ -146,11 +159,9 @@ export function mountHunter(api, container) {
     controller = new AbortController();
     const mine = controller;
     el.search.disabled = true;
-    el.cancel.hidden = false;
-    setStatus(a.running);
+    setState("loading", s.running, [el.cancel]);
     api.setPins([]);
-    el.list.replaceChildren();
-    el.how.hidden = true;
+    clearResults();
     try {
       const result = await api.analysis.request("hunter", query, toHunterData(api.phen, { excludeDates: api.lockedDates() }), mine.signal);
       store.dispatch("HUNTER_RESULT", { requestId, datasetId, findings: result.findings, status: result.status });
@@ -158,33 +169,38 @@ export function mountHunter(api, container) {
       lastResult = result;
       show(result);
     } catch (error) {
-      if (error.name === "AbortError") { if (store.state.hunterStatus === "running") store.dispatch("CANCEL_SEARCH"); setStatus(a.cancelled); }
-      else { store.dispatch("DATA_ERROR", { message: error.message }); setStatus(T(a.error, { reason: error.message }), "warn"); }
+      if (error.name === "AbortError") { if (store.state.hunterStatus === "running") store.dispatch("CANCEL_SEARCH"); setState("idle", s.cancelled); }
+      else { console.error(error); store.dispatch("DATA_ERROR", { message: error.message }); setState("error", s.error, [Object.assign(h(document, "button", { type: "button", class: "button ghost small-button", text: s.retry }), { onclick: search })]); }
     } finally {
-      if (controller === mine) { el.search.disabled = false; el.cancel.hidden = true; }
+      if (controller === mine) el.search.disabled = false;
     }
   }
   function show(result) {
-    renderResults();
     const reason = result.reason ?? "";
-    const text = {
-      results: T(a.results, { n: result.findings.length }) + ". " + T(a.total, { total: result.totalMatches, n: result.findings.length }) + " " + result.scopeLabel + ".",
-      no_results: a.noResults + " " + result.scopeLabel + ".", insufficient_data: T(a.insufficient, { reason }), unsupported_period: T(a.unsupported, { reason }), error: T(a.error, { reason }), not_available: T(a.notAvailable, { reason }), cancelled: a.cancelled,
-    }[result.status] ?? result.status;
-    setStatus(text, ["results", "no_results"].includes(result.status) ? "ok" : "warn");
-    if (result.status === "results") api.guided(T(a.found, { n: result.findings.length, id: cellId(result.findings[0].row, result.findings[0].col) }));
+    if (result.status === "results") {
+      setState(null, "");
+      renderResults();
+      renderHead(result);
+      api.guided(T(a.found, { n: result.findings.length, id: cellId(result.findings[0].row, result.findings[0].col) }));
+    } else if (result.status === "no_results") setState("empty", s.empty);
+    else if (result.status === "error") setState("error", T(a.error, { reason }));
+    else {
+      const text = { insufficient_data: T(a.insufficient, { reason }), unsupported_period: T(a.unsupported, { reason }), not_available: T(a.notAvailable, { reason }) }[result.status] ?? reason ?? result.status;
+      setState("unavailable", text);
+    }
     renderHow(result, null);
   }
   el.search.addEventListener("click", search);
   el.cancel.addEventListener("click", () => { controller?.abort(); });
 
   // ---- Opening a finding: the same map moves, highlights, shows the evidence and can be heard.
+  async function showLayerFor(f) { if (f.delta !== null) await api.showChangeFor(f.firstDate, f.secondDate); else await api.showValues(f.date); }
   async function openFinding(id) {
     const f = store.state.findings.find((x) => x.id === id);
     if (!f) return;
     store.dispatch("OPEN_FINDING", { id });
     const cell = { row: f.row, col: f.col, index: f.sampleId };
-    if (f.delta !== null) await api.showChangeFor(f.firstDate, f.secondDate); else await api.showValues(f.date);
+    await showLayerFor(f);
     api.selectCell(cell, { play: false, say: false, user: false });
     const centre = cellCenter(api.grid, f.row, f.col);
     api.setView({ lon: centre.lon, lat: centre.lat, zoom: Math.max(api.state.view.zoom, 4) });
@@ -196,11 +212,19 @@ export function mountHunter(api, container) {
   }
   el.listen.addEventListener("click", async () => { if (!api.audio.enabled) await api.setSound(true); api.playCurrent(); });
 
-  // ---- Keep the panel in step with the dataset and the locked dates.
-  api.state.phenHooks = [...(api.state.phenHooks ?? []), () => { controller?.abort(); lastResult = null; el.list.replaceChildren(); el.how.hidden = true; el.listen.hidden = true; fillDates(); syncForm(); setStatus(a.idle); }];
+  // ---- Keep the panel in step with the dataset and the locked dates; coming back restores this tool's own state.
+  async function restore() {
+    const findings = store.state.findings;
+    if (!findings.length || !lastResult) return;
+    renderPins();
+    const f = findings.find((x) => x.id === store.state.selectedFindingId);
+    if (f) await showLayerFor(f);
+  }
+  api.state.phenHooks = [...(api.state.phenHooks ?? []), () => { controller?.abort(); lastResult = null; clearResults(); fillDates(); syncForm(); setState("idle", s.idle); }];
   api.state.lockHooks = [...(api.state.lockHooks ?? []), () => { fillDates(); }];
-  api.state.tabHooks = { ...(api.state.tabHooks ?? {}), HUNTER: () => { fillDates(); syncForm(); } };
+  api.state.tabHooks = { ...(api.state.tabHooks ?? {}), HUNTER: () => { fillDates(); syncForm(); restore(); } };
   fillDates();
   syncForm();
+  setState("idle", s.idle);
   return { search, openFinding, render: renderResults, get result() { return lastResult; }, el };
 }

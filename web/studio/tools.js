@@ -1,5 +1,6 @@
 import { cellId, formatLat, formatLon, trimNumber } from "../cinematic/site/cells.js";
 import { h } from "../cinematic/site/dom.js";
+import { infoIcon } from "./studio-ui-kit.js";
 import { cellAt, cellCenter, cellRect, distanceKm, rectCells, samplePath, summarize, valueT } from "./field.js";
 import { MAX_SCAN_CELLS, SLOT, scanSteps, sequencePlan, strideFor } from "./mapping.js";
 import { clipToRegion, visibleBounds } from "./view.js";
@@ -134,7 +135,7 @@ export function mountTools(api) {
   speedSelect.addEventListener("change", () => audio.setSpeed(Number(speedSelect.value)));
 
   // ---- M3: area
-  const visibleRect = () => clipToRegion(visibleBounds(state.view, bounds, state.width, state.height), bounds);
+  const visibleRect = () => clipToRegion(visibleBounds(state.view, bounds, api.vw(), api.vh()), bounds);
   function playArea(rect) {
     if (!rect) { el.runState.textContent = c.scan.none; return; }
     const cells = rectCells(grid, rect);
@@ -147,7 +148,7 @@ export function mountTools(api) {
   playVisible.addEventListener("click", () => playArea(visibleRect()));
   playSelected.addEventListener("click", () => playArea(state.rect));
   const areaPanel = h(document, "section", { class: "panel", "aria-labelledby": "st-area-title" }, h(document, "h2", { id: "st-area-title", text: c.scan.title }),
-    h(document, "div", { class: "st-tools-row" }, playVisible, playSelected), h(document, "p", { class: "small", text: c.scan.help }));
+    h(document, "p", { class: "st-ask" }, c.tools.help.area, infoIcon(document, c.scan.help)), h(document, "div", { class: "st-tools-row" }, playVisible, playSelected));
 
   // Drawing a rectangle: mouse/touch drag or Enter at two corners.
   state.pointerHandlers.push((type, event, p, pointers) => {
@@ -196,7 +197,7 @@ export function mountTools(api) {
   clearPath.addEventListener("click", () => { state.path = []; refreshPath(); });
   undoPath.addEventListener("click", () => { state.path.pop(); refreshPath(); });
   const pathPanel = h(document, "section", { class: "panel", "aria-labelledby": "st-path-title" }, h(document, "h2", { id: "st-path-title", text: c.path.title }),
-    h(document, "div", { class: "st-tools-row" }, playPath, undoPath, clearPath), pathInfo, el.profile);
+    h(document, "p", { class: "st-ask" }, c.tools.help.path, infoIcon(document, c.path.profileNote.replace("{step}", PATH_STEP_KM))), h(document, "div", { class: "st-tools-row" }, playPath, undoPath, clearPath), pathInfo, el.profile);
 
   // Profile chart: the real cell values along the path on the same fixed log scale as the colours.
   function renderProfile() {
@@ -224,7 +225,7 @@ export function mountTools(api) {
     }
     svg.append(make("path", { d, class: "line" }));
     svg.append(make("line", { x1: 4, x2: 4, y1: 4, y2: H - 4, class: "marker", id: "st-profile-marker" }));
-    el.profile.append(h(document, "h3", { text: c.path.profile }), svg, h(document, "p", { class: "small", text: c.path.profileNote.replace("{step}", PATH_STEP_KM) }));
+    el.profile.append(h(document, "h3", { text: c.path.profile }), svg);
     state.profileSteps = steps; state.profileX = x;
   }
   state.onProgress = (run) => {

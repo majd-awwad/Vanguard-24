@@ -3,7 +3,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { TARGET, toLF, sha256, verifyDirectory } from "./copy-package.mjs";
+import { EXCLUDED_PHENOMENA, TARGET, toLF, sha256, verifyDirectory } from "./copy-package.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 export const REQUIRED_FIELDS = Object.freeze(["datasetId", "phenomenon", "eicVisualizationUrl", "sourceDatasetUrl", "sourceType", "variable", "unit", "timeCoverage", "geoCoverage", "resolution", "sampleCount", "lastVerified", "processingSteps", "missingPolicy", "qualityFlags", "licenseAndCredit", "assetHash"]);
@@ -11,17 +11,16 @@ export const REQUIRED_FIELDS = Object.freeze(["datasetId", "phenomenon", "eicVis
 const EIC = {
   dust: { url: "https://svs.gsfc.nasa.gov/5669/", note: "RELATED_CONTEXT for 2025-08-19 only: a separate GEOS-FP 2 km Replay at 20:00 UTC; not registered numeric pixels; never drawn on the map." },
   rainfall: { url: "https://svs.gsfc.nasa.gov/4285/", note: "RELATED_CONTEXT: GPM IMERG is a different (satellite-derived) product; this rainfall is GEOS-FP model output." },
-  temperature: { url: "https://svs.gsfc.nasa.gov/5147/", note: "RELATED_CONTEXT: the EIC visualization of GEOS-FP near-surface temperature; the relation is stated, nothing is drawn from it." },
   wind: { url: null, note: "No EIC visualization is part of this package." },
 };
 const MEASURES = {
   dust: "DUEXTTAU, dust extinction aerosol optical depth at 550 nm", rainfall: "PRECTOT (total precipitation rate) and derived one-hour accumulation in mm",
-  temperature: "T2M (2 m air temperature) in K and derived degC", wind: "U10M and V10M (10 m wind) and derived speed and meteorological direction (null for calm)",
+  wind: "U10M and V10M (10 m wind) and derived speed and meteorological direction (null for calm)",
 };
 
 /** Pure: builds the manifest list from the master catalog and the per-phenomenon catalogs/snapshots. */
 export function buildManifest({ master, catalogs, snapshots, grids, verifiedAt }) {
-  return Object.keys(master.phenomena).map((id) => {
+  return Object.keys(snapshots).map((id) => {
     const assets = master.assets.filter((a) => a.phenomenon === id);
     const list = snapshots[id];
     const first = list[0];
@@ -40,7 +39,7 @@ export function buildManifest({ master, catalogs, snapshots, grids, verifiedAt }
       resolution: { native: first.source.nativeResolutionDegrees ?? { lat: 0.25, lon: 0.3125 }, grid: `${grids[id].rows} x ${grids[id].cols} cells of 1.2 x 1.75 degrees` },
       sampleCount: { snapshots: list.length, cellsPerSnapshot: grids[id].rows * grids[id].cols }, buildLabels: builds,
       lastVerified: verifiedAt,
-      processingSteps: ["Read the GEOS-FP NetCDF granule (SHA-256 recorded)", "Spherical area-weighted mean of the native footprints inside each 1.2 x 1.75 degree cell", "Serialise as JSON with provenance; every file verified against the master catalog sha256", id === "wind" ? "Derive speed and meteorological direction from the aggregated U and V (never averaged directions)" : id === "rainfall" ? "Derive one-hour accumulation = PRECTOT x 3600 s" : id === "temperature" ? "Derive degC = T2M - 273.15" : "No further derivation"],
+      processingSteps: ["Read the GEOS-FP NetCDF granule (SHA-256 recorded)", "Spherical area-weighted mean of the native footprints inside each 1.2 x 1.75 degree cell", "Serialise as JSON with provenance; every file verified against the master catalog sha256", id === "wind" ? "Derive speed and meteorological direction from the aggregated U and V (never averaged directions)" : id === "rainfall" ? "Derive one-hour accumulation = PRECTOT x 3600 s" : "No further derivation"],
       missingPolicy: "null means missing; any invalid native overlap makes the target cell missing; missing is never replaced by zero or shown as no change (0 missing cells in this release).",
       qualityFlags: ["model output, not a direct observation", "different literal model build labels are not comparable (differences and Echo blocked across them)", "native footprints inferred from regular coordinate centres; no explicit datum declaration"],
       licenseAndCredit: "Data: NASA GMAO GEOS-FP. Earth imagery: NASA Earth Observatory Blue Marble. No NASA logo; EARTHPULSE is a student project and is not endorsed by NASA.",
@@ -66,7 +65,7 @@ async function main() {
   const read = async (path) => JSON.parse(toLF(await readFile(resolve(TARGET, path))).toString("utf8"));
   const master = await read("catalog.json");
   const catalogs = {}; const snapshots = {}; const grids = {};
-  for (const id of Object.keys(master.phenomena)) {
+  for (const id of Object.keys(master.phenomena).filter((phenomenon) => !EXCLUDED_PHENOMENA.includes(phenomenon))) {
     catalogs[id] = await read(`${id}/catalog.json`);
     grids[id] = await read(`${id}/grid.json`);
     snapshots[id] = [];

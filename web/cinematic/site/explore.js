@@ -1,9 +1,11 @@
-import { createTransport } from "../../audio/transport.js";
 import { heardClass, makeSpatialPlan } from "../../audio/spatial-plan.js";
+import { createTransport } from "../../audio/transport.js";
 import { createDecodePlayback } from "../../decode.js";
 import { createDecodeSession } from "../../experiences/decode/session.js";
 import { loadDecodeCase } from "../../sources/decode/index.js";
-import { createAudioTap, drawWaveform } from "../audio-tap.js";
+import { drawWaveform } from "../audio-tap.js";
+import { DUST_BREAKPOINTS, levelFor } from "../../studio/ambience-core.js";
+import { createRecordings } from "../../studio/recordings.js";
 import { copy as cinematicCopy } from "../copy.js";
 import { createScene } from "../scene.js";
 import { cellBounds, cellId, cellSize, fillIso, formatLat, formatLon, textureCrop, trimNumber } from "./cells.js";
@@ -75,10 +77,10 @@ async function mountExplore(document, root, language) {
     body.dataset.renderer = "svg";
   }
 
-  const tap = createAudioTap();
-  const transport = createTransport({ createContext: () => tap.createContext() });
-  transport.setVolume(settings.volume);
-  transport.setSpeed(settings.speed);
+  // Listening here plays the user's recordings, chosen by the real value of the cell. The Decode session only keeps the focus and the captions.
+  const rec = createRecordings({ baseUrl: new URL("../../assets/ambient/", import.meta.url), reduced: () => matchMedia?.("(prefers-reduced-motion: reduce)").matches === true });
+  rec.setVolume(settings.volume);
+  const transport = createTransport();
   const playback = createDecodePlayback(transport);
   let caseData = null;
   const session = createDecodeSession({
@@ -170,7 +172,17 @@ async function mountExplore(document, root, language) {
   el.selected = h(document, "section", { class: "panel", "aria-labelledby": "xp-sel-title" });
   el.listen = h(document, "section", { class: "panel", "aria-labelledby": "xp-listen-title" });
   el.compare = h(document, "section", { class: "panel", "aria-labelledby": "xp-compare-title" });
-  const right = h(document, "div", { class: "xp-right" }, el.selected, el.listen, el.compare);
+  el.selected.className = "xp-part";
+  el.listen.className = "xp-part";
+  el.compare.className = "xp-compare-body";
+  const drawerClose = h(document, "button", { type: "button", class: "icon-btn", "aria-label": c.compare.title + " ×", text: "×" });
+  const drawer = h(document, "aside", { class: "xp-drawer", id: "xp-compare-drawer", hidden: true, "aria-label": c.compare.title }, h(document, "div", { class: "xp-drawer-head" }, drawerClose), el.compare);
+  const openCompare = h(document, "button", { type: "button", class: "button ghost", "aria-expanded": "false", "aria-controls": "xp-compare-drawer", text: c.compare.title });
+  const setDrawer = (open, focus = false) => { drawer.hidden = !open; openCompare.setAttribute("aria-expanded", String(open)); if (open) drawerClose.focus(); else if (focus) openCompare.focus(); };
+  openCompare.addEventListener("click", () => setDrawer(drawer.hidden));
+  drawerClose.addEventListener("click", () => setDrawer(false, true));
+  drawer.addEventListener("keydown", (event) => { if (event.key === "Escape") { event.stopPropagation(); setDrawer(false, true); } });
+  const right = h(document, "div", { class: "xp-right" }, h(document, "section", { class: "panel xp-card" }, el.selected, el.listen, openCompare), drawer);
 
   root.replaceChildren(h(document, "div", { class: "xp-layout" }, left, centre, right), h(document, "p", { class: "credit", text: c.credit }));
   if (!scene) stageFallback(); else { scene.setStage(el.stage); scene.setGeography({ caseId: caseData.id, bounds: { ...bounds }, projection: "plate-carree" }); }
@@ -187,14 +199,26 @@ async function mountExplore(document, root, language) {
   el.listenNote = h(document, "p", { class: "small" });
   el.listen.append(h(document, "h2", { id: "xp-listen-title", text: c.listen.title }), h(document, "div", { class: "player-line" }, el.cellLabel, el.state),
     h(document, "div", { class: "player-buttons" }, play, stop), h(document, "label", { class: "volume", for: "xp-volume" }, h(document, "span", { text: c.listen.volume }), el.volume), el.wave, el.listenNote, el.caption2);
-  play.addEventListener("click", () => { if (!state.a) { el.caption2.textContent = c.listen.needCell; return; } session.dispatch({ type: "probe", row: state.a[0], col: state.a[1] }); el.caption2.textContent = fillIso(c.captions.playing, { id: idOf(state.a) }, language); });
-  stop.addEventListener("click", () => { session.dispatch({ type: "pause" }); el.caption2.textContent = c.captions.stopped; });
-  el.volume.addEventListener("input", () => { const value = Number(el.volume.value) / 100; transport.setVolume(value); saveSettings({ volume: value }); });
+  play.addEventListener("click", () => { if (!state.a) { el.caption2.textContent = c.listen.needCell; return; } hearCell(state.a[0], state.a[1]); el.caption2.textContent = fillIso(c.captions.playing, { id: idOf(state.a) }, language); });
+  stop.addEventListener("click", () => { rec.stop(); clearTimeout(second); el.state.textContent = c.listen.states.paused; el.caption2.textContent = c.captions.stopped; });
+  el.volume.addEventListener("input", () => { const value = Number(el.volume.value) / 100; rec.setVolume(value); saveSettings({ volume: value }); });
+  const panOfCell = (row, col) => { const b = cellBounds(bounds, caseData.levels[view().level], row, col); const lon = (b.west + b.east) / 2; return Math.max(-1, Math.min(1, (2 * (lon - bounds.west)) / (bounds.east - bounds.west) - 1)); };
+  let second = 0;
+  function hearCell(row, col, seconds = 1.8) {
+    const value = cellOf(view(), row, col)?.value;
+    const level = levelFor({ phenomenon: "dust", value: Number.isFinite(value) ? value : null, breakpoints: DUST_BREAKPOINTS });
+    rec.unlock().then(() => rec.preview("dust", level, panOfCell(row, col), seconds));
+    el.state.textContent = level ? c.listen.states.playing : c.listen.states.idle;
+    return level;
+  }
+  el.listenLabel = h(document, "small", { class: "st-sound-note", text: language === "ar" ? "الأصوات تسجيلات تُختار بالقيمة الحقيقية: منخفض / متوسط / مرتفع. المستوى يتبع البيانات؛ أما التسجيلات نفسها فتوضيحية." : "Sounds are recordings chosen by the real value: low / mid / high. The level follows the data; the recordings themselves are illustrative." });
+  el.listen.append(el.listenLabel);
 
   function choose(row, col) {
     state.a = [row, col];
     if (state.b && state.b[0] === row && state.b[1] === col) state.b = null;
-    session.dispatch({ type: "probe", row, col });
+    session.dispatch({ type: "focus", row, col });
+    hearCell(row, col);
     el.caption2.textContent = fillIso(c.captions.playing, { id: idOf(state.a) }, language);
     gridApi.setSelected(state);
     gridApi.focusCell(row, col);
@@ -241,7 +265,9 @@ async function mountExplore(document, root, language) {
     hear.disabled = !(state.a && state.b);
     hear.addEventListener("click", () => {
       session.dispatch({ type: "focus", row: state.b[0], col: state.b[1] });
-      session.dispatch({ type: "play", mode: "contrast" });
+      hearCell(state.a[0], state.a[1], 1.4);
+      clearTimeout(second);
+      second = setTimeout(() => hearCell(state.b[0], state.b[1], 1.4), 1900);
       el.caption2.textContent = fillIso(c.captions.contrast, { a: idOf(state.a), b: idOf(state.b) }, language);
     });
     cmp.push(h(document, "label", { class: "xp-pick", for: "xp-other" }, h(document, "span", { text: c.compare.other }), select), h(document, "div", { class: "player-buttons" }, hear), h(document, "p", { class: "small", text: c.compare.hearNote }));
@@ -273,14 +299,13 @@ async function mountExplore(document, root, language) {
     const snap = view();
     scene?.setSnapshot(snap);
     const t = snap.transport;
-    const label = t.audioUnavailable && t.status === "playing" ? c.listen.silentMode : c.listen.states[t.status] ?? t.status;
-    if (el.state.textContent !== label) el.state.textContent = label;
+    void t;
   });
   buildGrid();
   renderAll();
   let frame;
-  const loop = () => { drawWaveform(el.wave, tap.analyser, { color: "#68e0d0" }); frame = requestAnimationFrame(loop); };
+  const loop = () => { drawWaveform(el.wave, rec.analyser, { color: "#68e0d0" }); frame = requestAnimationFrame(loop); };
   frame = requestAnimationFrame(loop);
   document.addEventListener("visibilitychange", () => { if (document.hidden) { cancelAnimationFrame(frame); frame = undefined; } else if (frame === undefined) frame = requestAnimationFrame(loop); });
-  if (new URL(document.URL).searchParams.has("debug")) window.__explore = { session, scene, transport, state, tap };
+  if (new URL(document.URL).searchParams.has("debug")) window.__explore = { session, scene, transport, state, rec };
 }

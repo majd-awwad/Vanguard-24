@@ -1,0 +1,96 @@
+{
+  "schema": "earthpulse.ambient-sounds/1",
+  "role": "optional illustrative ambience; NOT data, NOT recordings of the measured events",
+  "items": [
+    {
+      "file": "dust-high.mp3",
+      "phenomenon": "dust",
+      "level": "high",
+      "sha256": "9091a2270d74ec3da2851e43f0b6017f3df255ebe340adfb1a90e28d8b3766eb",
+      "bytes": 321036,
+      "original": "WhatsApp_Audio_2026-11-15_at_7.37.38_AM_1.mpeg",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    },
+    {
+      "file": "dust-low.mp3",
+      "phenomenon": "dust",
+      "level": "low",
+      "sha256": "4253cc7ad75e2fc8e0aacfefeed3f5a801477ce2000989b8aa2cabccd5ebdc7c",
+      "bytes": 321036,
+      "original": "WhatsApp_Audio_2026-11-15_at_7.37.39_AM.mpeg",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    },
+    {
+      "file": "dust-mid.mp3",
+      "phenomenon": "dust",
+      "level": "mid",
+      "sha256": "67d2b889e6818eb240008f002f1f97d2623382d8cf2cda5c43bba1e6c780956c",
+      "bytes": 321036,
+      "original": "WhatsApp_Audio_2026-11-15_at_7.37.38_AM.mpeg",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    },
+    {
+      "file": "rain-high.mp3",
+      "phenomenon": "rain",
+      "level": "high",
+      "sha256": "edac7559acba1146a422e0abdd57190ca9b5c269ef7039472a69afb611d551eb",
+      "bytes": 193191,
+      "original": "Mixkit #2399 heavy rain drops",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    },
+    {
+      "file": "rain-low.mp3",
+      "phenomenon": "rain",
+      "level": "low",
+      "sha256": "900226c62bcd7f9b0f2e19f0ad10cb930fc1aef72986c30ac014813fcdd722ef",
+      "bytes": 321036,
+      "original": "Freesound #810468 by designerschoice (rain-samsung-galaxy-smartphone ... light)",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    },
+    {
+      "file": "rain-mid.mp3",
+      "phenomenon": "rain",
+      "level": "mid",
+      "sha256": "cdd5609f92b1f29f41c484d6452d7064117590942d338d6b2b2c10370ae78776",
+      "bytes": 321036,
+      "original": "Freesound #217236 by roofusj (steady rain in the city)",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    },
+    {
+      "file": "wind-high.mp3",
+      "phenomenon": "wind",
+      "level": "high",
+      "sha256": "b6af8a890650f16f08c1fa45be9a4be1f900d0cd33cd10eb0ce9ae819ad6bb7d",
+      "bytes": 160958,
+      "original": "WhatsApp_Audio_2026-11-15_at_7.35.24_AM.mpeg",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    },
+    {
+      "file": "wind-low.mp3",
+      "phenomenon": "wind",
+      "level": "low",
+      "sha256": "ba8433a72ddc1573b13b354996793804645fa5517948370afee95aad5c687c07",
+      "bytes": 160958,
+      "original": "WhatsApp_Audio_2026-11-15_at_7.35.24_AM_2.mpeg",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    },
+    {
+      "file": "wind-mid.mp3",
+      "phenomenon": "wind",
+      "level": "mid",
+      "sha256": "e4f4d1d5c6b1e5ecbc774657334791a606dd8851f6b4e19851a5ba6d7126debe",
+      "bytes": 160958,
+      "original": "WhatsApp_Audio_2026-11-15_at_7.35.24_AM_1.mpeg",
+      "license": "TO VERIFY",
+      "processing": "trimmed, loudness-normalised (low -28 / mid -23 / high -18 LUFS), 0.4 s fades, 44.1 kHz stereo MP3 128 kbps, metadata stripped"
+    }
+  ]
+}

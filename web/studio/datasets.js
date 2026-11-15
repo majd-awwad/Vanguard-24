@@ -1,4 +1,4 @@
-// Earth Map data layer: the four phenomena of Mohammad's verified JSON package, their documented scales, and a loader
+// Earth Map data layer: the three phenomena of Mohammad's verified JSON package, their documented scales, and a loader
 // that checks every file's SHA-256 against the master catalog in the browser (LF-normalised, see
 // scripts/earth-map/copy-package.mjs). Everything here is NASA GMAO GEOS-FP *model* output, never measured.
 
@@ -24,13 +24,6 @@ export const PHENOMENA = Object.freeze({
     stops: [[0, hex(0x17324d)], [0.25, hex(0x2a73c9)], [0.55, hex(0x46c2f0)], [0.8, hex(0xb6f0ff)], [1, hex(0xffffff)]],
     change: { max: 3, nearZero: 0.05 },
     related: [{ label: "SVS 4285 (IMERG, a different product)", url: "https://svs.gsfc.nasa.gov/4285/", relation: "RELATED_CONTEXT" }],
-  },
-  temperature: {
-    id: "temperature", short: "DFPT1NXSLV", variable: "T2M", measure: "celsius", unit: "degC", unitLabel: "°C", decimals: 1,
-    window: "one-hour mean", defaultThreshold: 35, transform: "linear", min: -15, max: 45, ticks: [0, 20, 40],
-    stops: [[0, hex(0x3b4cc0)], [0.25, hex(0x6fa8dc)], [0.45, hex(0xf2e9c9)], [0.65, hex(0xf6b26b)], [0.85, hex(0xe8563a)], [1, hex(0x8b0f1c)]],
-    change: { max: 20, nearZero: 0.5 },
-    related: [{ label: "SVS 5147", url: "https://svs.gsfc.nasa.gov/5147/", relation: "RELATED_CONTEXT" }],
   },
   wind: {
     id: "wind", short: "DFPT1NXSLV", variable: "U10M, V10M", measure: "speedMps", unit: "m s-1", unitLabel: "m/s", decimals: 1,
@@ -130,9 +123,9 @@ export function validateSnapshot(spec, s) {
 }
 
 /** Same build label for both snapshots, or the reason a difference is blocked. */
-export function comparability(a, b) {
+export function comparability(a, b, { groupOf = (s) => s.source.modelSource, policy = null } = {}) {
   if (!a || !b) return { ok: false, reason: "missing snapshot" };
-  return a.source.modelSource === b.source.modelSource ? { ok: true } : { ok: false, reason: BUILD_REASON };
+  return groupOf(a) === groupOf(b) ? { ok: true } : { ok: false, reason: policy ?? BUILD_REASON };
 }
 
 export const isLocked = (phenomenon, date, unlocked) => phenomenon === "dust" && DECODE_LOCKED_DATES.includes(date) && !unlocked;
@@ -164,8 +157,15 @@ export async function openPackage({ baseUrl = PACKAGE_URL(), fetchImpl = fetch, 
         snapshots.set(entry.id, { id: entry.id, phenomenon: id, date: entry.date, time: s.time, source: s.source, warnings: s.warnings ?? [], statistics: s.statistics, visualLink: s.visualLink ?? null, measures, values: measures[spec.measure], variables: s.variables ?? null });
       });
       const list = [...snapshots.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-      const groups = new Map();
-      for (const s of list) { if (!groups.has(s.source.modelSource)) groups.set(s.source.modelSource, []); groups.get(s.source.modelSource).push(s.id); }
+      // The catalog's own compatibilityGroups are used directly; the derived rule (the literal modelSource of each snapshot) is only the fallback.
+      const derived = new Map();
+      for (const s of list) { if (!derived.has(s.source.modelSource)) derived.set(s.source.modelSource, []); derived.get(s.source.modelSource).push(s.id); }
+      const declared = Array.isArray(catalog.compatibilityGroups) ? catalog.compatibilityGroups.filter((g) => g && typeof g.modelSource === "string" && Array.isArray(g.snapshotIds)) : [];
+      const covered = new Set(declared.flatMap((g) => g.snapshotIds));
+      const useCatalog = declared.length > 0 && list.every((s) => covered.has(s.id));
+      const groupList = useCatalog ? declared.map((g) => ({ modelSource: g.modelSource, snapshotIds: [...g.snapshotIds] })) : [...derived].map(([modelSource, snapshotIds]) => ({ modelSource, snapshotIds }));
+      const groupById = new Map(groupList.flatMap((g) => g.snapshotIds.map((sid) => [sid, g.modelSource])));
+      const compatibilityPolicy = typeof catalog.compatibilityPolicy === "string" ? catalog.compatibilityPolicy : null;
       const seasons = [];
       for (const s of list) {
         let season = seasons.find((x) => x.key === s.time.season.key);
@@ -175,11 +175,11 @@ export async function openPackage({ baseUrl = PACKAGE_URL(), fetchImpl = fetch, 
       const comparisons = (catalog.comparisons ?? []).map((c) => ({ ...c, path: `${id}/${c.path}` }));
       return {
         id, spec, grid, catalog, list, snapshots, seasons, comparisons,
-        compatibilityGroups: [...groups].map(([modelSource, snapshotIds]) => ({ modelSource, snapshotIds })),
+        compatibilityGroups: groupList, compatibilityPolicy, groupsFrom: useCatalog ? "catalog" : "derived",
         unavailableComparisons: catalog.unavailableComparisons ?? [],
         snapshot: (snapshotId) => snapshots.get(snapshotId) ?? null,
         byDate: (date) => list.find((s) => s.date === date) ?? null,
-        groupOf: (snapshotId) => snapshots.get(snapshotId)?.source.modelSource ?? null,
+        groupOf: (snapshotId) => groupById.get(snapshotId) ?? snapshots.get(snapshotId)?.source.modelSource ?? null,
       };
     })();
     opened.set(id, job);
@@ -191,7 +191,7 @@ export async function openPackage({ baseUrl = PACKAGE_URL(), fetchImpl = fetch, 
     if (idA === idB) return { status: "same" };
     const [first, second] = phen.snapshot(idA).date <= phen.snapshot(idB).date ? [idA, idB] : [idB, idA];
     const published = phen.comparisons.find((p) => p.first === first && p.second === second);
-    const cmp = comparability(phen.snapshot(first), phen.snapshot(second));
+    const cmp = comparability(phen.snapshot(first), phen.snapshot(second), { groupOf: (s) => phen.groupOf(s.id), policy: phen.compatibilityPolicy });
     if (published && cmp.ok) return { status: "published", first, second, id: published.id, path: published.path };
     if (cmp.ok) return { status: "computed", first, second };
     const known = phen.unavailableComparisons.find((p) => p.first === first && p.second === second);

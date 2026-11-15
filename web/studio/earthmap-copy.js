@@ -12,13 +12,13 @@ export const mapCopy = {
       switched: { GUIDED_VOICE: "Guided Voice is on.", PURE_SONIFICATION: "Pure Sonification is on. No spoken guidance." },
     },
     phen: {
-      label: "Data", dust: "Dust", rainfall: "Rainfall", temperature: "Temperature", wind: "Wind", forests: "Forests",
+      label: "Data", dust: "Dust", rainfall: "Rainfall", wind: "Wind", forests: "Forests",
       forestsReason: "Forests: not available in this release. The forest data (GEDI) are six spatial footprints, not a time series.",
-      measure: { dust: "Dust optical depth at 550 nm", rainfall: "Rainfall, one-hour accumulation", temperature: "Air temperature at 2 m", wind: "Wind speed at 10 m" },
-      unitName: { dust: "unitless", rainfall: "mm per hour", temperature: "°C", wind: "m/s" },
+      measure: { dust: "Dust optical depth at 550 nm", rainfall: "Rainfall, one-hour accumulation", wind: "Wind speed at 10 m" },
+      unitName: { dust: "unitless", rainfall: "mm per hour", wind: "m/s" },
       soundMeaning: {
         dust: "More dust makes the pulses denser and brighter.", rainfall: "More rain makes the pulses faster. No rain is silent.",
-        temperature: "A warmer place is a higher pitch.", wind: "Stronger wind makes the pulses faster. The sound moves left or right with the east-west part of the wind; calm stays centred.",
+        wind: "Stronger wind makes the pulses faster. The sound moves left or right with the east-west part of the wind; calm stays centred.",
       },
       loading: "Loading {name}…", error: "Could not load this data.", retry: "Try again",
     },
@@ -35,7 +35,7 @@ export const mapCopy = {
     read: { cell: "{id}. {lat}, {lon}. {measure}: {value} {unit}. {date}. Model data.", missing: "{id}. {lat}, {lon}. {measure}: missing value. {date}.", change: "{id}. {lat}, {lon}. Change in {measure}: {value} {unit}, {direction}.", windExtra: "Wind from {dir}." },
     voice: {
       explain: "Explain my position", last: "Return to last position", help: "What can I do here?", speechVolume: "Voice volume", dataVolume: "Sound volume", unavailable: "No voice for this language is installed, so guidance appears as text.",
-      welcome: { GUIDED_VOICE: "Guided Voice. Choose Dust, Rainfall, Temperature or Wind at the top, then move over the map with the pointer or the arrow keys. The value is read after you stop moving." },
+      welcome: { GUIDED_VOICE: "Guided Voice. Choose Dust, Rainfall or Wind at the top, then move over the map with the pointer or the arrow keys. The value is read after you stop moving." },
       helpText: {
         EXPLORE: "Explore. Move over the map or use the arrow keys, which move one cell at a time. Cells are named by a letter for the row, counted from the north, and a number for the column, counted from the west. Enter selects a cell and plays it. R reads your position. Plus and minus zoom. Use the Select area and Draw path tools to hear many cells.",
         HUNTER: "Find signals. Pick a question: highest values, above a threshold, or largest increase or decrease between two dates. Press Search. Open a result to move the map to it and hear it.",
@@ -60,13 +60,13 @@ export const mapCopy = {
       switched: { GUIDED_VOICE: "الإرشاد بالكلام مفعّل.", PURE_SONIFICATION: "أصوات البيانات فقط مفعّل. لا إرشاد منطوق." },
     },
     phen: {
-      label: "البيانات", dust: "الغبار", rainfall: "الأمطار", temperature: "الحرارة", wind: "الرياح", forests: "الغابات",
+      label: "البيانات", dust: "الغبار", rainfall: "الأمطار", wind: "الرياح", forests: "الغابات",
       forestsReason: "الغابات: غير متاحة في هذا الإصدار. بيانات الغابات (GEDI) ست بصمات مكانية وليست سلسلة زمنية.",
-      measure: { dust: "العمق البصري للغبار عند 550 نانومتر", rainfall: "الأمطار، تراكم ساعة واحدة", temperature: "درجة حرارة الهواء على ارتفاع 2 م", wind: "سرعة الرياح على ارتفاع 10 م" },
-      unitName: { dust: "بلا وحدة", rainfall: "ملم في الساعة", temperature: "°م", wind: "م/ث" },
+      measure: { dust: "العمق البصري للغبار عند 550 نانومتر", rainfall: "الأمطار، تراكم ساعة واحدة", wind: "سرعة الرياح على ارتفاع 10 م" },
+      unitName: { dust: "بلا وحدة", rainfall: "ملم في الساعة", wind: "م/ث" },
       soundMeaning: {
         dust: "كلما زاد الغبار صارت النبضات أكثف وأكثر سطوعًا.", rainfall: "كلما زاد المطر صارت النبضات أسرع. ولا مطر يعني صمتًا.",
-        temperature: "المكان الأدفأ نغمته أعلى.", wind: "كلما اشتدت الرياح صارت النبضات أسرع. ويتحرك الصوت يمينًا أو يسارًا مع المركّبة الشرقية الغربية للرياح؛ والهدوء يبقى في الوسط.",
+        wind: "كلما اشتدت الرياح صارت النبضات أسرع. ويتحرك الصوت يمينًا أو يسارًا مع المركّبة الشرقية الغربية للرياح؛ والهدوء يبقى في الوسط.",
       },
       loading: "جارٍ تحميل {name}…", error: "تعذّر تحميل هذه البيانات.", retry: "حاول مرة أخرى",
     },
@@ -83,7 +83,7 @@ export const mapCopy = {
     read: { cell: "{id}. {lat}، {lon}. {measure}: {value} {unit}. {date}. بيانات نموذج.", missing: "{id}. {lat}، {lon}. {measure}: قيمة مفقودة. {date}.", change: "{id}. {lat}، {lon}. التغير في {measure}: {value} {unit}، {direction}.", windExtra: "الرياح من {dir}." },
     voice: {
       explain: "اشرح موضعي", last: "ارجع إلى آخر موضع", help: "ماذا يمكنني أن أفعل هنا؟", speechVolume: "مستوى صوت الكلام", dataVolume: "مستوى صوت البيانات", unavailable: "لا يوجد صوت لهذه اللغة على هذا الجهاز، لذلك يظهر الإرشاد نصًا.",
-      welcome: { GUIDED_VOICE: "الإرشاد بالكلام. اختر الغبار أو الأمطار أو الحرارة أو الرياح من الأعلى، ثم تحرّك فوق الخريطة بالمؤشر أو بمفاتيح الأسهم. تُقرأ القيمة بعد أن تتوقف عن الحركة." },
+      welcome: { GUIDED_VOICE: "الإرشاد بالكلام. اختر الغبار أو الأمطار أو الرياح من الأعلى، ثم تحرّك فوق الخريطة بالمؤشر أو بمفاتيح الأسهم. تُقرأ القيمة بعد أن تتوقف عن الحركة." },
       helpText: {
         EXPLORE: "استكشف. تحرّك فوق الخريطة أو استخدم مفاتيح الأسهم التي تنقلك خلية واحدة في كل مرة. تُسمّى الخلايا بحرف للصف يُعدّ من الشمال ورقم للعمود يُعدّ من الغرب. Enter يختار الخلية ويشغّلها. R يقرأ موضعك. زائد وناقص للتكبير. واستخدم أداتي تحديد منطقة ورسم مسار لسماع خلايا كثيرة.",
         HUNTER: "اكتشف إشارات. اختر سؤالًا: أعلى القيم، أو ما فوق عتبة، أو أكبر زيادة أو نقصان بين تاريخين. اضغط بحث. افتح نتيجة لتنتقل الخريطة إليها وتسمعها.",

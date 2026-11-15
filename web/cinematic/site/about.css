@@ -27,3 +27,26 @@
   .about-cards { grid-template-columns: 1fr; }
   .about-globe { width: min(75vw, 18rem); }
 }
+
+/* Section icons and the small data-to-sound diagram */
+.panel.about-what > h2::before, .panel.about-why > h2::before, .panel.about-mission > h2::before, .panel.about-team h2::before { content: ""; display: inline-block; flex: none; width: 1.25rem; height: 1.25rem; margin-inline-end: .55rem; vertical-align: -.2em; background: var(--teal); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+.panel.about-what { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.8'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Ccircle%20cx%3D'12'%20cy%3D'12'%20r%3D'9'%2F%3E%3Cpath%20d%3D'M3%2012h18M12%203c3%203%203%2015%200%2018M12%203c-3%203-3%2015%200%2018'%2F%3E%3C%2Fsvg%3E"); }
+.panel.about-why { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.8'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M3%2012h2.5l2-6%203.5%2012%203-9%202%203h5'%2F%3E%3C%2Fsvg%3E"); }
+.panel.about-mission { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.8'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Ccircle%20cx%3D'12'%20cy%3D'12'%20r%3D'9'%2F%3E%3Ccircle%20cx%3D'12'%20cy%3D'12'%20r%3D'5'%2F%3E%3Ccircle%20cx%3D'12'%20cy%3D'12'%20r%3D'1'%2F%3E%3C%2Fsvg%3E"); }
+.panel.about-team { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.8'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'3'%2F%3E%3Cpath%20d%3D'M3%2020c0-3.5%203-6%206-6s6%202.5%206%206'%2F%3E%3Ccircle%20cx%3D'17'%20cy%3D'8'%20r%3D'2.5'%2F%3E%3Cpath%20d%3D'M16%2014c3%200%205%202%205%205'%2F%3E%3C%2Fsvg%3E"); }
+.about-flow { list-style: none; margin: var(--s-3) 0; padding: 0; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.about-flow li { padding: .4rem .9rem; border-radius: var(--radius-pill); border: 1px solid var(--line-strong); background: var(--surface-2); font-size: var(--fs-small); font-weight: 600; }
+.about-flow li + li::before { content: "→"; margin-inline-end: .6rem; color: var(--teal); }
+:root[dir="rtl"] .about-flow li + li::before { content: "←"; }
+.about-flow li + li { position: relative; }
+
+/* Meet the team: the real photo, large, with the six names beside it */
+.panel.about-team { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: var(--s-5); align-items: center; padding: var(--s-5); }
+.team-photo { margin: 0; display: grid; gap: var(--s-2); min-width: 0; }
+.team-photo img { width: 100%; height: auto; aspect-ratio: 1600 / 1066; object-fit: cover; border-radius: 20px; border: 1px solid var(--line-strong); box-shadow: 0 24px 60px rgb(0 0 0 / .5), 0 0 90px rgb(104 224 208 / .14); background: var(--surface-2); }
+.team-photo figcaption { color: var(--muted); font-size: var(--fs-small); text-align: center; }
+.team-info { display: grid; gap: var(--s-3); align-content: center; min-width: 0; }
+.team-info h2 { margin: 0; }
+.team-info p { margin: 0; }
+.team-info .members { justify-content: flex-start; }
+@media (max-width: 900px) { .panel.about-team { grid-template-columns: minmax(0, 1fr); padding: var(--s-4); } }

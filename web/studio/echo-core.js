@@ -133,6 +133,6 @@ export function toEchoData(phen, { excludeDates = [], flatFraction = 0.001 } = {
   const spec = phen.spec;
   return {
     phenomenon: phen.id, unit: spec.unitLabel || spec.unit, rows: phen.grid.rows, cols: phen.grid.cols, flatTolerance: flatFraction * (spec.max - spec.min),
-    snapshots: phen.list.filter((s) => !excludeDates.includes(s.date)).map((s) => ({ date: s.date, build: s.source.modelSource, values: Array.from(s.values), timeStart: s.time.start, timeEnd: s.time.end })),
+    snapshots: phen.list.filter((s) => !excludeDates.includes(s.date)).map((s) => ({ date: s.date, build: phen.groupOf?.(s.id) ?? s.source.modelSource, values: Array.from(s.values), timeStart: s.time.start, timeEnd: s.time.end })),
   };
 }

@@ -140,7 +140,7 @@ test("studio copy: both languages, same keys", () => {
 });
 
 import { CHANGE_BASE_HZ, HIGH_HZ, MAX_SCAN_CELLS, PITCH_LOW_HZ, changeSemitones, changeTones, hoverPlan, lonPan, missingTone, scanSteps, sequencePlan, strideFor, valueHz, valueTone } from "../web/studio/mapping.js";
-import { HOVER_INTERVAL_MS, confirmationPlan, createStudioAudio } from "../web/studio/audio.js";
+import { createStudioAudio } from "../web/studio/audio.js";
 
 test("studio-v1: pitch is the dust value on one fixed log scale, pan is longitude", () => {
   assert.equal(PITCH_LOW_HZ, 220);
@@ -194,7 +194,7 @@ test("change sound: increase rises, decrease falls, near zero is one steady note
 test("area scan: west to east, rows north to south, bounded cell count, summary of real cells", () => {
   const cells = rectCells(grid, { west: -20, east: 50, south: 15, north: 45 });
   assert.equal(cells.length, 1000);
-  assert.equal(strideFor(1000), 2);
+  assert.equal(strideFor(1000), 3);
   assert.equal(strideFor(MAX_SCAN_CELLS), 1);
   const steps = scanSteps(cells, snapshots[0].values, strideFor(cells.length));
   assert.ok(steps.length <= MAX_SCAN_CELLS && steps.length > 100);
@@ -210,37 +210,23 @@ test("area scan: west to east, rows north to south, bounded cell count, summary 
   assert.ok(s.min <= s.mean && s.mean <= s.max);
 });
 
-test("hover audio: not before the explicit enable, deduplicated, throttled, last position wins", async () => {
-  let clock = 1000;
-  const timers = [];
-  const audio = createStudioAudio({ now: () => clock, setTimer: (f, ms) => { timers.push({ f, ms }); return timers.length; }, clearTimer: () => {} });
-  const loaded = [];
-  audio.transport.load = (plan) => loaded.push(plan.events[0].id + ":" + plan.mode);
-  audio.transport.play = async () => {};
-  const plan = (n) => () => ({ mode: "hover", events: [{ id: "ev-" + n }] });
-  audio.hover("a", plan(1));
-  assert.equal(loaded.length, 0, "silent until enabled");
+test("studio clock: silent until the explicit enable, plans are markers without tones, the active step is reported", async () => {
+  const audio = createStudioAudio({});
+  assert.equal(audio.enabled, false);
   await audio.enable();
-  assert.equal(loaded.at(-1), "ev-0:confirm");
-  assert.equal(confirmationPlan().events.length, 1);
-  clock += 500;
-  audio.hover("a", plan(1));
-  assert.equal(loaded.length, 2, "first hover plays at once");
-  audio.hover("a", plan(1));
-  assert.equal(loaded.length, 2, "same key does not replay");
-  clock += 10;
-  audio.hover("b", plan(2));
-  audio.hover("c", plan(3));
-  assert.equal(loaded.length, 2, "throttled");
-  assert.equal(timers.length, 1);
-  assert.ok(timers[0].ms <= HOVER_INTERVAL_MS && timers[0].ms > 0);
-  clock += 100;
-  timers[0].f();
-  assert.equal(loaded.length, 3);
-  assert.equal(loaded.at(-1), "ev-3:hover", "the latest position plays");
+  assert.equal(audio.enabled, true);
   audio.disable();
-  audio.hover("z", plan(9));
-  assert.equal(loaded.length, 3, "muted after disable");
+  assert.equal(audio.enabled, false);
+  const marker = () => [{ offsetS: 0, tone: undefined }];
+  const plan = sequencePlan("dust", [{ row: 0, col: 1, index: 1, value: 0.2 }, { row: 0, col: 2, index: 2, value: 0.4 }], grid, { slotS: 0.3, tag: "scan", tonesFor: marker });
+  assert.equal(plan.events.length, 2);
+  assert.ok(plan.events.every((e) => e.tone === undefined), "no synthesized tone is attached to a step");
+  assert.ok(plan.events[0].pan < plan.events[1].pan, "the pan (west left, east right) travels with the step for the recording slice");
+  const loaded = [];
+  audio.transport.load = (p) => loaded.push(p);
+  audio.transport.play = async () => {};
+  await audio.play(plan);
+  assert.equal(loaded.length, 1);
 });
 
 import { PATH_STEP_KM, pathSteps, rectBetween } from "../web/studio/tools.js";

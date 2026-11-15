@@ -10,7 +10,7 @@ export const PITCH_OCTAVES = 3; // 220 Hz .. 1760 Hz across the fixed value scal
 export const TONE_GAIN = 0.16;
 export const HOVER_S = 0.18;
 export const CHANGE_BASE_HZ = 440;
-export const MAX_SCAN_CELLS = 300;
+export const MAX_SCAN_CELLS = 130; // one recording slice per step: at most about 130 steps (every 3rd cell of the whole grid, 126 cells, about 38 s)
 export const SLOT = Object.freeze({ dust: 0.07, change: 0.12, path: 0.12 });
 
 const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
@@ -63,7 +63,7 @@ export function sequencePlan(kind, steps, grid, { slotS, tag = "scan", startS = 
   steps.forEach((step, i) => {
     const pan = lonPan(grid, step.lon ?? cellCenter(grid, step.row, step.col).lon);
     (tonesFor ? tonesFor(step, pan, { kind, slotS, compact }) : cellTones(kind, step.value, pan, { compact })).forEach(({ offsetS, tone }, j) => {
-      events.push({ id: `ev-${events.length}`, onsetS: startS + i * slotS + offsetS, row: step.row, col: step.col, step: i, tone, evidence: { value: step.value, mappingVersion: MAPPING_VERSION, part: j } });
+      events.push({ id: `ev-${events.length}`, onsetS: startS + i * slotS + offsetS, row: step.row, col: step.col, step: i, tone, pan, evidence: { value: step.value, mappingVersion: MAPPING_VERSION, part: j } });
     });
   });
   return planOf(events, startS + steps.length * slotS + 0.05, tag);

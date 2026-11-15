@@ -27,7 +27,6 @@ export function soundParams(phenomenon, info) {
   if (value === null || value === undefined) return { missing: true };
   const n = normalizer(spec)(value);
   if (phenomenon === "rainfall") return value <= DRY_MM ? { n, silent: true } : { n, rate: 1.5 + 12.5 * n, frequencyHz: 520, waveform: "triangle" };
-  if (phenomenon === "temperature") return { n, frequencyHz: 220 * 2 ** (2 * n), waveform: "sine" };
   if (phenomenon === "dust") return { n, rate: 3 + 21 * n, frequencyHz: 900 * 2 ** (1.5 * n), waveform: n < 1 / 3 ? "triangle" : n < 2 / 3 ? "square" : "sawtooth" };
   // wind: speed -> pulse/tremolo rate; east-west component of the flow -> pan; calm is centred.
   const calm = value < CALM_MPS || info.direction === null || info.direction === undefined || !Number.isFinite(info.u) || !Number.isFinite(info.v);
@@ -41,7 +40,6 @@ export function valueTones(phenomenon, info, { pan = 0, eventS = HOVER_EVENT_S }
   if (p.missing) return [{ offsetS: 0, tone: missingTone(pan) }];
   if (p.silent) return [];
   const where = p.pan ?? pan;
-  if (phenomenon === "temperature") return [{ offsetS: 0, tone: shaped(p.frequencyHz, where, "sine", eventS, 0.03, Math.min(0.1, eventS / 4)) }];
   const offsets = pulseOffsets(p.rate, eventS);
   const pulseS = phenomenon === "rainfall" ? 0.035 : phenomenon === "dust" ? 0.022 : 0.07;
   return [{ offsetS: 0, tone: shaped(p.frequencyHz, where, p.waveform, pulseS, 0.004, Math.min(0.02, pulseS / 2), { voice: "pulse", pulses: offsets }) }];

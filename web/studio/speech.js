@@ -43,7 +43,8 @@ export function createSpeech({
     if (state === "SPEAKING") setState("IDLE");
   }
 
-  function speakNow(text) {
+  function speakNow(input) {
+    const text = typeof input === "function" ? input() : input;
     token++;
     const mine = token;
     show(text);

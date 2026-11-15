@@ -21,7 +21,7 @@ const server = createServer(async (request, response) => {
       response.writeHead(404).end();
       return;
     }
-    response.writeHead(200, { "Content-Type": types[extname(file)] ?? "application/octet-stream" });
+    response.writeHead(200, { "Content-Type": types[extname(file)] ?? "application/octet-stream", "Cache-Control": "no-cache" });
     if (request.method === "HEAD") {
       response.end();
       return;
