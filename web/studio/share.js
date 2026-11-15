@@ -1,4 +1,3 @@
-import { h } from "../cinematic/site/dom.js";
 import { resolveComparison } from "./compare.js";
 
 // Optional: a shareable link that stores the date, the layer pair, the selected area and the path (never any audio).
@@ -37,26 +36,13 @@ export function decodeShare(search, catalog, bounds) {
   return out;
 }
 
-export function mountShare(api) {
-  const { state, el, c, document, win, catalog, list } = api;
-  const dates = Object.fromEntries(list.map((s) => [s.id, s.date]));
-  const button = h(document, "button", { type: "button", class: "button ghost small-button", text: c.share.copy });
-  const status = h(document, "p", { class: "small", role: "status", "aria-live": "polite", text: c.share.note });
-  button.addEventListener("click", async () => {
-    const params = encodeShare({ snapshotId: state.snapshot.id, comparison: state.cmpSources ? { a: state.cmpSources.a.id, b: state.cmpSources.b.id } : null, rect: state.rect, path: state.path }, dates);
-    const url = new URL(document.URL);
-    url.search = params.toString() + (new URLSearchParams(url.search).get("lang") ? "&lang=" + new URLSearchParams(url.search).get("lang") : "");
-    try { await win.navigator.clipboard.writeText(url.href); status.textContent = c.share.copied; } catch { status.textContent = url.href; }
-  });
-  state.drawers.append(h(document, "section", { class: "panel st-share" }, button, status));
-  // Apply a link on load.
-  const wanted = decodeShare(new URL(document.URL).search, catalog, api.bounds);
-  if (wanted.rect) { state.rect = wanted.rect; }
-  if (wanted.path) { state.path = wanted.path; api.refreshPath?.(); }
-  if (wanted.cmp) {
-    el.cmpA.value = wanted.cmp.first; el.cmpB.value = wanted.cmp.second;
-    api.describeComparison?.();
-    api.showChange?.();
-  }
-  api.invalidate();
+/** The page URL with the share parameters, keeping only the presentation flags (`lang`, `demo`) of the current URL. */
+export function shareUrl(currentUrl, params) {
+  const url = new URL(currentUrl);
+  const keep = new URLSearchParams(url.search);
+  const next = new URLSearchParams(params);
+  for (const key of ["lang", "demo"]) if (keep.get(key)) next.set(key, keep.get(key));
+  url.search = next.toString();
+  url.hash = "";
+  return url.href;
 }

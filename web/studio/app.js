@@ -1,4 +1,4 @@
-import { createStudioMap } from "./map.js";
+import { createStudioMap } from "./map.js?v=5";
 import { loadStudioManifest, serpentinePath } from "./data.js";
 import { createStudioSonifier, mapStudioSample, STUDIO_MAPPING_VERSION } from "../audio/studio-sonification.js";
 import { createStudioPlayback } from "./playback.js";
